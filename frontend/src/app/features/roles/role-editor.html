@@ -1,0 +1,115 @@
+<a class="volver" routerLink="/roles">Roles y permisos</a>
+
+@if (loadError()) {
+  <p class="aviso aviso-error" role="alert">{{ loadError() }}</p>
+} @else if (!ready()) {
+  <p class="cargando" role="status">Cargando…</p>
+} @else {
+  <div class="titulo">
+    <h1>{{ isNew ? 'Nuevo rol' : role()!.name }}</h1>
+    @if (role(); as r) {
+      @if (!r.active) {
+        <span class="sello sello-inactivo">Inactivo</span>
+      }
+      <p class="meta cifras">{{ r.userCount }} {{ r.userCount === 1 ? 'usuario' : 'usuarios' }} con este rol</p>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="panel bloque" aria-labelledby="datos-titulo">
+      <h2 id="datos-titulo">Datos del rol</h2>
+      <div class="rejilla">
+        <div class="campo">
+          <label for="r-name">Nombre</label>
+          <input id="r-name" class="control" formControlName="name" [attr.aria-invalid]="bad('name') || null" [attr.aria-describedby]="bad('name') ? 'e-name' : null" />
+          @if (bad('name')) {
+            <span class="error" id="e-name">Escriba un nombre de 2 a 80 caracteres.</span>
+          }
+        </div>
+        <div class="campo">
+          <label for="r-code">Código</label>
+          <input id="r-code" class="control codigo" formControlName="code" autocapitalize="characters" spellcheck="false" [attr.aria-invalid]="bad('code') || null" aria-describedby="ayuda-code" />
+          <span [class]="bad('code') ? 'error' : 'ayuda'" id="ayuda-code">
+            {{ isNew ? 'Identificador interno en mayúsculas, p. ej. DOCENTE. No se puede cambiar después.' : 'El código no se puede cambiar.' }}
+          </span>
+        </div>
+        <div class="campo completo">
+          <label for="r-description">Descripción <span class="opcional">(opcional)</span></label>
+          <textarea id="r-description" class="control" rows="2" formControlName="description" [attr.aria-invalid]="bad('description') || null"></textarea>
+          @if (bad('description')) {
+            <span class="error">Use máximo 255 caracteres.</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="panel bloque" aria-labelledby="permisos-titulo">
+      <div class="permisos-cabeza">
+        <h2 id="permisos-titulo">Permisos</h2>
+        <span class="cifras contador" aria-live="polite">{{ count() }} seleccionados</span>
+      </div>
+      @if (lockedPermissions()) {
+        <p class="aviso">El rol Administrador conserva todos los permisos para que siempre haya quien gestione la seguridad.</p>
+      }
+      @for (g of groups(); track g.module) {
+        <div class="grupo-permisos">
+        <fieldset [disabled]="readOnly() || lockedPermissions()">
+          <legend>
+            <label class="checkbox grupo">
+              <input
+                type="checkbox"
+                [checked]="groupState(g) === 'todos'"
+                [indeterminate]="groupState(g) === 'algunos'"
+                (change)="toggleGroup(g, $any($event.target).checked)"
+              />
+              <span>{{ g.module }}</span>
+            </label>
+          </legend>
+          @for (p of g.items; track p.key) {
+            <label class="checkbox">
+              <input type="checkbox" [checked]="isChecked(p.key)" (change)="toggle(p.key, $any($event.target).checked)" />
+              <span>{{ p.label }}</span>
+            </label>
+          }
+        </fieldset>
+        </div>
+      }
+    </section>
+
+    @if (canManage) {
+      <div class="pie">
+        @if (role(); as r) {
+          @if (!r.isSystem) {
+            @if (r.active) {
+              <button type="button" class="btn btn-texto peligro" (click)="confirmStatus.set(true)">Inactivar rol</button>
+            } @else {
+              <button type="button" class="btn btn-texto" (click)="setStatus(true)">Activar rol</button>
+            }
+          }
+        }
+        <div class="botones">
+          <a class="btn btn-secundario" routerLink="/roles">Cancelar</a>
+          <button type="submit" class="btn btn-principal" [disabled]="saving()">
+            @if (saving()) {
+              <span class="spinner" aria-hidden="true"></span> Guardando…
+            } @else {
+              {{ isNew ? 'Crear rol' : 'Guardar cambios' }}
+            }
+          </button>
+        </div>
+      </div>
+    }
+  </form>
+
+  <app-dialog [open]="confirmStatus()" heading="Inactivar rol" (closed)="confirmStatus.set(false)">
+    <p class="confirmar">El rol no podrá asignarse a usuarios nuevos. Solo se puede inactivar si ningún usuario activo lo tiene.</p>
+    <div class="botones">
+      <button type="button" class="btn btn-secundario" (click)="confirmStatus.set(false)">Cancelar</button>
+      <button type="button" class="btn btn-peligro" [disabled]="saving()" (click)="setStatus(false)">Inactivar</button>
+    </div>
+  </app-dialog>
+}

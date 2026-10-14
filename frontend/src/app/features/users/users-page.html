@@ -1,0 +1,148 @@
+<app-page-header heading="Usuarios" description="Personas con acceso a la plataforma y el rol que define lo que pueden hacer.">
+  @if (canManage) {
+    <button type="button" class="btn btn-principal" (click)="openCreate()">Nuevo usuario</button>
+  }
+</app-page-header>
+
+<form class="filtros" [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
+  <div class="campo buscar">
+    <label for="f-buscar">Buscar</label>
+    <input id="f-buscar" class="control" type="search" formControlName="search" placeholder="Nombre, correo o documento" />
+  </div>
+  @if (roles().length) {
+    <div class="campo">
+      <label for="f-rol">Rol</label>
+      <select id="f-rol" class="control" formControlName="roleId">
+        <option value="">Todos</option>
+        @for (r of roles(); track r.id) {
+          <option [value]="r.id">{{ r.name }}</option>
+        }
+      </select>
+    </div>
+  }
+  <div class="campo">
+    <label for="f-estado">Estado</label>
+    <select id="f-estado" class="control" formControlName="active">
+      <option value="">Todos</option>
+      <option value="true">Activos</option>
+      <option value="false">Inactivos</option>
+    </select>
+  </div>
+</form>
+
+<section class="panel lista" aria-labelledby="lista-titulo" [attr.aria-busy]="loading()">
+  <h2 id="lista-titulo" class="visually-hidden">Lista de usuarios</h2>
+
+  @if (loadError()) {
+    <div class="vacio">
+      <p class="aviso aviso-error" role="alert">{{ loadError() }}</p>
+      <button type="button" class="btn btn-secundario" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (!loading() && users().length === 0) {
+    <div class="vacio">
+      @if (hasFilters()) {
+        <p>Ningún usuario coincide con los filtros.</p>
+        <button type="button" class="btn btn-secundario" (click)="clearFilters()">Limpiar filtros</button>
+      } @else {
+        <p>Todavía no hay usuarios registrados.</p>
+      }
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Último ingreso</th>
+          @if (canManage) {
+            <th scope="col"><span class="visually-hidden">Acciones</span></th>
+          }
+        </tr>
+      </thead>
+      <tbody [class.atenuado]="loading()">
+        @for (u of users(); track u.id) {
+          <tr [class.inactivo]="!u.active">
+            <td class="persona">
+              <span class="nombre">{{ u.firstName }} {{ u.lastName }}</span>
+              <span class="correo">{{ u.email }}</span>
+              @if (u.documentNumber) {
+                <span class="doc cifras">Doc. {{ u.documentNumber }}</span>
+              }
+            </td>
+            <td class="rol" data-rotulo="Rol">{{ u.role.name }}</td>
+            <td class="estado" data-rotulo="Estado">
+              @if (!u.active) {
+                <span class="sello sello-inactivo">Inactivo</span>
+              } @else if (u.locked) {
+                <span class="sello sello-alerta" title="Bloqueado por intentos fallidos durante 15 minutos">Bloqueado</span>
+              } @else {
+                <span class="sello sello-activo">Activo</span>
+              }
+            </td>
+            <td class="ingreso cifras" data-rotulo="Último ingreso">
+              {{ u.lastLoginAt ? (u.lastLoginAt | date: 'd MMM y, h:mm a') : 'Nunca' }}
+            </td>
+            @if (canManage) {
+              <td class="acciones">
+                <button type="button" class="btn btn-texto" (click)="openEdit(u)">
+                  Editar<span class="visually-hidden"> a {{ u.firstName }} {{ u.lastName }}</span>
+                </button>
+                @if (u.id !== myId) {
+                  <button type="button" class="btn btn-texto" [class.peligro]="u.active" (click)="toggleStatus(u)">
+                    {{ u.active ? 'Inactivar' : 'Activar' }}<span class="visually-hidden"> a {{ u.firstName }} {{ u.lastName }}</span>
+                  </button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (loading() && users().length === 0) {
+      <p class="vacio" role="status">Cargando usuarios…</p>
+    }
+  }
+
+  @if (total() > 0) {
+    <nav class="paginas" aria-label="Paginación">
+      <span class="cifras" aria-live="polite">{{ rangeText() }}</span>
+      @if (lastPage() > 1) {
+      <div>
+        <button type="button" class="btn btn-secundario" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">Anterior</button>
+        <button type="button" class="btn btn-secundario" [disabled]="page() >= lastPage() || loading()" (click)="goTo(page() + 1)">Siguiente</button>
+      </div>
+      }
+    </nav>
+  }
+</section>
+
+<app-dialog [open]="editing() !== null" [heading]="editingUser() ? 'Editar usuario' : 'Nuevo usuario'" [wide]="true" (closed)="editing.set(null)">
+  @if (editing() !== null) {
+    <app-user-form
+      [user]="editingUser()"
+      [roles]="roles()"
+      [saving]="saving()"
+      [serverError]="formError()"
+      [isSelf]="editingUser()?.id === myId"
+      (save)="save($event)"
+      (cancel)="editing.set(null)"
+      (sendLink)="sendLink($event)"
+    />
+  }
+</app-dialog>
+
+<app-dialog [open]="confirming() !== null" heading="Inactivar usuario" (closed)="confirming.set(null)">
+  @if (confirming(); as u) {
+    <p class="confirmar">
+      <strong>{{ u.firstName }} {{ u.lastName }}</strong> no podrá ingresar y sus sesiones abiertas se cerrarán.
+      Puede activarlo de nuevo cuando lo necesite.
+    </p>
+    <div class="botones">
+      <button type="button" class="btn btn-secundario" (click)="confirming.set(null)">Cancelar</button>
+      <button type="button" class="btn btn-peligro" [disabled]="statusBusy()" (click)="applyStatus(u, false)">
+        {{ statusBusy() ? 'Inactivando…' : 'Inactivar' }}
+      </button>
+    </div>
+  }
+</app-dialog>

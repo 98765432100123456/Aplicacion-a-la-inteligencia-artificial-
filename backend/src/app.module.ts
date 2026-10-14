@@ -21,8 +21,8 @@ import { UsersModule } from './users/users.module';
     }),
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60_000, limit: 300 }],
-      // Las pruebas e2e hacen muchos ingresos seguidos.
-      skipIf: () => process.env.NODE_ENV === 'test',
+      // Las pruebas e2e hacen muchos ingresos seguidos. Nunca desactivar en producción.
+      skipIf: () => process.env.NODE_ENV === 'test' || process.env.THROTTLE_DISABLED === 'true',
     }),
     AuditModule,
     MailModule,

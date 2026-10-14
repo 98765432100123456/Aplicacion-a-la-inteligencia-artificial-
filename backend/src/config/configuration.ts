@@ -32,6 +32,9 @@ export function loadConfig(): AppConfig {
   if (env === 'production' && jwtSecret.length < 32) {
     throw new Error('JWT_SECRET debe tener al menos 32 caracteres en producción.');
   }
+  if (env === 'production' && process.env.THROTTLE_DISABLED === 'true') {
+    throw new Error('THROTTLE_DISABLED no se permite en producción.');
+  }
   return {
     env,
     port: Number(process.env.PORT ?? 3000),

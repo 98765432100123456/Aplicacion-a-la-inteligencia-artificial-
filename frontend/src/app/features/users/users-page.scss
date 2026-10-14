@@ -1,0 +1,202 @@
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(14rem, 2fr) repeat(2, minmax(10rem, 1fr));
+  gap: var(--e-4);
+  margin-bottom: var(--e-5);
+}
+
+.lista {
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--texto-sm);
+}
+
+th {
+  padding: var(--e-3) var(--e-4);
+  text-align: left;
+  font-size: var(--texto-xs);
+  font-weight: 700;
+  color: var(--tinta-suave);
+  background: var(--fondo);
+  border-bottom: 1px solid var(--linea);
+}
+
+td {
+  padding: var(--e-3) var(--e-4);
+  border-bottom: 1px solid var(--linea);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody.atenuado {
+  opacity: 0.55;
+  transition: opacity var(--dur-rapida);
+}
+
+tr.inactivo .nombre,
+tr.inactivo .rol {
+  color: var(--tinta-suave);
+}
+
+.persona {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.nombre {
+  font-weight: 600;
+  font-size: var(--texto-md);
+}
+
+.correo,
+.doc {
+  color: var(--tinta-suave);
+  overflow-wrap: anywhere;
+}
+
+.ingreso {
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+
+.acciones {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.peligro {
+  color: var(--alerta-700);
+
+  &:hover:not(:disabled) {
+    background: var(--alerta-100);
+    color: var(--alerta-700);
+  }
+}
+
+.vacio {
+  display: grid;
+  justify-items: start;
+  gap: var(--e-4);
+  padding: var(--e-8) var(--e-6);
+  color: var(--tinta-suave);
+}
+
+.paginas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-4);
+  padding: var(--e-3) var(--e-4);
+  border-top: 1px solid var(--linea);
+  font-size: var(--texto-sm);
+  color: var(--tinta-suave);
+
+  div {
+    display: flex;
+    gap: var(--e-2);
+  }
+}
+
+.confirmar {
+  margin-bottom: var(--e-6);
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--e-3);
+}
+
+/* Tableta: se oculta la columna menos importante */
+@media (max-width: 1100px) {
+  th:nth-child(4),
+  td.ingreso {
+    display: none;
+  }
+}
+
+/* Móvil: cada usuario es un bloque; las acciones quedan a mano abajo */
+@media (max-width: 719px) {
+  .filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .buscar {
+    grid-column: 1 / -1;
+  }
+
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--e-1) var(--e-3);
+    padding: var(--e-4);
+    border-bottom: 1px solid var(--linea);
+  }
+
+  tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  td {
+    padding: 0;
+    border: 0;
+  }
+
+  .persona {
+    grid-column: 1;
+  }
+
+  .estado {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  .rol {
+    grid-column: 1 / -1;
+    color: var(--tinta-suave);
+  }
+
+  .acciones {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: var(--e-2);
+    margin: var(--e-2) 0 calc(var(--e-2) * -1) calc(var(--e-3) * -1);
+  }
+
+  .paginas {
+    flex-direction: column;
+    align-items: stretch;
+
+    div {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .botones {
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+    }
+  }
+}

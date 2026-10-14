@@ -1,7 +1,7 @@
 {
   "name": "ica-bienestar-api",
   "version": "0.1.0",
-  "description": "API REST de la aplicación ICA – Bienestar Animal",
+  "description": "API REST de la aplicaci\u00f3n ICA \u2013 Bienestar Animal",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -16,7 +16,9 @@
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "seed": "ts-node src/database/seed.ts"
+    "seed": "ts-node src/database/seed.ts",
+    "seed:prod": "node dist/database/seed.js",
+    "migration:run:prod": "typeorm -d dist/database/data-source.js migration:run"
   },
   "jest": {
     "moduleFileExtensions": [

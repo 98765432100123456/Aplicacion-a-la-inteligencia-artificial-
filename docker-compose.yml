@@ -1,0 +1,51 @@
+# Entorno local completo: PostgreSQL + API + web.
+#   docker compose up --build
+#   docker compose exec api node dist/database/seed.js
+# Web: http://localhost:8080   API: http://localhost:3000/api/health
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ica
+      POSTGRES_PASSWORD: ica_dev
+      POSTGRES_DB: ica_bienestar
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ica -d ica_bienestar']
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ica
+      DB_PASSWORD: ica_dev
+      DB_NAME: ica_bienestar
+      DB_MIGRATIONS_RUN: 'true'
+      JWT_SECRET: solo-para-desarrollo-local-cambiar-en-cada-ambiente
+      CORS_ORIGINS: http://localhost:8080
+      FRONTEND_URL: http://localhost:8080
+      SEED_ADMIN_EMAIL: admin@ica-bienestar.local
+      SEED_ADMIN_PASSWORD: CambiarEsta.2026
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - '8080:8080'
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
