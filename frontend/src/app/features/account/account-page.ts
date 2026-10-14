@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
+import { HasUnsavedChanges } from '../../core/guards';
 import { errorMessage } from '../../core/http-error';
 import { PageHeader } from '../../shared/page-header';
 import { PasswordInput } from '../../shared/password-input';
@@ -11,7 +12,7 @@ import { ToastService } from '../../shared/toast.service';
   selector: 'app-account-page',
   imports: [ReactiveFormsModule, PageHeader, PasswordInput],
   template: `
-    <app-page-header heading="Mi cuenta" />
+    <app-page-header heading="Cuenta" />
 
     <div class="columnas">
       <section class="panel bloque" aria-labelledby="datos-titulo">
@@ -73,14 +74,14 @@ import { ToastService } from '../../shared/toast.service';
     .aviso { margin-bottom: var(--e-5); }
     form { display: grid; gap: var(--e-5); justify-items: start; }
     form .campo { width: 100%; }
-    @media (max-width: 599px) {
+    @media (max-width: 37.49em) {
       .columnas { grid-template-columns: 1fr; }
       .bloque { padding: var(--e-4); }
       form .btn { width: 100%; }
     }
   `,
 })
-export class AccountPage {
+export class AccountPage implements HasUnsavedChanges {
   protected readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   protected readonly hint = PASSWORD_HINT;
@@ -96,6 +97,10 @@ export class AccountPage {
     },
     { validators: matchFields('password', 'confirm') },
   );
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty;
+  }
 
   protected bad(field: 'current' | 'password'): boolean {
     const c = this.form.controls[field];

@@ -14,7 +14,8 @@ Aplicación web para evaluar el bienestar animal en fincas: listas de chequeo po
 ## Documentación
 
 - [Arquitectura](docs/ARQUITECTURA.md): diagramas, conexión frontend–backend–base de datos, modelo de datos, API y despliegue.
-- [Sistema de diseño](docs/SISTEMA-DE-DISENO.md): paleta con contrastes, tipografía, componentes y decisiones.
+- [Sistema de diseño](docs/SISTEMA-DE-DISENO.md): paleta con contrastes en modo claro y oscuro, tipografía, componentes y decisiones.
+- [Revisión con Apple HIG](docs/REVISION-APPLE-HIG.md): auditoría de diseño con las guías de Apple y de Vercel, y lo que se corrigió.
 - [Plan de trabajo](docs/PLAN-DE-TRABAJO.md): qué está hecho y qué sigue, requerimiento por requerimiento.
 - [Ramas](docs/RAMAS.md): flujo de trabajo con Git.
 
@@ -52,7 +53,7 @@ npm install
 npm start                   # http://localhost:4200 (envía /api al puerto 3000)
 ```
 
-Ingrese con el administrador que define `.env` (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`) y cambie la contraseña en **Mi cuenta**.
+Ingrese con el administrador que define `.env` (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`) y cambie la contraseña en **Cuenta**.
 
 En desarrollo, si `SMTP_HOST` está vacío, los correos de invitación y recuperación no se envían: se escriben en la consola de la API, de donde se copia el enlace.
 
@@ -71,7 +72,7 @@ docker compose exec api node dist/database/seed.js
 | `cd backend && npm test` | Pruebas unitarias de la API |
 | `cd backend && npm run test:e2e` | Flujos completos contra PostgreSQL (base `ica_bienestar_test`, se reinicia en cada ejecución) |
 | `cd frontend && npm run test:ci` | Pruebas unitarias del frontend (Chrome sin interfaz) |
-| `cd frontend && npm run e2e` | Playwright a 1440 y 390 px: flujos, accesibilidad con axe-core, desbordamiento y tamaño táctil. Requiere la API (con `THROTTLE_DISABLED=true`) y la web corriendo |
+| `cd frontend && npm run e2e` | Playwright a 1440 y 390 px: flujos, accesibilidad con axe-core en modo claro y oscuro, texto al 200 %, teclado, desbordamiento y tamaño táctil. Requiere la API (con `THROTTLE_DISABLED=true`) y la web corriendo |
 
 La CI (`.github/workflows/ci.yml`) ejecuta las pruebas de la API y del frontend, y el build, en cada push y pull request.
 
@@ -94,8 +95,23 @@ La CI (`.github/workflows/ci.yml`) ejecuta las pruebas de la API y del frontend,
 │   └── e2e/              pruebas Playwright
 ├── docs/                 arquitectura, diseño, plan y ramas
 ├── .claude/agents/       agentes especializados (agency-agents) para el desarrollo con Claude Code
+├── .claude/skills/       skills de diseño y pruebas (ver abajo)
 └── docker-compose.yml
 ```
+
+## Skills de Claude Code
+
+En `.claude/skills/` hay skills que Claude Code carga automáticamente al trabajar en este repositorio:
+
+| Skill | Para qué | Origen |
+|---|---|---|
+| `apple-design` | Revisar y mejorar la interfaz con las Human Interface Guidelines de Apple (123 páginas) | [dickwu/apple-design-skill](https://github.com/dickwu/apple-design-skill) |
+| `web-design-guidelines` | Revisar el código contra las Web Interface Guidelines de Vercel | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
+| `design-taste-frontend` | Dirección de arte para páginas públicas (no para pantallas de la app) | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) |
+| `image-to-code` | Generar un diseño en imagen y llevarlo a código (requiere generación de imágenes) | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) |
+| `playwright-cli` | Automatizar el navegador desde la terminal | [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli) |
+
+`apple-design/references/design-md/apple-DESIGN.md` es la referencia del sistema visual de Apple tomada de [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md).
 
 ## Equipo
 

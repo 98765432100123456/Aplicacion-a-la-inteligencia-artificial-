@@ -20,7 +20,7 @@ import { Component, input } from '@angular/core';
     p { margin-top: var(--e-1); color: var(--tinta-suave); max-width: 40rem; }
     .acciones { display: flex; gap: var(--e-3); flex-wrap: wrap; }
     .acciones:empty { display: none; }
-    @media (max-width: 599px) { .acciones, .acciones ::ng-deep .btn { width: 100%; } }
+    @media (max-width: 37.49em) { .acciones, .acciones ::ng-deep .btn { width: 100%; } }
   `,
 })
 export class PageHeader {

@@ -72,11 +72,11 @@ tr.inactivo .rol {
 }
 
 .peligro {
-  color: var(--alerta-700);
+  color: var(--alerta);
 
   &:hover:not(:disabled) {
-    background: var(--alerta-100);
-    color: var(--alerta-700);
+    background: var(--alerta-fondo);
+    color: var(--alerta);
   }
 }
 
@@ -104,6 +104,19 @@ tr.inactivo .rol {
   }
 }
 
+.descartar {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--e-5);
+}
+
+.botones-aviso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
 .confirmar {
   margin-bottom: var(--e-6);
 }
@@ -115,7 +128,7 @@ tr.inactivo .rol {
 }
 
 /* Tableta: se oculta la columna menos importante */
-@media (max-width: 1100px) {
+@media (max-width: 68.80em) {
   th:nth-child(4),
   td.ingreso {
     display: none;
@@ -123,7 +136,7 @@ tr.inactivo .rol {
 }
 
 /* Móvil: cada usuario es un bloque; las acciones quedan a mano abajo */
-@media (max-width: 719px) {
+@media (max-width: 44.99em) {
   .filtros {
     grid-template-columns: 1fr 1fr;
   }

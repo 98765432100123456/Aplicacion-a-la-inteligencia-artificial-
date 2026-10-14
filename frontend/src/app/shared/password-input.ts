@@ -40,10 +40,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       min-width: 4.75rem; min-height: var(--alto-control); padding: 0 var(--e-3);
       border: 1px solid transparent; border-left-color: var(--linea);
       border-radius: 0 var(--radio-control) var(--radio-control) 0;
-      background: transparent; color: var(--potrero-700);
+      background: transparent; color: var(--acento);
       font: inherit; font-size: var(--texto-sm); font-weight: 600; cursor: pointer;
     }
-    .alternar:hover { background: var(--potrero-50); }
+    .alternar:hover { background: var(--acento-tenue); }
   `,
 })
 export class PasswordInput implements ControlValueAccessor {

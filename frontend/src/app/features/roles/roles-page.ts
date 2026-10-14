@@ -55,7 +55,7 @@ import { PageHeader } from '../../shared/page-header';
       position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
       gap: var(--e-1) var(--e-8); padding: var(--e-5) var(--e-6); transition: border-color var(--dur-rapida) var(--curva);
     }
-    li:hover { border-color: var(--potrero-700); }
+    li:hover { border-color: var(--acento); }
     li:focus-within { outline: 3px solid var(--foco); outline-offset: 2px; }
     .cabeza { display: flex; align-items: center; gap: var(--e-3); flex-wrap: wrap; }
     h2 { font-size: var(--texto-lg); }
@@ -71,7 +71,7 @@ import { PageHeader } from '../../shared/page-header';
     .inactivo h2 a, .inactivo dd { color: var(--tinta-suave); }
     .cargando { color: var(--tinta-tenue); }
     .vacio { display: grid; justify-items: start; gap: var(--e-4); padding: var(--e-6); }
-    @media (max-width: 719px) {
+    @media (max-width: 44.99em) {
       li { grid-template-columns: 1fr; padding: var(--e-4); }
       .datos { grid-column: 1; grid-row: auto; gap: var(--e-6); margin-top: var(--e-3); }
       .datos div { text-align: left; }

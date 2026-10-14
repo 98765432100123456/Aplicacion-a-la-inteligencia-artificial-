@@ -1,5 +1,7 @@
 # Sistema de diseño
 
+Revisado con las guías de Apple (skill `apple-design`); el informe completo está en [REVISION-APPLE-HIG.md](REVISION-APPLE-HIG.md).
+
 Los tokens están en `frontend/src/styles.scss`. Este documento explica por qué son así.
 
 ## Idea
@@ -15,19 +17,25 @@ Principios:
 
 ## Paleta
 
-Contraste medido con la fórmula WCAG 2.1.
+Los colores son **semánticos**: cada token nombra un rol (`--superficie`, `--acento`, `--accion`, `--alerta`…) y cambia de valor según la apariencia del sistema. No hay interruptor propio de tema; se sigue `prefers-color-scheme` (HIG `dark-mode.md`). Contrastes medidos con la fórmula WCAG 2.1.
 
-| Token | Color | Uso | Sobre blanco | Sobre `--fondo` |
+| Token | Claro | Oscuro | Uso | Contraste claro / oscuro |
 |---|---|---|---|---|
-| `--potrero-700` | `#1f5135` | Acción principal, enlaces y estado activo | 9.2:1 | 8.1:1 |
-| `--potrero-900` | `#143823` | Panel de ingreso y hover principal | 13.0:1 (texto blanco encima) | — |
-| `--tinta` | `#1c211d` | Texto | 16.3:1 | 14.4:1 |
-| `--tinta-suave` | `#4d564f` | Texto secundario | 7.6:1 | 6.7:1 |
-| `--tinta-tenue` | `#5f6862` | Ayudas y metadatos | 5.8:1 | 5.1:1 |
-| `--maiz-700` | `#8a5a0b` | Advertencia y bloqueado | 5.9:1 | 5.2:1 |
-| `--alerta-700` | `#a8261b` | Error y acciones destructivas | 7.1:1 | 6.2:1 |
-| `--foco` | `#1d5fa8` | Anillo de foco | 6.5:1 | 5.7:1 |
-| `--fondo` | `#eef1ed` | Fondo de la aplicación | — | — |
+| `--fondo` | `#eef1ed` | `#111613` | Fondo de la aplicación | — |
+| `--superficie` | `#ffffff` | `#1a201c` | Paneles y tablas | — |
+| `--superficie-elevada` | `#ffffff` | `#222a25` | Diálogos y cajón | — |
+| `--tinta` | `#1c211d` | `#e6ebe7` | Texto | 16.3:1 / 13.7:1 |
+| `--tinta-suave` | `#4d564f` | `#b3bdb5` | Texto secundario | 7.6:1 / 8.6:1 |
+| `--tinta-tenue` | `#5f6862` | `#97a39a` | Ayudas, metadatos y ejemplos en campos | 5.8:1 / 6.3:1 |
+| `--linea-control` | `#7b877e` | `#6f7c73` | Borde de campos (mínimo 3:1) | 3.7:1 / 3.8:1 |
+| `--acento` | `#1f5135` | `#8bd3a8` | Enlaces, estado activo e íconos | 9.2:1 / 9.5:1 |
+| `--accion` | `#1f5135` | `#2f7d50` | Fondo del botón principal (texto blanco) | 9.2:1 / 5.0:1 |
+| `--maiz` | `#8a5a0b` | `#e5ad4f` | Advertencia y bloqueado | 5.9:1 / 8.2:1 |
+| `--alerta` | `#a8261b` | `#ff9585` | Error | 7.1:1 / 7.8:1 |
+| `--peligro` | `#a8261b` | `#b3261e` | Fondo de acción destructiva (texto blanco) | 7.1:1 / 6.5:1 |
+| `--foco` | `#1d5fa8` | `#7fb2f0` | Anillo de foco | 6.5:1 / 7.5:1 |
+
+Con **contraste aumentado** (`prefers-contrast: more`), el texto secundario toma el color del texto principal y los bordes se oscurecen a `#3d453f` (o se aclaran a `#b3bdb5` en oscuro).
 
 El verde es el del potrero, no un acento de moda. El azul se reserva para el foco, así nunca se confunde con una acción.
 
@@ -40,11 +48,11 @@ Escala de 1.2 sobre 16 px: 12 · 14 · 16 · 19 · 23 · 28 · 33 px (`--texto-x
 ## Espaciado, grid y puntos de quiebre
 
 - Base de 4 px: `--e-1` (4) a `--e-16` (64).
-- Puntos de quiebre:
-  - 600 px: los diálogos ocupan toda la pantalla.
-  - 720 px: la tabla de usuarios pasa a bloques.
-  - 900 px: el ingreso pasa a una columna.
-  - 1024 px: la navegación lateral pasa a cajón.
+- Puntos de quiebre en `em`, para que reaccionen al tamaño de letra del navegador y no solo al ancho (HIG `typography.md › Supporting Dynamic Type`). Con texto al 200 % en una pantalla de escritorio, la interfaz pasa sola al diseño de celular:
+  - 37.5em (600 px): los diálogos ocupan toda la pantalla.
+  - 45em (720 px): la tabla de usuarios pasa a bloques.
+  - 56.25em (900 px): el ingreso pasa a una columna.
+  - 64em (1024 px): la navegación lateral pasa a cajón.
 - Ancho de lectura limitado en los formularios: 24 rem en ingreso y 52 rem en el editor de roles.
 
 ## Radios y elevación
@@ -69,9 +77,16 @@ Los paneles se separan con bordes. La sombra (`--sombra-flotante`) queda solo pa
 
 ## Movimiento
 
-- 150 ms para hover y color; 240 ms para diálogos, cajón y mensajes.
+- **Presión:** todos los botones bajan a `scale(0.97)` en 120 ms (HIG `buttons.md`: "Always include a press state").
+- **Color y hover:** 150 ms con `ease`. Los efectos de hover del menú solo aplican con puntero fino (`hover: hover`).
+- **Diálogos:** entran desde `scale(0.96)` con opacidad, en 200 ms con `cubic-bezier(0.23, 1, 0.32, 1)`. Nunca desde `scale(0)`.
+- **Cajón móvil:** curva de iOS `cubic-bezier(0.32, 0.72, 0, 1)` en 300 ms.
 - No hay animaciones de aparición al hacer scroll.
 - `prefers-reduced-motion` reduce todo a 1 ms.
+
+## Materiales
+
+La barra superior del celular es la única capa funcional que flota sobre el contenido. Es translúcida (`backdrop-filter: saturate(180%) blur(16px)`), según HIG `materials.md` y `liquid-glass.md`, que reservan el material para los controles y nunca para el contenido. Con `prefers-reduced-transparency` vuelve a ser sólida.
 
 ## Wireframe
 

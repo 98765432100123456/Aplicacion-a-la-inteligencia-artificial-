@@ -139,11 +139,11 @@ legend {
 }
 
 .peligro {
-  color: var(--alerta-700);
+  color: var(--alerta);
 
   &:hover:not(:disabled) {
-    background: var(--alerta-100);
-    color: var(--alerta-700);
+    background: var(--alerta-fondo);
+    color: var(--alerta);
   }
 }
 
@@ -151,7 +151,7 @@ legend {
   margin-bottom: var(--e-6);
 }
 
-@media (max-width: 599px) {
+@media (max-width: 37.49em) {
   .bloque {
     padding: var(--e-4);
   }

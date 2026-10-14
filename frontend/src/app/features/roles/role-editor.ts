@@ -5,6 +5,7 @@ import { forkJoin, of } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 import { errorMessage } from '../../core/http-error';
+import { HasUnsavedChanges } from '../../core/guards';
 import { P, PermissionDef, RoleItem } from '../../core/models';
 import { Dialog } from '../../shared/dialog';
 import { ToastService } from '../../shared/toast.service';
@@ -20,7 +21,7 @@ interface Group {
   templateUrl: './role-editor.html',
   styleUrl: './role-editor.scss',
 })
-export class RoleEditor implements OnInit {
+export class RoleEditor implements OnInit, HasUnsavedChanges {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -38,6 +39,8 @@ export class RoleEditor implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly confirmStatus = signal(false);
   private submitted = false;
+  private initialPermissions = '';
+  private saved = false;
 
   /** El Administrador conserva todos los permisos para que nadie quede sin acceso a la seguridad. */
   protected readonly lockedPermissions = computed(() => this.role()?.code === 'ADMIN');
@@ -65,10 +68,16 @@ export class RoleEditor implements OnInit {
           this.selected.set(new Set(role.permissions));
         }
         if (this.readOnly()) this.form.disable();
+        this.initialPermissions = [...this.selected()].sort().join(',');
         this.ready.set(true);
       },
       error: (e) => this.loadError.set(errorMessage(e, 'No se pudo cargar el rol.')),
     });
+  }
+
+  hasUnsavedChanges(): boolean {
+    if (this.saved || this.readOnly() || !this.ready()) return false;
+    return this.form.dirty || [...this.selected()].sort().join(',') !== this.initialPermissions;
   }
 
   protected isChecked(key: string) {
@@ -127,6 +136,7 @@ export class RoleEditor implements OnInit {
     request.subscribe({
       next: (role) => {
         this.saving.set(false);
+        this.saved = true;
         this.toast.success(this.isNew ? `Rol ${role.name} creado.` : `Cambios guardados en ${role.name}.`);
         // Si el usuario editó su propio rol, se refrescan sus permisos.
         if (role.id === this.auth.user()?.role.id) this.auth.refresh();

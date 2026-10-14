@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -59,6 +59,9 @@ export class UsersPage implements OnInit {
   protected readonly editing = signal<UserItem | 'nuevo' | null>(null);
   protected readonly saving = signal(false);
   protected readonly formError = signal<string | null>(null);
+
+  protected readonly confirmDiscard = signal(false);
+  private readonly userForm = viewChild(UserForm);
 
   protected readonly confirming = signal<UserItem | null>(null);
   protected readonly statusBusy = signal(false);
@@ -141,6 +144,21 @@ export class UsersPage implements OnInit {
     this.editing.set(user);
   }
 
+  /** Cerrar el formulario: si hay cambios sin guardar, primero se confirma. */
+  protected requestCloseEditor() {
+    if (this.editing() === null) return;
+    if (this.userForm()?.isDirty() && !this.confirmDiscard()) {
+      this.confirmDiscard.set(true);
+      return;
+    }
+    this.closeEditor();
+  }
+
+  protected closeEditor() {
+    this.confirmDiscard.set(false);
+    this.editing.set(null);
+  }
+
   protected editingUser(): UserItem | null {
     const e = this.editing();
     return e && e !== 'nuevo' ? e : null;
@@ -154,7 +172,7 @@ export class UsersPage implements OnInit {
     request.subscribe({
       next: (user) => {
         this.saving.set(false);
-        this.editing.set(null);
+        this.closeEditor();
         this.toast.success(
           current
             ? `Cambios guardados para ${user.firstName} ${user.lastName}.`

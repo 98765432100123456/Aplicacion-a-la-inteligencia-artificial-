@@ -34,17 +34,17 @@ const MESSAGES: Record<Field, string> = {
         </div>
         <div class="campo completo">
           <label for="u-correo">Correo electrónico</label>
-          <input id="u-correo" class="control" type="email" formControlName="email" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" [attr.aria-invalid]="bad('email') || null" [attr.aria-describedby]="bad('email') ? 'e-email' : null" />
+          <input id="u-correo" class="control" type="email" placeholder="nombre@dominio.co" formControlName="email" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" [attr.aria-invalid]="bad('email') || null" [attr.aria-describedby]="bad('email') ? 'e-email' : null" />
           @if (bad('email')) { <span class="error" id="e-email">{{ messages.email }}</span> }
         </div>
         <div class="campo">
           <label for="u-doc">Documento <span class="opcional">(opcional)</span></label>
-          <input id="u-doc" class="control" formControlName="documentNumber" autocomplete="off" [attr.aria-invalid]="bad('documentNumber') || null" [attr.aria-describedby]="bad('documentNumber') ? 'e-documentNumber' : null" />
+          <input id="u-doc" class="control" formControlName="documentNumber" placeholder="1020304050" autocomplete="off" [attr.aria-invalid]="bad('documentNumber') || null" [attr.aria-describedby]="bad('documentNumber') ? 'e-documentNumber' : null" />
           @if (bad('documentNumber')) { <span class="error" id="e-documentNumber">{{ messages.documentNumber }}</span> }
         </div>
         <div class="campo">
           <label for="u-tel">Teléfono <span class="opcional">(opcional)</span></label>
-          <input id="u-tel" class="control" type="tel" formControlName="phone" autocomplete="off" inputmode="tel" [attr.aria-invalid]="bad('phone') || null" [attr.aria-describedby]="bad('phone') ? 'e-phone' : null" />
+          <input id="u-tel" class="control" type="tel" placeholder="300 123 4567" formControlName="phone" autocomplete="off" inputmode="tel" [attr.aria-invalid]="bad('phone') || null" [attr.aria-describedby]="bad('phone') ? 'e-phone' : null" />
           @if (bad('phone')) { <span class="error" id="e-phone">{{ messages.phone }}</span> }
         </div>
         <div class="campo completo">
@@ -95,7 +95,7 @@ const MESSAGES: Record<Field, string> = {
     .etiqueta { font-weight: 600; font-size: var(--texto-sm); }
     .ayuda { font-size: var(--texto-sm); color: var(--tinta-tenue); }
     .botones { display: flex; justify-content: flex-end; gap: var(--e-3); margin-top: var(--e-8); }
-    @media (max-width: 599px) {
+    @media (max-width: 37.49em) {
       .rejilla { grid-template-columns: 1fr; }
       .acceso { flex-direction: column; align-items: stretch; }
       .botones { flex-direction: column-reverse; }
@@ -129,6 +129,11 @@ export class UserForm implements OnInit {
     phone: ['', Validators.pattern(/^\+?[0-9 ]{7,20}$/)],
     roleId: ['', Validators.required],
   });
+
+  /** Hay datos escritos sin guardar (modality.md: evitar perder datos al cerrar). */
+  isDirty(): boolean {
+    return this.form.dirty;
+  }
 
   ngOnInit() {
     const u = this.user();

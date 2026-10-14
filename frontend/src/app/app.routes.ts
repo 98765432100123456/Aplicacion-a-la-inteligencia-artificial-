@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, permissionGuard } from './core/guards';
+import { authGuard, guestGuard, permissionGuard, unsavedChangesGuard } from './core/guards';
 import { P } from './core/models';
 
 export const routes: Routes = [
@@ -51,6 +51,7 @@ export const routes: Routes = [
         title: 'Nuevo rol | ICA Bienestar Animal',
         canActivate: [permissionGuard],
         data: { permissions: [P.ROLES_GESTIONAR] },
+        canDeactivate: [unsavedChangesGuard],
         loadComponent: () => import('./features/roles/role-editor').then((m) => m.RoleEditor),
       },
       {
@@ -58,11 +59,13 @@ export const routes: Routes = [
         title: 'Rol | ICA Bienestar Animal',
         canActivate: [permissionGuard],
         data: { permissions: [P.ROLES_VER] },
+        canDeactivate: [unsavedChangesGuard],
         loadComponent: () => import('./features/roles/role-editor').then((m) => m.RoleEditor),
       },
       {
         path: 'mi-cuenta',
-        title: 'Mi cuenta | ICA Bienestar Animal',
+        title: 'Cuenta | ICA Bienestar Animal',
+        canDeactivate: [unsavedChangesGuard],
         loadComponent: () => import('./features/account/account-page').then((m) => m.AccountPage),
       },
     ],

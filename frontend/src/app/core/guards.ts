@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, CanDeactivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
 // inject() solo funciona antes del primer await: por eso se toman al inicio.
@@ -27,3 +27,12 @@ export const permissionGuard: CanActivateFn = (route) => {
   if (!required.length || auth.can(...required)) return true;
   return inject(Router).createUrlTree(['/inicio'], { queryParams: { sinPermiso: 1 } });
 };
+
+/** Pantallas con formularios que pueden perder cambios al salir. */
+export interface HasUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+
+/** Pide confirmación antes de salir de una pantalla con cambios sin guardar. */
+export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (component) =>
+  !component.hasUnsavedChanges() || window.confirm('Hay cambios sin guardar. ¿Salir y descartarlos?');

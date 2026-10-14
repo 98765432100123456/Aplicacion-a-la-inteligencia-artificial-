@@ -108,7 +108,7 @@
   <app-dialog [open]="confirmStatus()" heading="Inactivar rol" (closed)="confirmStatus.set(false)">
     <p class="confirmar">El rol no podrá asignarse a usuarios nuevos. Solo se puede inactivar si ningún usuario activo lo tiene.</p>
     <div class="botones">
-      <button type="button" class="btn btn-secundario" (click)="confirmStatus.set(false)">Cancelar</button>
+      <button type="button" class="btn btn-secundario" autofocus (click)="confirmStatus.set(false)">Cancelar</button>
       <button type="button" class="btn btn-peligro" [disabled]="saving()" (click)="setStatus(false)">Inactivar</button>
     </div>
   </app-dialog>

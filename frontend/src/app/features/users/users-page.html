@@ -7,7 +7,7 @@
 <form class="filtros" [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
   <div class="campo buscar">
     <label for="f-buscar">Buscar</label>
-    <input id="f-buscar" class="control" type="search" formControlName="search" placeholder="Nombre, correo o documento" />
+    <input id="f-buscar" class="control" type="search" formControlName="search" placeholder="Nombre, correo o documento…" autocomplete="off" spellcheck="false" />
   </div>
   @if (roles().length) {
     <div class="campo">
@@ -117,7 +117,16 @@
   }
 </section>
 
-<app-dialog [open]="editing() !== null" [heading]="editingUser() ? 'Editar usuario' : 'Nuevo usuario'" [wide]="true" (closed)="editing.set(null)">
+<app-dialog [open]="editing() !== null" [heading]="editingUser() ? 'Editar usuario' : 'Nuevo usuario'" [wide]="true" (closed)="requestCloseEditor()">
+  @if (confirmDiscard()) {
+    <div class="aviso aviso-advertencia descartar" role="alert">
+      <span>Hay cambios sin guardar.</span>
+      <span class="botones-aviso">
+        <button type="button" class="btn btn-secundario" (click)="confirmDiscard.set(false)">Seguir editando</button>
+        <button type="button" class="btn btn-peligro" (click)="closeEditor()">Descartar cambios</button>
+      </span>
+    </div>
+  }
   @if (editing() !== null) {
     <app-user-form
       [user]="editingUser()"
@@ -126,7 +135,7 @@
       [serverError]="formError()"
       [isSelf]="editingUser()?.id === myId"
       (save)="save($event)"
-      (cancel)="editing.set(null)"
+      (cancel)="requestCloseEditor()"
       (sendLink)="sendLink($event)"
     />
   }
@@ -139,7 +148,7 @@
       Puede activarlo de nuevo cuando lo necesite.
     </p>
     <div class="botones">
-      <button type="button" class="btn btn-secundario" (click)="confirming.set(null)">Cancelar</button>
+      <button type="button" class="btn btn-secundario" autofocus (click)="confirming.set(null)">Cancelar</button>
       <button type="button" class="btn btn-peligro" [disabled]="statusBusy()" (click)="applyStatus(u, false)">
         {{ statusBusy() ? 'Inactivando…' : 'Inactivar' }}
       </button>

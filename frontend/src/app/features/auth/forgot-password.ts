@@ -36,6 +36,7 @@ import { AuthLayout } from './auth-layout';
               formControlName="email"
               autocomplete="email"
               inputmode="email"
+              placeholder="nombre@dominio.co"
               autocapitalize="off"
               spellcheck="false"
               [attr.aria-invalid]="invalid() || null"

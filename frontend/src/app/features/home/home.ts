@@ -64,8 +64,8 @@ interface Resumen {
       display: grid; gap: var(--e-1); padding: var(--e-5); color: var(--tinta); text-decoration: none;
       transition: border-color var(--dur-rapida) var(--curva);
     }
-    .dato:hover { border-color: var(--potrero-700); color: var(--tinta); }
-    .valor { font-size: var(--texto-3xl); font-weight: 700; line-height: 1; color: var(--potrero-900); }
+    .dato:hover { border-color: var(--acento); color: var(--tinta); }
+    .valor { font-size: var(--texto-3xl); font-weight: 700; line-height: 1; color: var(--acento-fuerte); }
     .rotulo { color: var(--tinta-suave); font-size: var(--texto-sm); font-weight: 500; }
     .cargando { color: var(--tinta-tenue); }
     .proximo { padding: var(--e-6); max-width: 46rem; border-style: dashed; background: transparent; }

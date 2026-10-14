@@ -2,17 +2,18 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
 
 /**
  * Diálogo modal sobre <dialog> nativo: atrapa el foco, cierra con Escape y
- * devuelve el foco al elemento que lo abrió.
+ * devuelve el foco al elemento que lo abrió. El padre decide si se cierra
+ * (por ejemplo, para confirmar antes de perder cambios).
  */
 @Component({
   selector: 'app-dialog',
   template: `
-    <dialog #dlg [attr.aria-labelledby]="titleId" (close)="closed.emit()" (cancel)="closed.emit()" (click)="onBackdrop($event)">
+    <dialog #dlg [attr.aria-labelledby]="titleId" (cancel)="$event.preventDefault(); closed.emit()" (click)="onBackdrop($event)">
       <div class="contenido" [class.ancho]="wide()">
         <header>
           <h2 [id]="titleId">{{ heading() }}</h2>
           <button type="button" class="cerrar" (click)="closed.emit()" aria-label="Cerrar">
-            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8"/></svg>
+            <svg width="20" height="20" style="width:1.25rem;height:1.25rem" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8"/></svg>
           </button>
         </header>
         <ng-content />
@@ -22,13 +23,14 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
   styles: `
     dialog {
       padding: 0; border: 0; border-radius: var(--radio-panel);
-      box-shadow: var(--sombra-flotante); color: var(--tinta);
-      width: min(34rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem);
+      box-shadow: var(--sombra-flotante); color: var(--tinta); background: var(--superficie-elevada);
+      width: min(34rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overscroll-behavior: contain;
     }
     dialog:has(.ancho) { width: min(44rem, calc(100vw - 2rem)); }
-    dialog::backdrop { background: rgb(20 30 24 / 0.5); }
-    dialog[open] { animation: entrar var(--dur-media) var(--curva); }
-    @keyframes entrar { from { opacity: 0; transform: translateY(8px); } }
+    dialog::backdrop { background: var(--velo); }
+    /* Entrada desde una escala apenas menor, nunca desde cero (centrado: es modal). */
+    dialog[open] { animation: entrar 200ms var(--curva); }
+    @keyframes entrar { from { opacity: 0; transform: scale(0.96); } }
     .contenido { padding: var(--e-6); }
     header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--e-4); margin-bottom: var(--e-5); }
     h2 { font-size: var(--texto-xl); padding-top: var(--e-1); }
@@ -37,7 +39,7 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
       border: 0; border-radius: var(--radio-control); background: transparent; color: var(--tinta-suave); cursor: pointer;
     }
     .cerrar:hover { background: var(--fondo); color: var(--tinta); }
-    @media (max-width: 599px) {
+    @media (max-width: 37.49em) {
       dialog { width: 100vw; max-width: 100vw; max-height: 100dvh; height: 100dvh; margin: 0; border-radius: 0; }
       dialog:has(.ancho) { width: 100vw; }
       .contenido { padding: var(--e-5) var(--e-4); }

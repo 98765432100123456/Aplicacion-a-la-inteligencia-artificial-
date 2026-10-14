@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
             <rect x="1" y="1" width="26" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
             <path d="M7 14.5l4.5 4.5L21 9" fill="none" stroke="currentColor" stroke-width="2.4" />
           </svg>
-          <span>ICA Bienestar Animal</span>
+          <span translate="no">ICA Bienestar Animal</span>
         </p>
         <div class="presentacion">
           <h1>Evaluación de bienestar animal en fincas</h1>
@@ -48,7 +48,7 @@ import { Component } from '@angular/core';
     .contexto {
       display: flex; flex-direction: column; justify-content: space-between; gap: var(--e-10);
       padding: var(--e-10) clamp(var(--e-8), 4vw, var(--e-16));
-      background: var(--potrero-900); color: #e8efe9;
+      background: var(--panel-marca); color: #e8efe9;
     }
     .marca { display: flex; align-items: center; gap: var(--e-3); font-weight: 700; color: #fff; }
     .presentacion { max-width: 30rem; }
@@ -65,7 +65,7 @@ import { Component } from '@angular/core';
     .formulario { display: grid; place-items: center; padding: var(--e-10) var(--e-6); background: var(--superficie); }
     .hoja { width: 100%; max-width: 24rem; }
 
-    @media (max-width: 899px) {
+    @media (max-width: 56.24em) {
       .marco { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
       .contexto { padding: var(--e-4); gap: 0; }
       .presentacion, .pie { display: none; }
