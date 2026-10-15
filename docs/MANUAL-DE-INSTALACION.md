@@ -1,0 +1,174 @@
+Manual de instalación
+=====================
+
+Este manual describe cómo preparar un equipo para ejecutar ICA Bienestar Animal en modo de desarrollo y cómo consultar la aplicación desde un computador o desde un teléfono móvil.
+
+
+Componentes que se ejecutan
+---------------------------
+
+El sistema se compone de tres elementos, y los tres deben estar activos para usar la aplicación:
+
+- **Base de datos PostgreSQL:** almacena usuarios, roles y la bitácora de auditoría.
+- **Servicio de aplicación (API):** atiende el inicio de sesión y la gestión de la información. Se ejecuta desde la carpeta `backend`.
+- **Interfaz web:** presenta las pantallas en el navegador. Se ejecuta desde la carpeta `frontend`.
+
+El servicio de aplicación y la interfaz web se mantienen abiertos, cada uno en una terminal diferente, mientras se usa la aplicación.
+
+
+Requisitos del equipo
+---------------------
+
+| Programa | Versión | Uso |
+|---|---|---|
+| Node.js | 22 o superior | Ejecuta el servicio de aplicación y la interfaz web |
+| PostgreSQL | 16 | Base de datos |
+| Git | Reciente | Descarga del repositorio |
+| Google Chrome | Reciente | Navegador recomendado |
+
+
+Descarga del repositorio
+------------------------
+
+```bash
+git clone -b claude/system-architecture-setup-295c5q https://github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-.git
+cd Aplicacion-a-la-inteligencia-artificial-
+```
+
+
+Preparación de la base de datos
+-------------------------------
+
+Con PostgreSQL instalado, se crean el usuario y la base de datos que usa la aplicación. Esta preparación se realiza una sola vez:
+
+```bash
+psql -U postgres -c "CREATE USER ica WITH PASSWORD 'ica_dev' CREATEDB;"
+psql -U postgres -c "CREATE DATABASE ica_bienestar OWNER ica;"
+```
+
+Para ejecutar las pruebas de extremo a extremo del servicio se crea además la base de pruebas:
+
+```bash
+psql -U postgres -c "CREATE DATABASE ica_bienestar_test OWNER ica;"
+```
+
+
+Preparación del servicio de aplicación
+--------------------------------------
+
+Desde la carpeta `backend` se instalan las dependencias y se copia la configuración de ejemplo:
+
+```bash
+cd backend
+npm install
+cp .env.example .env
+```
+
+En Windows, con la consola de comandos, la copia se realiza con `copy .env.example .env`. Los valores del archivo `.env` funcionan sin cambios con la base de datos creada en la sección anterior.
+
+A continuación se crean las tablas y se cargan los roles base junto con el administrador inicial:
+
+```bash
+npm run migration:run
+npm run seed
+```
+
+
+Preparación de la interfaz web
+------------------------------
+
+Desde la carpeta `frontend` se instalan las dependencias:
+
+```bash
+cd frontend
+npm install
+```
+
+
+Ejecución diaria
+----------------
+
+Con el equipo preparado, cada vez que se desee usar la aplicación se abren dos terminales. En la primera se inicia el servicio de aplicación:
+
+```bash
+cd backend
+npm run start:dev
+```
+
+En la segunda se inicia la interfaz web:
+
+```bash
+cd frontend
+npm start
+```
+
+La aplicación queda disponible en Chrome en la dirección `http://localhost:4200`. Para detener cualquiera de los dos procesos se presiona `Ctrl + C` en su terminal.
+
+**Cuenta inicial**
+
+| Campo | Valor |
+|---|---|
+| Correo electrónico | `admin@ica-bienestar.local` |
+| Contraseña | `CambiarEsta.2026` |
+
+Se recomienda cambiar la contraseña desde la sección **Cuenta** después del primer ingreso.
+
+
+Consulta desde un teléfono móvil
+--------------------------------
+
+El teléfono no ejecuta ningún comando; únicamente abre la página que sirve el computador. Para ello, el computador y el teléfono deben estar conectados a la misma red WiFi, y la interfaz web se inicia de modo que acepte conexiones de otros dispositivos de la red:
+
+```bash
+cd frontend
+npm start -- --host 0.0.0.0
+```
+
+Luego se consulta la dirección IP del computador en la red local. En Windows se obtiene con el comando `ipconfig`, en la línea *Dirección IPv4*; en macOS, con `ipconfig getifaddr en0`; en Linux, con `hostname -I`. Con esa dirección, por ejemplo `192.168.1.20`, se abre en el Chrome del teléfono:
+
+```text
+http://192.168.1.20:4200
+```
+
+El servicio de aplicación no requiere ningún ajuste adicional, porque la interfaz web le reenvía las peticiones dentro del mismo computador. Si el teléfono no logra abrir la página, se debe verificar que el cortafuegos del computador permita conexiones entrantes en el puerto 4200.
+
+**Vista de teléfono en el computador**
+
+Para revisar el diseño móvil sin un teléfono, se abre `http://localhost:4200` en Chrome, se presiona `Ctrl + Shift + M` (en macOS, `Cmd + Shift + M`) y se selecciona un modelo de teléfono en la barra superior de la vista.
+
+
+Correos electrónicos en desarrollo
+----------------------------------
+
+Mientras la variable `SMTP_HOST` permanezca vacía en `backend/.env`, el sistema no envía correos: el contenido de cada mensaje de invitación o de recuperación de contraseña se escribe en la terminal del servicio de aplicación. Desde allí se copia el enlace y se abre en el navegador. Para el envío real se configuran las variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` y `SMTP_PASSWORD` con los datos de un servidor de correo.
+
+
+Alternativa con contenedores
+----------------------------
+
+En un equipo con Docker instalado es posible levantar la base de datos, el servicio de aplicación y la interfaz web con un solo comando desde la raíz del repositorio:
+
+```bash
+docker compose up --build
+```
+
+Una vez iniciados los contenedores, se cargan los datos iniciales con:
+
+```bash
+docker compose exec api node dist/database/seed.js
+```
+
+En esta modalidad la aplicación se consulta en `http://localhost:8080`.
+
+
+Problemas frecuentes
+--------------------
+
+| Situación | Causa probable y solución |
+|---|---|
+| La pantalla de ingreso indica que no hay conexión con el servidor | El servicio de aplicación no está en ejecución. Debe iniciarse con `npm run start:dev` en la carpeta `backend` |
+| El servicio de aplicación no inicia y menciona la base de datos | PostgreSQL no está en ejecución o los datos de conexión en `backend/.env` no coinciden con los de la base creada |
+| El servicio indica que falta la variable `JWT_SECRET` | No existe el archivo `backend/.env`. Debe copiarse desde `.env.example` |
+| El ingreso responde "Demasiados intentos seguidos" | Se superó el límite de peticiones por minuto. Basta con esperar un minuto |
+| El ingreso indica que la cuenta está bloqueada | Hubo cinco intentos fallidos. La cuenta se desbloquea a los 15 minutos o al restablecer la contraseña |
+| El puerto 4200 o 3000 ya está en uso | Otro proceso ocupa el puerto. Debe cerrarse ese proceso o la terminal anterior de la aplicación |

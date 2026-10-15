@@ -1,8 +1,13 @@
-# Arquitectura del sistema
+Arquitectura del sistema
+========================
 
-Aplicación web para evaluar el bienestar animal en fincas (documento *Requerimientos funcionales Aplicación ICA – Bienestar Animal*). Este documento describe cómo se conectan frontend, backend y base de datos, y cómo se despliega en Google Cloud.
+Este documento describe la arquitectura de ICA Bienestar Animal, aplicación web para la evaluación del bienestar animal en fincas, desarrollada a partir del documento *Requerimientos funcionales Aplicación ICA – Bienestar Animal*. Se detallan los componentes del sistema, la forma en que se comunican la interfaz web, el servicio de aplicación y la base de datos, el modelo de datos, los servicios expuestos y el procedimiento de despliegue en Google Cloud.
 
-## 1. Vista general
+
+Vista general
+-------------
+
+El siguiente diagrama presenta los componentes del sistema en el ambiente de producción. Las líneas punteadas corresponden a servicios previstos para sprints posteriores.
 
 ```mermaid
 flowchart LR
@@ -21,40 +26,49 @@ flowchart LR
     CR -->|SMTP| MAIL[Servidor de correo]
 ```
 
+La tabla siguiente relaciona cada capa con la tecnología seleccionada y el requerimiento que atiende.
+
 | Capa | Tecnología | Requerimiento |
 |---|---|---|
-| Frontend | Angular 20 (componentes standalone, signals, sin zone.js) | RNF01, RNF13, RNF16 |
-| Backend | NestJS 11 + TypeORM sobre Node.js 22 | Recomendación técnica del documento |
-| Base de datos | PostgreSQL 16 (Cloud SQL en producción) | RNFG03 |
-| Autenticación | JWT firmado (HS256) + contraseñas con bcrypt | RF01, RNF05 |
+| Interfaz web | Angular 20, con componentes independientes, señales y sin zone.js | RNF01, RNF13, RNF16 |
+| Servicio de aplicación | NestJS 11 y TypeORM sobre Node.js 22 | Recomendación técnica del documento de requerimientos |
+| Base de datos | PostgreSQL 16, administrado con Cloud SQL en producción | RNFG03 |
+| Autenticación | Tokens JWT firmados con HS256 y contraseñas cifradas con bcrypt | RF01, RNF05 |
 | Correo | SMTP con nodemailer | RF04 |
-| Despliegue | Firebase Hosting + Cloud Run + Cloud SQL | RNF02, RNFG01 |
-| Credenciales | Variables de entorno desde Secret Manager | RNFG06 |
+| Despliegue | Firebase Hosting, Cloud Run y Cloud SQL | RNF02, RNFG01 |
+| Credenciales | Variables de entorno provistas por Secret Manager | RNFG06 |
 
-## 2. Cómo se conectan las partes
 
-### Frontend → Backend
+Comunicación entre componentes
+------------------------------
 
-- El frontend llama siempre a la ruta relativa `/api`, así que **frontend y API comparten dominio** y no hace falta CORS en producción.
-  - Desarrollo: `ng serve` usa `frontend/proxy.conf.json` para enviar `/api` a `http://localhost:3000`.
-  - Docker local: nginx (`frontend/nginx.conf`) reenvía `/api/` al contenedor `api`.
-  - Producción: Firebase Hosting reescribe `/api/**` al servicio de Cloud Run `ica-bienestar-api` (`frontend/firebase.json`).
-- Cada petición lleva `Authorization: Bearer <token>`, que agrega `core/auth.interceptor.ts`. Si la API responde 401, el interceptor cierra la sesión y lleva al ingreso.
-- El token se guarda en `sessionStorage` y se pierde al cerrar el navegador.
+**Interfaz web y servicio de aplicación**
 
-### Backend → Base de datos
+La interfaz web invoca siempre la ruta relativa `/api`, de modo que ambos componentes comparten dominio y no se requiere CORS en producción. La redirección de esa ruta depende del ambiente:
 
-- `backend/src/config/configuration.ts` arma la conexión de TypeORM:
-  - Local: `DB_HOST` y `DB_PORT`.
-  - Cloud Run: `DB_SOCKET_PATH=/cloudsql/<proyecto>:<región>:<instancia>` con el conector de Cloud SQL, sin IP pública.
-- El esquema se maneja **solo con migraciones** (`synchronize: false`). Están en `backend/src/database/migrations`.
-- `npm run seed` crea los roles base y el primer administrador. Se puede ejecutar varias veces sin duplicar datos.
+| Ambiente | Mecanismo | Configuración |
+|---|---|---|
+| Desarrollo | El servidor de desarrollo de Angular redirige `/api` hacia `http://localhost:3000` | `frontend/proxy.conf.json` |
+| Contenedores locales | nginx redirige `/api/` hacia el contenedor `api` | `frontend/nginx.conf` |
+| Producción | Firebase Hosting redirige `/api/**` hacia el servicio de Cloud Run `ica-bienestar-api` | `frontend/firebase.json` |
 
-### Backend → Correo
+Cada petición incluye la cabecera `Authorization: Bearer <token>`, agregada por el interceptor `core/auth.interceptor.ts`. Cuando el servicio responde con el código 401, el interceptor cierra la sesión y redirige a la pantalla de ingreso. El token se conserva en `sessionStorage` y se elimina al cerrar el navegador.
 
-- `MailService` envía por SMTP. Si `SMTP_HOST` está vacío (solo en desarrollo), el correo se escribe en el log de la API para poder copiar el enlace. En producción la API no arranca sin SMTP.
+**Servicio de aplicación y base de datos**
 
-## 3. Módulos del backend
+El archivo `backend/src/config/configuration.ts` construye la conexión de TypeORM. En el ambiente local se usan las variables `DB_HOST` y `DB_PORT`; en Cloud Run se usa `DB_SOCKET_PATH=/cloudsql/<proyecto>:<región>:<instancia>`, a través del conector de Cloud SQL y sin dirección IP pública.
+
+El esquema de la base de datos se administra exclusivamente mediante migraciones (`synchronize: false`), ubicadas en `backend/src/database/migrations`. El comando `npm run seed` crea los roles base y el primer administrador, y puede ejecutarse varias veces sin duplicar información.
+
+**Servicio de aplicación y correo electrónico**
+
+El componente `MailService` envía los mensajes por SMTP. En desarrollo, cuando la variable `SMTP_HOST` está vacía, el contenido del mensaje se escribe en el registro del servicio para permitir copiar el enlace. En producción el servicio no inicia sin un servidor SMTP configurado.
+
+
+Módulos del servicio de aplicación
+----------------------------------
+
+El servicio se organiza en módulos de NestJS con responsabilidades separadas, como se muestra a continuación.
 
 ```mermaid
 flowchart TB
@@ -69,15 +83,21 @@ flowchart TB
     end
 ```
 
-Cada petición pasa por tres guards globales, en este orden:
+Toda petición atraviesa tres guardas globales, en el orden indicado en la tabla.
 
-1. `ThrottlerGuard`: límite de peticiones. El login acepta 10 por minuto y la recuperación 5.
-2. `JwtAuthGuard`: exige token salvo en las rutas `@Public()`. La estrategia **vuelve a leer el usuario en cada petición**, así que una inactivación, un cambio de rol o un cambio de contraseña aplican de inmediato.
-3. `PermissionsGuard`: revisa `@RequirePermissions(...)` contra los permisos del rol (RNF07).
+| Guarda | Función |
+|---|---|
+| `ThrottlerGuard` | Limita el número de peticiones. El inicio de sesión admite 10 por minuto y la solicitud de recuperación, 5 |
+| `JwtAuthGuard` | Exige un token válido, salvo en las rutas marcadas con `@Public()`. La estrategia vuelve a consultar el usuario en cada petición, de modo que una inactivación, un cambio de rol o un cambio de contraseña surten efecto de inmediato |
+| `PermissionsGuard` | Verifica los permisos exigidos con `@RequirePermissions(...)` frente a los permisos del rol del usuario (RNF07) |
 
-Para agregar un módulo nuevo (fincas, evaluaciones…) se crea su carpeta en `src/`, se agregan sus permisos a `roles/permissions.ts` y se protege cada ruta con `@RequirePermissions`.
+La incorporación de un módulo nuevo, como fincas o evaluaciones, consiste en crear su carpeta en `src/`, registrar sus permisos en `roles/permissions.ts` y proteger cada ruta con `@RequirePermissions`.
 
-## 4. Modelo de datos (Sprint 1)
+
+Modelo de datos del primer sprint
+---------------------------------
+
+El diagrama de entidad y relación presenta las tablas creadas por la migración inicial.
 
 ```mermaid
 erDiagram
@@ -128,11 +148,15 @@ erDiagram
     }
 ```
 
-Los permisos se guardan como arreglo en el rol en lugar de una tabla intermedia. Son pocos (12), cambian solo cuando se agrega un módulo y así se leen en una sola consulta por petición.
+Los permisos se almacenan como un arreglo dentro de cada rol, en lugar de una tabla intermedia. La decisión obedece a que el catálogo es reducido (doce permisos), cambia únicamente cuando se agrega un módulo y, de esta forma, se obtiene en una sola consulta por petición.
 
-## 5. Flujos de seguridad
 
-### Inicio de sesión (RF01)
+Flujos de seguridad
+-------------------
+
+**Inicio de sesión (RF01)**
+
+El diagrama de secuencia describe la validación de credenciales, el bloqueo por intentos fallidos y la emisión del token.
 
 ```mermaid
 sequenceDiagram
@@ -158,7 +182,9 @@ sequenceDiagram
     end
 ```
 
-### Recuperación de contraseña (RF04)
+**Recuperación de contraseña (RF04)**
+
+El diagrama de secuencia describe la solicitud del enlace, su validación y el registro de la nueva contraseña.
 
 ```mermaid
 sequenceDiagram
@@ -184,91 +210,110 @@ sequenceDiagram
     A-->>W: 200 → pantalla de ingreso
 ```
 
-El mismo mecanismo sirve de **invitación**: cuando un administrador crea un usuario, este recibe un enlace (válido por 72 h) para definir su contraseña. El administrador nunca conoce la clave.
+El mismo mecanismo se emplea como invitación: cuando un administrador crea un usuario, la persona recibe un enlace con vigencia de 72 horas para definir su contraseña. En ningún momento el administrador conoce la contraseña.
 
-## 6. API (Sprint 1)
 
-Con la API en desarrollo, la documentación interactiva queda en `http://localhost:3000/api/docs` (Swagger).
+Servicios de la API en el primer sprint
+---------------------------------------
 
-| Método | Ruta | Permiso | Uso |
+En el ambiente de desarrollo, la documentación interactiva de la API, generada con Swagger, está disponible en `http://localhost:3000/api/docs`. La tabla siguiente resume los servicios publicados.
+
+| Método | Ruta | Permiso requerido | Descripción |
 |---|---|---|---|
-| POST | `/api/auth/login` | público | Ingreso |
-| GET | `/api/auth/me` | sesión | Usuario actual y permisos |
-| POST | `/api/auth/forgot-password` | público | Pide el enlace de recuperación |
-| GET | `/api/auth/reset-password/validate?token=` | público | Revisa si el enlace sigue vigente |
-| POST | `/api/auth/reset-password` | público | Define la nueva contraseña |
-| POST | `/api/auth/change-password` | sesión | Cambia la contraseña propia |
-| GET | `/api/users` | `usuarios.ver` o `usuarios.gestionar` | Lista con búsqueda, filtros y paginación |
-| GET | `/api/users/:id` | `usuarios.ver` o `usuarios.gestionar` | Detalle |
-| POST | `/api/users` | `usuarios.gestionar` | Crea y envía la invitación |
-| PATCH | `/api/users/:id` | `usuarios.gestionar` | Edita datos o rol |
-| PATCH | `/api/users/:id/status` | `usuarios.gestionar` | Activa o inactiva |
-| POST | `/api/users/:id/access-link` | `usuarios.gestionar` | Reenvía el enlace de acceso |
-| GET | `/api/roles` | `roles.ver` o `usuarios.gestionar` | Lista con conteo de usuarios |
+| POST | `/api/auth/login` | Ninguno | Inicio de sesión |
+| GET | `/api/auth/me` | Sesión activa | Usuario autenticado y sus permisos |
+| POST | `/api/auth/forgot-password` | Ninguno | Solicitud del enlace de recuperación |
+| GET | `/api/auth/reset-password/validate?token=` | Ninguno | Verificación de la vigencia del enlace |
+| POST | `/api/auth/reset-password` | Ninguno | Registro de la nueva contraseña |
+| POST | `/api/auth/change-password` | Sesión activa | Cambio de la contraseña propia |
+| GET | `/api/users` | `usuarios.ver` o `usuarios.gestionar` | Consulta con búsqueda, filtros y paginación |
+| GET | `/api/users/:id` | `usuarios.ver` o `usuarios.gestionar` | Detalle de un usuario |
+| POST | `/api/users` | `usuarios.gestionar` | Creación del usuario y envío de la invitación |
+| PATCH | `/api/users/:id` | `usuarios.gestionar` | Edición de datos o del rol |
+| PATCH | `/api/users/:id/status` | `usuarios.gestionar` | Activación o inactivación |
+| POST | `/api/users/:id/access-link` | `usuarios.gestionar` | Reenvío del enlace de acceso |
+| GET | `/api/roles` | `roles.ver` o `usuarios.gestionar` | Consulta de roles con el número de usuarios |
 | GET | `/api/roles/permissions` | `roles.ver` | Catálogo de permisos |
-| GET | `/api/roles/:id` | `roles.ver` | Detalle |
-| POST | `/api/roles` | `roles.gestionar` | Crea un rol |
-| PATCH | `/api/roles/:id` | `roles.gestionar` | Edita nombre, descripción y permisos |
-| PATCH | `/api/roles/:id/status` | `roles.gestionar` | Activa o inactiva |
-| GET | `/api/health` | público | Estado de la API y de la base |
+| GET | `/api/roles/:id` | `roles.ver` | Detalle de un rol |
+| POST | `/api/roles` | `roles.gestionar` | Creación de un rol |
+| PATCH | `/api/roles/:id` | `roles.gestionar` | Edición de nombre, descripción y permisos |
+| PATCH | `/api/roles/:id/status` | `roles.gestionar` | Activación o inactivación |
+| GET | `/api/health` | Ninguno | Estado del servicio y de la base de datos |
 
-Reglas de negocio que aplica la API:
+El servicio aplica las siguientes reglas de negocio:
 
-- El correo es único y se guarda en minúsculas.
-- Un administrador no puede inactivarse ni cambiar su propio rol, y siempre debe quedar al menos un administrador activo.
-- Los roles base (Administrador, Evaluador, Consultor externo) no se pueden inactivar, y el Administrador conserva todos los permisos.
-- Un rol solo se inactiva si ningún usuario activo lo tiene.
-- La contraseña debe tener entre 10 y 72 caracteres, con al menos una letra y un número.
+- El correo electrónico es único y se almacena en minúsculas.
+- Un administrador no puede inactivar su propia cuenta ni cambiar su propio rol, y siempre debe existir al menos un administrador activo.
+- Los roles base (Administrador, Evaluador y Consultor externo) no pueden inactivarse, y el rol Administrador conserva todos los permisos.
+- Un rol solo puede inactivarse cuando ningún usuario activo lo tiene asignado.
+- La contraseña debe tener entre 10 y 72 caracteres e incluir al menos una letra y un número.
 
-## 7. Frontend
 
-```
-frontend/src/app/
-├── core/        servicios sin interfaz: auth, api, interceptor, guards, modelos
-├── shared/      componentes reutilizables: diálogo, campo de contraseña, avisos, encabezado
-├── layout/      shell con navegación lateral (cajón en móvil)
-└── features/    una carpeta por módulo, con carga diferida por ruta
-    ├── auth/    ingreso, recuperar y crear contraseña
-    ├── home/
-    ├── users/
-    ├── roles/
-    └── account/
-```
+Interfaz web
+------------
 
-- Las rutas internas usan `authGuard` y `permissionGuard`. El menú solo muestra lo que el rol permite, aunque la seguridad real la aplica la API.
-- Los estilos se basan en variables CSS definidas en `src/styles.scss` (ver [SISTEMA-DE-DISENO.md](SISTEMA-DE-DISENO.md)).
+La aplicación Angular se organiza en las carpetas descritas a continuación. Cada módulo funcional se carga de forma diferida al acceder a su ruta.
 
-## 8. Despliegue en Google Cloud
+| Carpeta | Contenido |
+|---|---|
+| `core/` | Servicios sin interfaz gráfica: sesión, acceso a la API, interceptor, guardas de rutas y modelos |
+| `shared/` | Componentes reutilizables: diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
+| `layout/` | Estructura principal con navegación lateral, que en pantallas pequeñas se convierte en un panel desplegable |
+| `features/auth/` | Ingreso, recuperación y creación de contraseña |
+| `features/home/` | Pantalla de inicio |
+| `features/users/` | Gestión de usuarios |
+| `features/roles/` | Gestión de roles y permisos |
+| `features/account/` | Datos de la cuenta y cambio de contraseña |
 
-| Ambiente | Proyecto GCP | Rama |
+Las rutas internas están protegidas por `authGuard` y `permissionGuard`. El menú presenta únicamente las secciones que el rol permite; no obstante, el control de acceso efectivo lo ejerce el servicio de aplicación. Los estilos se basan en variables CSS definidas en `src/styles.scss`, descritas en el [sistema de diseño](SISTEMA-DE-DISENO.md).
+
+
+Despliegue en Google Cloud
+--------------------------
+
+El sistema contempla tres ambientes independientes, cada uno asociado a una rama del repositorio.
+
+| Ambiente | Proyecto de Google Cloud | Rama |
 |---|---|---|
 | Desarrollo | `ica-bienestar-dev` | `develop` |
 | Pruebas | `ica-bienestar-qa` | `release/*` |
 | Producción | `ica-bienestar-prod` | `main` |
 
-Cada ambiente tiene su propia instancia de Cloud SQL y sus propios secretos (RNFG07). Pasos para un ambiente:
+Cada ambiente dispone de su propia instancia de Cloud SQL y de sus propios secretos (RNFG07). El procedimiento de despliegue de un ambiente se describe a continuación.
+
+**Base de datos**
 
 ```bash
-# 1. Base de datos
 gcloud sql instances create ica-bienestar-db --database-version=POSTGRES_16 --region=us-central1 --tier=db-g1-small
 gcloud sql databases create ica_bienestar --instance=ica-bienestar-db
 gcloud sql users create ica --instance=ica-bienestar-db --password=<clave>
+```
 
-# 2. Secretos
+**Secretos**
+
+```bash
 printf '%s' "$(openssl rand -base64 48)" | gcloud secrets create jwt-secret --data-file=-
 printf '%s' '<clave-bd>' | gcloud secrets create db-password --data-file=-
 printf '%s' '<clave-smtp>' | gcloud secrets create smtp-password --data-file=-
+```
 
-# 3. API en Cloud Run
+**Servicio de aplicación en Cloud Run**
+
+```bash
 gcloud run deploy ica-bienestar-api --source backend --region us-central1 \
   --add-cloudsql-instances <proyecto>:us-central1:ica-bienestar-db \
   --set-env-vars NODE_ENV=production,DB_SOCKET_PATH=/cloudsql/<proyecto>:us-central1:ica-bienestar-db,DB_USER=ica,DB_NAME=ica_bienestar,DB_MIGRATIONS_RUN=true,FRONTEND_URL=https://<dominio>,SMTP_HOST=<host>,SMTP_USER=<usuario> \
   --set-secrets JWT_SECRET=jwt-secret:latest,DB_PASSWORD=db-password:latest,SMTP_PASSWORD=smtp-password:latest
+```
 
-# 4. Frontend en Firebase Hosting
+**Interfaz web en Firebase Hosting**
+
+```bash
 cd frontend && npx ng build && npx firebase-tools deploy --only hosting
 ```
 
-Con `DB_MIGRATIONS_RUN=true`, las migraciones pendientes se aplican al arrancar la API. El seed se ejecuta una vez por ambiente con `npm run seed:prod`, por ejemplo con un Cloud Run Job.
+Con la variable `DB_MIGRATIONS_RUN=true`, las migraciones pendientes se aplican al iniciar el servicio. La carga de datos iniciales se ejecuta una vez por ambiente con `npm run seed:prod`, por ejemplo mediante un Cloud Run Job.
 
-Observabilidad (RNF22, RNFG05): Cloud Run envía la salida estándar a Cloud Logging. `/api/health` sirve como verificación de disponibilidad (uptime check) en Cloud Monitoring.
+**Observabilidad**
+
+En atención a los requerimientos RNF22 y RNFG05, Cloud Run envía la salida estándar del servicio a Cloud Logging, y la ruta `/api/health` se utiliza como verificación de disponibilidad en Cloud Monitoring.

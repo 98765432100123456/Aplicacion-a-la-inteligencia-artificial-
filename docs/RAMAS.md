@@ -1,6 +1,7 @@
-# Estrategia de ramas
+Estrategia de ramas
+===================
 
-Se usa un flujo tipo Git Flow simplificado.
+El repositorio adopta una variante simplificada del modelo Git Flow. El diagrama ilustra el recorrido de un cambio desde una rama de funcionalidad hasta su publicación.
 
 ```mermaid
 gitGraph
@@ -23,32 +24,42 @@ gitGraph
     merge release/0.2.0
 ```
 
-| Rama | Para qué | Despliega en |
+
+Tipos de rama
+-------------
+
+| Rama | Propósito | Ambiente de despliegue |
 |---|---|---|
-| `main` | Código en producción. Solo recibe merges de `release/*` o `hotfix/*` | Producción |
-| `develop` | Integración del sprint | Desarrollo |
-| `feature/<módulo>` | Una funcionalidad. Sale de `develop` y vuelve a `develop` por pull request | — |
-| `release/<versión>` | Estabilización antes de publicar | Pruebas (QA) |
+| `main` | Código en producción. Solo recibe integraciones desde `release/*` o `hotfix/*` | Producción |
+| `develop` | Integración de los cambios del sprint | Desarrollo |
+| `feature/<módulo>` | Desarrollo de una funcionalidad. Se crea desde `develop` y regresa a ella mediante una solicitud de integración | No aplica |
+| `release/<versión>` | Estabilización previa a una publicación | Pruebas |
 | `hotfix/<descripción>` | Corrección urgente sobre `main` | Producción |
 
-Ramas de funcionalidad previstas, una por módulo del documento de requerimientos:
+Las ramas de funcionalidad previstas corresponden a los módulos del documento de requerimientos:
 
-- `feature/seguridad`: login, roles, usuarios y recuperación (Sprint 1)
-- `feature/fincas`
-- `feature/parametrizacion-especies`
-- `feature/evaluacion`
-- `feature/diagnostico-ia`
-- `feature/reportes`
-- `feature/administracion`
+- `feature/seguridad`: inicio de sesión, roles, usuarios y recuperación de contraseña, correspondiente al primer sprint.
+- `feature/fincas`.
+- `feature/parametrizacion-especies`.
+- `feature/evaluacion`.
+- `feature/diagnostico-ia`.
+- `feature/reportes`.
+- `feature/administracion`.
 
-## Reglas
 
-1. Nadie sube cambios directamente a `main` ni a `develop`; todo entra por pull request con la CI en verde.
-2. Mensajes de commit en español y en imperativo: "Agrega filtro por rol en usuarios".
-3. Cada pull request actualiza la documentación si cambia la arquitectura, la API o la configuración.
-4. Las migraciones de base de datos nunca se editan después de fusionadas; se crea una nueva.
+Reglas de contribución
+----------------------
 
-## Crear las ramas base
+- Ningún cambio se incorpora directamente a `main` ni a `develop`; todo cambio ingresa mediante una solicitud de integración con la integración continua aprobada.
+- Los mensajes de los commits se redactan en español y en modo imperativo, por ejemplo: "Agrega filtro por rol en usuarios".
+- Toda solicitud de integración que modifique la arquitectura, la API o la configuración actualiza la documentación correspondiente.
+- Las migraciones de base de datos no se modifican después de integradas; cualquier ajuste se realiza con una migración nueva.
+
+
+Creación de las ramas base
+--------------------------
+
+Las ramas base se crean desde una copia actualizada de `main`:
 
 ```bash
 git checkout main && git pull
@@ -56,4 +67,4 @@ git checkout -b develop && git push -u origin develop
 git checkout -b feature/seguridad && git push -u origin feature/seguridad
 ```
 
-En GitHub, en *Settings → Branches*, conviene proteger `main` y `develop`: exigir pull request y que el check **CI** esté en verde.
+Se recomienda proteger las ramas `main` y `develop` desde la configuración del repositorio en GitHub (*Settings → Branches*), de modo que exijan una solicitud de integración y la aprobación de la verificación **CI**.

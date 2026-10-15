@@ -1,73 +1,90 @@
-# Plan de trabajo por requerimiento
+Plan de trabajo por requerimiento
+=================================
 
-Estado de cada requerimiento del documento *Requerimientos funcionales Aplicación ICA – Bienestar Animal* y qué falta implementar.
+Este documento registra el estado de cada requerimiento del documento *Requerimientos funcionales Aplicación ICA – Bienestar Animal* y establece la planeación de los sprints siguientes.
 
-Estados: **Hecho** (implementado y probado) · **Base lista** (la infraestructura existe, falta el módulo) · **Pendiente**.
+Los estados empleados son los siguientes:
 
-## Sprint 1: seguridad e infraestructura
+| Estado | Significado |
+|---|---|
+| Implementado | La funcionalidad está desarrollada y cubierta por pruebas automatizadas |
+| Base disponible | La infraestructura necesaria existe y falta el módulo funcional |
+| Pendiente | La funcionalidad está planeada para un sprint posterior |
 
-| RF | Requerimiento | Estado | Dónde |
+
+Primer sprint: seguridad e infraestructura
+------------------------------------------
+
+**Requerimientos funcionales**
+
+| Código | Requerimiento | Estado | Ubicación |
 |---|---|---|---|
-| RF01 | Gestión de autenticación | Hecho | `backend/src/auth`, `frontend/src/app/features/auth/login.ts` |
-| RF02 | Gestión de roles | Hecho | `backend/src/roles`, `frontend/src/app/features/roles` |
-| RF03 | Registro de usuarios (crear, editar, activar, inactivar) | Hecho | `backend/src/users`, `frontend/src/app/features/users` |
-| RF04 | Recuperación de acceso por correo | Hecho | `auth/password-reset.service.ts`, `features/auth/forgot-password.ts`, `reset-password.ts` |
-| RF34 | Trazabilidad de acciones | Base lista | `audit_logs` registra el ingreso, la seguridad, los usuarios y los roles. Falta auditar las evaluaciones y crear la pantalla de consulta (`auditoria.ver`) |
+| RF01 | Gestión de autenticación | Implementado | `backend/src/auth`, `frontend/src/app/features/auth/login.ts` |
+| RF02 | Gestión de roles | Implementado | `backend/src/roles`, `frontend/src/app/features/roles` |
+| RF03 | Registro de usuarios: creación, edición, activación e inactivación | Implementado | `backend/src/users`, `frontend/src/app/features/users` |
+| RF04 | Recuperación de acceso por correo electrónico | Implementado | `auth/password-reset.service.ts`, `features/auth/forgot-password.ts`, `features/auth/reset-password.ts` |
+| RF34 | Trazabilidad de acciones | Base disponible | La tabla `audit_logs` registra los eventos de ingreso, seguridad, usuarios y roles. Falta auditar las evaluaciones y construir la pantalla de consulta asociada al permiso `auditoria.ver` |
 
-| RNF | Requerimiento | Cómo se cumple |
+**Requerimientos no funcionales**
+
+| Código | Requerimiento | Forma de cumplimiento |
 |---|---|---|
-| RNF01 | Frontend en Angular | Angular 20 |
-| RNF05 | Autenticación segura | bcrypt (12 rondas), JWT de 8 h, bloqueo tras 5 intentos y límite de peticiones |
-| RNF07 | Control de acceso por rol | `PermissionsGuard` en la API y guards en el frontend |
-| RNF08 | Bitácora | `AuditService` |
-| RNF12–14 | Usabilidad, diseño responsivo y accesibilidad | Pruebas Playwright a 390 y 1440 px con axe-core (0 violaciones) |
-| RNF15–16 | Código modular y reutilizable | Un módulo por dominio, componentes compartidos |
-| RNF21 | Calidad de datos | `class-validator` en la API y validadores en los formularios |
+| RNF01 | Interfaz web en Angular | Angular 20 |
+| RNF05 | Autenticación segura | Contraseñas cifradas con bcrypt de 12 rondas, tokens JWT con vigencia de ocho horas, bloqueo tras cinco intentos fallidos y límite de peticiones |
+| RNF07 | Control de acceso por rol | Guarda `PermissionsGuard` en la API y guardas de rutas en la interfaz |
+| RNF08 | Bitácora de auditoría | Servicio `AuditService` |
+| RNF12, RNF13 y RNF14 | Usabilidad, diseño adaptable y accesibilidad | Pruebas con Playwright en escritorio y teléfono móvil, con axe-core en modo claro y oscuro y sin violaciones |
+| RNF15 y RNF16 | Código modular y reutilizable | Un módulo por dominio y componentes compartidos |
+| RNF21 | Calidad de los datos | Validación con `class-validator` en la API y validadores en los formularios |
 | RNF23 | Integración continua | `.github/workflows/ci.yml` |
-| RNF24 / RNFG07 | Ambientes separados | Variables de entorno; dev, qa y prod en [ARQUITECTURA.md](ARQUITECTURA.md#8-despliegue-en-google-cloud) |
+| RNF24 y RNFG07 | Separación de ambientes | Configuración por variables de entorno y ambientes de desarrollo, pruebas y producción, descritos en la sección de [despliegue de la arquitectura](ARQUITECTURA.md#despliegue-en-google-cloud) |
 | RNFG03 | Base de datos administrada | PostgreSQL compatible con Cloud SQL |
-| RNFG06 | Credenciales fuera del código | `.env` ignorado por git; Secret Manager en la nube |
+| RNFG06 | Credenciales fuera del código | Archivo `.env` excluido del repositorio y Secret Manager en la nube |
 
-## Lo que sigue (próximos sprints)
 
-Orden sugerido según las dependencias entre módulos.
+Planeación de los sprints siguientes
+------------------------------------
 
-### Sprint 2: Fincas y catálogos
+El orden propuesto responde a las dependencias entre módulos: las evaluaciones requieren fincas y listas de chequeo, y el diagnóstico requiere evaluaciones diligenciadas.
 
-- **RF35** Catálogos: especies, departamentos y municipios (DIVIPOLA), tipos de productor, sistemas productivos y estados de evaluación.
-- **RF05–RF08** Fincas: datos básicos, ubicación (departamento, municipio, vereda, dirección y coordenadas opcionales), especies asociadas e inventario por grupo etario.
-- **RF33** Búsqueda y filtros de fincas. Se puede reutilizar el patrón de la lista de usuarios.
-- Permisos que ya existen: `fincas.ver` y `fincas.gestionar`.
+**Segundo sprint: fincas y catálogos**
 
-### Sprint 3: Parametrización por especie
+- **RF35:** catálogos de especies, departamentos y municipios según la codificación DIVIPOLA, tipos de productor, sistemas productivos y estados de evaluación.
+- **RF05 a RF08:** registro de fincas con sus datos básicos, ubicación (departamento, municipio, vereda, dirección y coordenadas opcionales), especies asociadas e inventario por grupo etario.
+- **RF33:** búsqueda y filtrado de fincas, con el mismo patrón empleado en la lista de usuarios.
+- Los permisos `fincas.ver` y `fincas.gestionar` ya existen en el catálogo.
 
-- **RF09–RF12** Listas de chequeo por especie: criterios, subcriterios, indicadores, preguntas, ponderaciones y tipos de respuesta. Cada grupo de estudiantes parametriza su especie según su manual del ICA.
-- **RNF17 / RNF28** Las listas no se escriben en el código y se versionan: una evaluación queda ligada a la versión del formulario con la que se diligenció.
-- **RF38** (multiespecie) Activar o desactivar especies.
-- Permiso: `parametrizacion.gestionar`.
+**Tercer sprint: parametrización por especie**
 
-### Sprint 4: Evaluación
+- **RF09 a RF12:** listas de chequeo por especie, con criterios, subcriterios, indicadores, preguntas, ponderaciones y tipos de respuesta. Cada grupo de estudiantes parametriza su especie con base en el manual del ICA correspondiente.
+- **RNF17 y RNF28:** las listas se configuran como datos y no en el código, y se versionan, de modo que cada evaluación queda asociada a la versión del formulario con la que fue diligenciada.
+- **Módulo administrativo multiespecie:** activación y desactivación de especies.
+- Permiso asociado: `parametrizacion.gestionar`.
 
-- **RF13–RF19** Crear una evaluación (finca + especie), cargar su lista de chequeo, diligenciarla por secciones, guardar avances parciales con fecha y hora, validar los campos obligatorios, registrar observaciones y adjuntar evidencias en Cloud Storage (RNF11, RNFG02).
-- **RF36** Estados: borrador → en proceso → finalizada → validada → cerrada.
-- **RF34** Auditoría de creación, modificación y cierre.
-- Permisos: `evaluaciones.diligenciar` y `evaluaciones.validar`.
+**Cuarto sprint: evaluación**
 
-### Sprint 5: Diagnóstico y recomendaciones con IA
+- **RF13 a RF19:** creación de evaluaciones por finca y especie, carga automática de la lista de chequeo, diligenciamiento por secciones, guardado parcial con fecha y hora, validación de campos obligatorios, registro de observaciones y carga de evidencias en Cloud Storage (RNF11 y RNFG02).
+- **RF36:** estados de la evaluación: borrador, en proceso, finalizada, validada y cerrada.
+- **RF34:** auditoría de la creación, modificación y cierre de evaluaciones.
+- Permisos asociados: `evaluaciones.diligenciar` y `evaluaciones.validar`.
 
-- **RF20–RF23** Puntajes, clasificación del nivel de bienestar, diagnóstico y hallazgos críticos. Debe calcularse en menos de 5 s (RNF10).
-- **RF24–RF27** Recomendaciones con IA según la especie y el sistema productivo; el evaluador las edita y las convierte en un plan de mejora.
-- **RNF25 / RNF26** La IA es solo un apoyo: si el servicio falla, la evaluación sigue con el diagnóstico estructurado.
+**Quinto sprint: diagnóstico y recomendaciones con inteligencia artificial**
 
-### Sprint 6: Reportes y notificaciones
+- **RF20 a RF23:** cálculo de puntajes, clasificación del nivel de bienestar, diagnóstico y hallazgos críticos, con un tiempo de cálculo inferior a cinco segundos (RNF10).
+- **RF24 a RF27:** recomendaciones generadas con inteligencia artificial según la especie y el sistema productivo, que el evaluador revisa, ajusta y convierte en un plan de mejora.
+- **RNF25 y RNF26:** la inteligencia artificial actúa como apoyo a la decisión; si el servicio no está disponible, la evaluación continúa con el diagnóstico estructurado.
 
-- **RF28–RF32** Historial, comparación entre evaluaciones, tableros, reporte en PDF y exportación a Excel o CSV.
-- **RF38** (certificación) Certificado por correo cuando la finca cumple.
-- **RF40** Notificaciones por correo y dentro de la plataforma (se puede reutilizar `MailService`).
+**Sexto sprint: reportes y notificaciones**
 
-## Pendientes técnicos conocidos
+- **RF28 a RF32:** historial, comparación entre evaluaciones, tableros de indicadores, reporte en PDF y exportación a Excel o CSV.
+- **Certificación:** generación del certificado y envío por correo cuando la finca cumple los criterios evaluados.
+- **RF40:** notificaciones por correo y dentro de la plataforma, con reutilización del servicio `MailService`.
 
-- Respaldo automático de Cloud SQL y prueba de restauración (RNF20).
+
+Pendientes técnicos
+-------------------
+
+- Respaldo automático de Cloud SQL y prueba periódica de restauración (RNF20).
 - Pantalla de consulta de la bitácora de auditoría.
-- Rotación de `JWT_SECRET` sin cerrar todas las sesiones (hoy, al cambiarlo, todos deben ingresar de nuevo).
-- Ejecutar las pruebas Playwright en CI (necesitan la API y la base corriendo; hoy se ejecutan en local).
+- Rotación de `JWT_SECRET` sin cerrar todas las sesiones; en la versión actual, un cambio de la clave obliga a todos los usuarios a ingresar de nuevo.
+- Ejecución de las pruebas de Playwright en la integración continua; actualmente se ejecutan en el equipo local porque requieren la API y la base de datos en funcionamiento.
