@@ -39,6 +39,20 @@ Documentación del proyecto
 | [Interfaz web](frontend/README.md) | Configuración, comandos y pruebas de la aplicación Angular |
 
 
+Vista rápida en modo demostración
+---------------------------------
+
+Para conocer las pantallas sin instalar PostgreSQL ni ejecutar el servicio de aplicación, la interfaz ofrece un modo demostración. En este modo las respuestas de la API se simulan dentro del navegador con datos de prueba, que se conservan únicamente en ese navegador; no se envían correos. Solo se requiere Node.js 22:
+
+```bash
+cd frontend
+npm install
+npm run demo
+```
+
+La aplicación queda disponible en `http://localhost:4200`, con el correo `admin@ica-bienestar.local` y la contraseña `CambiarEsta.2026`. Las cuentas `evaluador@ica-bienestar.local` y `consultor@ica-bienestar.local`, con la misma contraseña, permiten observar la aplicación con otros roles. El enlace **Restablecer datos** del aviso superior devuelve los datos a su estado inicial.
+
+
 Puesta en marcha
 ----------------
 

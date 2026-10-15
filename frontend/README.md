@@ -17,6 +17,7 @@ Comandos
 |---|---|
 | `npm install` | Instala las dependencias |
 | `npm start` | Inicia el servidor de desarrollo en `http://localhost:4200` y redirige las peticiones `/api` al servicio de aplicación en el puerto 3000 |
+| `npm run demo` | Inicia la interfaz en modo demostración, sin servicio de aplicación ni base de datos: la API se simula en el navegador con datos de prueba |
 | `npm start -- --host 0.0.0.0` | Igual al anterior, pero permite abrir la aplicación desde otro dispositivo de la misma red, como un teléfono móvil |
 | `npm run build` | Compila la versión de producción en `dist/frontend/browser` |
 | `npm run test:ci` | Ejecuta las pruebas unitarias en Chrome sin ventana |
@@ -33,6 +34,8 @@ La interfaz invoca siempre la ruta relativa `/api`, de modo que la interfaz y el
 - **Desarrollo:** el archivo `proxy.conf.json` redirige `/api` hacia `http://localhost:3000`.
 - **Contenedores:** el servidor nginx, configurado en `nginx.conf`, redirige `/api/` hacia el contenedor del servicio.
 - **Producción:** Firebase Hosting, configurado en `firebase.json`, redirige `/api/**` hacia el servicio en Cloud Run.
+
+En el modo demostración, el interceptor `core/demo-api.interceptor.ts` responde las peticiones a `/api` dentro del navegador con las mismas reglas y mensajes del servicio real, y guarda los datos en el almacenamiento local del navegador.
 
 El token de acceso se conserva en el almacenamiento de la sesión del navegador y se elimina al cerrarlo.
 

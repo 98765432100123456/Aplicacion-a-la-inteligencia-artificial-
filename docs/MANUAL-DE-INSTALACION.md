@@ -4,6 +4,24 @@ Manual de instalación
 Este manual describe cómo preparar un equipo para ejecutar ICA Bienestar Animal en modo de desarrollo y cómo consultar la aplicación desde un computador o desde un teléfono móvil.
 
 
+Vista rápida sin base de datos
+------------------------------
+
+Si el propósito es únicamente conocer las pantallas, no es necesario instalar PostgreSQL ni ejecutar el servicio de aplicación. Basta con instalar Node.js 22 desde https://nodejs.org, abrir una terminal nueva en la carpeta del proyecto y ejecutar:
+
+```bash
+cd frontend
+npm install
+npm run demo
+```
+
+La aplicación queda disponible en `http://localhost:4200`, con el correo `admin@ica-bienestar.local` y la contraseña `CambiarEsta.2026`. En este modo los datos son de prueba, se guardan solo en el navegador y no se envían correos. Para el uso real del sistema se siguen las secciones restantes de este manual.
+
+**Ubicación de la carpeta en Windows.** Al descomprimir el archivo ZIP, Windows suele crear una carpeta dentro de otra con el mismo nombre. Antes de ejecutar `cd frontend` debe abrirse la carpeta que contiene directamente las carpetas `backend`, `frontend` y `docs`. En Visual Studio Code esto se logra con **File → Open Folder** sobre esa carpeta interior.
+
+**Comando `npm` no reconocido.** Este mensaje indica que Node.js no está instalado o que la terminal se abrió antes de instalarlo. Debe instalarse Node.js y abrirse una terminal nueva; si se usa Visual Studio Code, debe cerrarse y abrirse de nuevo el programa.
+
+
 Componentes que se ejecutan
 ---------------------------
 
@@ -175,4 +193,6 @@ Problemas frecuentes
 | El servicio indica que falta la variable `JWT_SECRET` | No existe el archivo `backend/.env`. Debe copiarse desde `.env.example` |
 | El ingreso responde "Demasiados intentos seguidos" | Se superó el límite de peticiones por minuto. Basta con esperar un minuto |
 | El ingreso indica que la cuenta está bloqueada | Hubo cinco intentos fallidos. La cuenta se desbloquea a los 15 minutos o al restablecer la contraseña |
+| `npm` no se reconoce como comando | Node.js no está instalado, o la terminal se abrió antes de instalarlo. Debe instalarse Node.js y abrirse una terminal nueva |
+| `cd frontend` indica que la ruta no existe | La terminal está en una carpeta exterior. Debe ubicarse en la carpeta que contiene `backend` y `frontend` |
 | El puerto 4200 o 3000 ya está en uso | Otro proceso ocupa el puerto. Debe cerrarse ese proceso o la terminal anterior de la aplicación |

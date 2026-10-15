@@ -2,4 +2,6 @@
 export const environment = {
   production: false,
   apiUrl: '/api',
+  /** Modo demostración: simula la API en el navegador (ver core/demo-api.interceptor.ts). */
+  demo: false,
 };
