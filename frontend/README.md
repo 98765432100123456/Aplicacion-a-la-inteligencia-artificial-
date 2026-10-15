@@ -18,7 +18,7 @@ Comandos
 | `npm install` | Instala las dependencias |
 | `npm start` | Inicia el servidor de desarrollo en `http://localhost:4200` y redirige las peticiones `/api` al servicio de aplicación en el puerto 3000 |
 | `npm run demo` | Inicia la interfaz en modo demostración, sin servicio de aplicación ni base de datos: la API se simula en el navegador con datos de prueba |
-| `npm start -- --host 0.0.0.0` | Igual al anterior, pero permite abrir la aplicación desde otro dispositivo de la misma red, como un teléfono móvil |
+| `npm start -- --host 0.0.0.0` | Igual que `npm start`, pero permite abrir la aplicación desde otro dispositivo de la misma red, como un teléfono móvil |
 | `npm run build` | Compila la versión de producción en `dist/frontend/browser` |
 | `npm run test:ci` | Ejecuta las pruebas unitarias en Chrome sin ventana |
 | `npm run e2e` | Ejecuta las pruebas de extremo a extremo con Playwright |
