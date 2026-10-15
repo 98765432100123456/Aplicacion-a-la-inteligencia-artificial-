@@ -30,10 +30,14 @@ Requisitos del equipo
 Descarga del repositorio
 ------------------------
 
+El código completo se encuentra en la rama `main`. Puede descargarse desde GitHub con el botón **Code** y la opción **Download ZIP**, o clonarse con Git:
+
 ```bash
-git clone -b claude/system-architecture-setup-295c5q https://github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-.git
+git clone https://github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-.git
 cd Aplicacion-a-la-inteligencia-artificial-
 ```
+
+La descarga no incluye las dependencias de Node.js (carpetas `node_modules`); estas se instalan con `npm install`, como se indica en las secciones siguientes.
 
 
 Preparación de la base de datos
