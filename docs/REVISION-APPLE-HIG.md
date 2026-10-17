@@ -20,9 +20,35 @@ Resultado
 | Antes de la revisión | Con problemas críticos |
 | Después de las correcciones | Buena |
 
-La interfaz se fundamenta en el concepto de **la ficha de campo**: sellos de estado rectos, renglones en la pantalla de ingreso y un único verde para la acción principal. Se trata de una herramienta deliberadamente sobria, adecuada para evaluadores que trabajan en campo.
-
 La revisión identificó un problema crítico de contraste en los bordes de los campos, así como la ausencia de modo oscuro, de soporte para texto ampliado y de protecciones contra la pérdida de datos. Todos los hallazgos fueron corregidos y quedaron cubiertos por pruebas automatizadas.
+
+Después de la revisión, la interfaz se rediseñó por completo para abandonar una apariencia que resultaba genérica. El rediseño, descrito en la sección siguiente, conservó todas las correcciones de esta revisión y las verificó de nuevo.
+
+
+Rediseño de la interfaz
+-----------------------
+
+El primer diseño, basado en sellos rectangulares, navegación lateral y casillas de verificación, cumplía las guías pero no tenía carácter propio. El rediseño tomó como referencia el oficio visual del proyecto Forja Digital y aplicó tres fuentes de criterio:
+
+| Fuente | Qué aportó al rediseño |
+|---|---|
+| Habilidad `apple-design` | Interruptores con `role="switch"` para los permisos, control segmentado para el filtro de estado, hojas inferiores con agarradera en el teléfono, barra superior translúcida, curva de cajón de iOS y radio de 22 px en diálogos |
+| Criterios de movimiento de Emil Kowalski | Curva de salida `cubic-bezier(0.23, 1, 0.32, 1)`, presión a `scale(0.97)`, entradas de 360 ms solo con `transform` y `opacity`, filas escalonadas en la pantalla de inicio y eliminación total con movimiento reducido |
+| Habilidad `design-taste-frontend` | Titulares grandes de letras juntas, un solo color de acción, capas separadas por color y línea en lugar de sombras, y el producto mostrado en lugar de descrito en la pantalla de ingreso |
+
+| Antes | Después |
+|---|---|
+| Public Sans en todos los textos | Manrope para la interfaz y Unbounded para el logotipo |
+| Botón principal verde oscuro con texto blanco | Verde pasto `#4cc77f` con texto oscuro, 8.8:1 |
+| Navegación lateral fija | Barra superior translúcida con menú desplegable en el teléfono |
+| Ficha con los roles en la pantalla de ingreso | Héroe oscuro con un teléfono que muestra una evaluación ilustrativa |
+| Tarjetas con cifras en la pantalla de inicio | Libro de cifras grandes y hoja de ruta de los próximos sprints |
+| Casillas de verificación para los permisos | Interruptores agrupados por módulo, con estado intermedio en el grupo |
+| Lista desplegable para el estado | Control segmentado con opciones de 44 px |
+| Sellos rectangulares de estado | Punto de color seguido de la palabra |
+| Diálogo a pantalla completa en el teléfono | Hoja que sube desde el borde inferior |
+
+Los mensajes emergentes dejaron de interceptar los toques sobre el contenido que cubren: solo su botón de cierre recibe eventos. El hallazgo surgió de las pruebas en el teléfono, donde un mensaje tapaba el botón de la última fila de la tabla.
 
 
 Hallazgo crítico
@@ -45,7 +71,7 @@ Mejoras de prioridad alta
 | Aspecto | Detalle |
 |---|---|
 | Guía | `dark-mode.md`, sección *Best practices*: "Ensure that your app looks good in both appearance modes." `color.md`, sección *Best practices*: "Make sure all your app's colors work well in light, dark, and increased contrast contexts." |
-| Corrección | Se definieron colores semánticos con una variante para `prefers-color-scheme: dark`, sin selector propio de tema, como establece `dark-mode.md`: "Avoid offering an app-specific appearance setting." Contrastes en modo oscuro: texto principal 13.7:1, texto secundario 8.6:1, ayudas 6.3:1, acento 9.5:1 y botón principal 5.0:1 |
+| Corrección | Se definieron colores semánticos con una variante para `prefers-color-scheme: dark`, sin selector propio de tema, como establece `dark-mode.md`: "Avoid offering an app-specific appearance setting." Contrastes vigentes en modo oscuro: texto principal 15.8:1, texto secundario 8.7:1, acento 12.1:1 y botón principal 8.8:1 |
 
 **Ausencia de contraste aumentado**
 
@@ -92,14 +118,14 @@ Mejoras de prioridad media
 | Aspecto | Detalle |
 |---|---|
 | Guía | `buttons.md`, sección *Best practices*: "Always include a press state for a custom button." |
-| Corrección | Todos los botones se reducen a `scale(0.97)` durante 120 ms al presionarlos |
+| Corrección | Todos los botones se reducen a `scale(0.97)` durante 140 ms al presionarlos |
 
 **Campos sin ejemplo de formato**
 
 | Aspecto | Detalle |
 |---|---|
 | Guía | `writing.md`, sección *Best practices*: "Show hints in text fields." |
-| Corrección | Se agregaron ejemplos en los campos de correo (`nombre@dominio.co`), documento (`1020304050`) y teléfono (`300 123 4567`). El texto de ejemplo usa `--tinta-tenue`, con contraste de 5.8:1 en modo claro y 6.3:1 en modo oscuro |
+| Corrección | Se agregaron ejemplos en los campos de correo (`nombre@dominio.co`), documento (`1020304050`) y teléfono (`300 123 4567`). El texto de ejemplo usa `--tinta-tenue`, con contraste de 5.7:1 en modo claro y 8.7:1 en modo oscuro |
 
 
 Mejoras de prioridad baja
@@ -123,13 +149,13 @@ Mejoras de prioridad baja
 Observaciones de diseño
 -----------------------
 
-**Identidad visual.** La interfaz se distingue por los sellos de estado y por la ficha con renglones de la pantalla de ingreso, que describe la función de cada rol. El verde se reserva para la acción principal y para el estado activo, como recomienda `branding.md`. El diseño no incurre en ninguno de los tres estilos genéricos que identifica la habilidad: fondo crema con tipografía serif y acento terracota, fondo negro con un único acento intenso, o cuadrícula de líneas finas sin radios.
+**Identidad visual.** La interfaz se distingue por el héroe oscuro con el teléfono ilustrativo, los titulares grandes de letras juntas y el libro de registro con puntos de estado. El verde pasto se reserva para la acción principal, los interruptores encendidos y el estado activo, como recomienda `branding.md`.
 
-**Material translúcido.** La barra superior de la versión móvil, única capa funcional que flota sobre el contenido, adoptó un fondo translúcido mediante `backdrop-filter`. Con la preferencia de transparencia reducida recupera un fondo sólido. No se aplicó desenfoque a ningún elemento de contenido.
+**Material translúcido.** La barra superior, única capa funcional que flota sobre el contenido, adoptó un fondo translúcido mediante `backdrop-filter`. Con la preferencia de transparencia reducida recupera un fondo sólido. No se aplicó desenfoque a ningún elemento de contenido.
 
-**Movimiento.** Los diálogos aparecen desde `scale(0.96)` y no desde cero. El panel desplegable emplea la curva de iOS `cubic-bezier(0.32, 0.72, 0, 1)`, y la preferencia de movimiento reducido desactiva todas las transiciones.
+**Movimiento.** Los diálogos aparecen desde `scale(0.96)` y no desde cero; en el teléfono se presentan como hojas que suben desde el borde inferior. Las hojas y el menú desplegable emplean la curva de iOS `cubic-bezier(0.32, 0.72, 0, 1)`, y la preferencia de movimiento reducido desactiva todas las transiciones.
 
-**Elementos prescindibles.** No se identificaron elementos que pudieran eliminarse sin pérdida; la interfaz ya es austera.
+**Elementos prescindibles.** El rediseño retiró la navegación lateral, las tarjetas de cifras y los sellos rectangulares, que ocupaban espacio sin aportar información.
 
 
 Aspectos favorables
@@ -137,7 +163,7 @@ Aspectos favorables
 
 - Todos los controles tienen un área táctil de al menos 44 px, verificada con Playwright.
 - La validación se presenta junto a cada campo y el foco se traslada al primer error, conforme a `entering-data.md`.
-- La navegación lateral tiene un solo nivel y en el teléfono se convierte en panel desplegable, conforme a `sidebars.md`.
+- La navegación tiene un solo nivel, se ubica en la barra superior y en el teléfono se convierte en menú desplegable con la sesión al final.
 - Los mensajes de error indican qué ocurrió y cómo resolverlo, sin fórmulas de disculpa, conforme a la sección *Write clear error messages* de `writing.md`.
 
 
@@ -148,15 +174,11 @@ Consideraciones de plataforma
 
 **Puntos suspensivos en botones que abren diálogos.** La guía `buttons.md` los exige únicamente en macOS ("Nuevo usuario…"). No constituyen una convención web y no se aplicaron.
 
-**Sesión al pie de la barra lateral.** La guía `sidebars.md` desaconseja ubicar acciones críticas al pie de la barra lateral en macOS, porque la ventana puede quedar parcialmente fuera de la pantalla. En la aplicación web la barra ocupa la altura completa de la ventana y permanece visible, por lo que se conservó esa ubicación.
-
-
 Habilidades no aplicadas a estas pantallas
 ------------------------------------------
 
 | Habilidad | Motivo |
 |---|---|
-| `design-taste-frontend` | Su propia descripción la excluye de las pantallas de aplicaciones ("Not for dashboards or app screens"). Se empleará cuando el proyecto incorpore una página pública |
 | `image-to-code` | Requiere una herramienta de generación de imágenes de diseño, no disponible en la sesión de trabajo |
 | `playwright-cli` | El proyecto ya emplea Playwright en `frontend/e2e/`; la habilidad está orientada a la automatización del navegador desde la terminal |
 
@@ -166,10 +188,10 @@ Verificación
 
 El archivo `frontend/e2e/apple-hig.spec.ts` verifica de forma automatizada:
 
-- La ausencia de violaciones de accesibilidad con axe-core en modo oscuro, en las cinco pantallas.
+- La ausencia de violaciones de accesibilidad con axe-core en modo oscuro, medida cuando las animaciones de entrada han terminado, en todas las pantallas internas.
 - El refuerzo de los bordes con la preferencia de contraste aumentado.
 - La ausencia de desbordamiento con el texto ampliado al doble, mediante el ajuste real de tamaño de letra del navegador.
-- El manejo del foco y de la tecla `Escape` en el panel desplegable móvil.
+- El manejo del foco y de la tecla `Escape` en el menú desplegable móvil.
 - La confirmación antes de descartar cambios.
 - El foco inicial en el botón Cancelar de las confirmaciones destructivas.
 - El estado de presión de los botones.

@@ -46,8 +46,8 @@ Organización del código
 | Ruta | Responsabilidad |
 |---|---|
 | `src/app/core/` | Servicio de sesión, acceso a la API, interceptor de autenticación, guardas de rutas y modelos |
-| `src/app/shared/` | Componentes reutilizables: diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
-| `src/app/layout/` | Estructura con navegación lateral, que en pantallas pequeñas se convierte en un panel desplegable |
+| `src/app/shared/` | Componentes reutilizables: logotipo, diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
+| `src/app/layout/` | Estructura con barra superior translúcida, que en pantallas pequeñas se convierte en un menú desplegable |
 | `src/app/features/auth/` | Ingreso, recuperación de contraseña y creación de contraseña |
 | `src/app/features/home/` | Pantalla de inicio |
 | `src/app/features/users/` | Gestión de usuarios |

@@ -1,43 +1,79 @@
+/* Filtros: buscador con ícono, rol y control segmentado de estado */
 .filtros {
   display: grid;
-  grid-template-columns: minmax(14rem, 2fr) repeat(2, minmax(10rem, 1fr));
+  grid-template-columns: minmax(16rem, 2fr) minmax(11rem, 1fr) auto;
+  align-items: end;
   gap: var(--e-4);
-  margin-bottom: var(--e-5);
+  margin-bottom: var(--e-8);
 }
 
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: var(--e-2);
+}
+
+.con-icono {
+  position: relative;
+
+  svg {
+    position: absolute;
+    left: var(--e-4);
+    top: 50%;
+    width: 1.125rem;
+    height: 1.125rem;
+    transform: translateY(-50%);
+    fill: none;
+    stroke: var(--tinta-suave);
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .control {
+    padding-left: var(--e-10);
+    border-radius: 999px;
+  }
+}
+
+/* Libro de cuentas: regla superior fuerte, filas separadas por líneas finas */
 .lista {
-  overflow: hidden;
+  animation-delay: 60ms;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--texto-sm);
+  border-top: 1px solid var(--linea-fuerte);
 }
 
 th {
-  padding: var(--e-3) var(--e-4);
+  padding: var(--e-3) var(--e-4) var(--e-3) 0;
   text-align: left;
   font-size: var(--texto-xs);
   font-weight: 700;
   color: var(--tinta-suave);
-  background: var(--fondo);
+  border-bottom: 1px solid var(--linea);
+}
+
+tbody tr {
   border-bottom: 1px solid var(--linea);
 }
 
 td {
-  padding: var(--e-3) var(--e-4);
-  border-bottom: 1px solid var(--linea);
+  padding: var(--e-4) var(--e-4) var(--e-4) 0;
   vertical-align: middle;
 }
 
-tbody tr:last-child td {
-  border-bottom: 0;
-}
-
 tbody.atenuado {
-  opacity: 0.55;
-  transition: opacity var(--dur-rapida);
+  opacity: 0.5;
+  transition: opacity var(--dur-rapida) ease;
 }
 
 tr.inactivo .nombre,
@@ -45,38 +81,58 @@ tr.inactivo .rol {
   color: var(--tinta-suave);
 }
 
+tr.inactivo .avatar {
+  background: color-mix(in srgb, var(--tinta) 8%, transparent);
+  color: var(--tinta-suave);
+}
+
 .persona {
+  display: flex;
+  align-items: center;
+  gap: var(--e-4);
+}
+
+.datos {
   display: grid;
-  gap: 0.125rem;
+  gap: 0.0625rem;
+  min-width: 0;
 }
 
 .nombre {
-  font-weight: 600;
-  font-size: var(--texto-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .correo,
 .doc {
+  font-size: var(--texto-sm);
   color: var(--tinta-suave);
   overflow-wrap: anywhere;
 }
 
+.rol {
+  font-weight: 600;
+}
+
 .ingreso {
+  font-size: var(--texto-sm);
   color: var(--tinta-suave);
   white-space: nowrap;
 }
 
 .acciones {
+  padding-right: 0;
   text-align: right;
   white-space: nowrap;
 }
 
 .peligro {
   color: var(--alerta);
+  text-decoration-color: color-mix(in srgb, var(--alerta) 45%, transparent);
 
   &:hover:not(:disabled) {
-    background: var(--alerta-fondo);
     color: var(--alerta);
+    text-decoration-color: var(--alerta);
   }
 }
 
@@ -84,8 +140,9 @@ tr.inactivo .rol {
   display: grid;
   justify-items: start;
   gap: var(--e-4);
-  padding: var(--e-8) var(--e-6);
+  padding: var(--e-10) 0;
   color: var(--tinta-suave);
+  border-top: 1px solid var(--linea-fuerte);
 }
 
 .paginas {
@@ -93,8 +150,7 @@ tr.inactivo .rol {
   align-items: center;
   justify-content: space-between;
   gap: var(--e-4);
-  padding: var(--e-3) var(--e-4);
-  border-top: 1px solid var(--linea);
+  padding: var(--e-4) 0;
   font-size: var(--texto-sm);
   color: var(--tinta-suave);
 
@@ -118,7 +174,12 @@ tr.inactivo .rol {
 }
 
 .confirmar {
-  margin-bottom: var(--e-6);
+  margin-bottom: var(--e-8);
+  color: var(--tinta-suave);
+
+  strong {
+    color: var(--tinta);
+  }
 }
 
 .botones {
@@ -128,21 +189,31 @@ tr.inactivo .rol {
 }
 
 /* Tableta: se oculta la columna menos importante */
-@media (max-width: 68.80em) {
+@media (max-width: 68.8em) {
   th:nth-child(4),
   td.ingreso {
     display: none;
   }
 }
 
-/* Móvil: cada usuario es un bloque; las acciones quedan a mano abajo */
-@media (max-width: 44.99em) {
+@media (max-width: 56em) {
   .filtros {
     grid-template-columns: 1fr 1fr;
   }
 
   .buscar {
     grid-column: 1 / -1;
+  }
+}
+
+/* Celular: cada usuario es una fila de lista con las acciones a mano */
+@media (max-width: 44.99em) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .segmentado {
+    display: grid;
   }
 
   thead {
@@ -159,13 +230,9 @@ tr.inactivo .rol {
   tr {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: var(--e-1) var(--e-3);
-    padding: var(--e-4);
+    gap: var(--e-2) var(--e-3);
+    padding: var(--e-4) 0;
     border-bottom: 1px solid var(--linea);
-  }
-
-  tbody tr:last-child {
-    border-bottom: 0;
   }
 
   td {
@@ -177,14 +244,16 @@ tr.inactivo .rol {
     grid-column: 1;
   }
 
-  .estado {
+  .celda-estado {
     grid-column: 2;
     grid-row: 1;
-    align-self: start;
+    align-self: center;
   }
 
   .rol {
     grid-column: 1 / -1;
+    padding-left: calc(2.5rem + var(--e-4));
+    font-size: var(--texto-sm);
     color: var(--tinta-suave);
   }
 
@@ -192,7 +261,7 @@ tr.inactivo .rol {
     grid-column: 1 / -1;
     display: flex;
     gap: var(--e-2);
-    margin: var(--e-2) 0 calc(var(--e-2) * -1) calc(var(--e-3) * -1);
+    padding-left: calc(2.5rem + var(--e-4) - var(--e-3));
   }
 
   .paginas {

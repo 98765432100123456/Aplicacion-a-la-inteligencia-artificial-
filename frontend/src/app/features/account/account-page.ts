@@ -12,12 +12,15 @@ import { ToastService } from '../../shared/toast.service';
   selector: 'app-account-page',
   imports: [ReactiveFormsModule, PageHeader, PasswordInput],
   template: `
-    <app-page-header heading="Cuenta" />
+    <app-page-header heading="Cuenta" description="Sus datos de acceso y la contraseña con la que ingresa." />
 
     <div class="columnas">
-      <section class="panel bloque" aria-labelledby="datos-titulo">
-        <h2 id="datos-titulo">Datos</h2>
-        <dl>
+      <section class="bloque entrada" aria-labelledby="datos-titulo">
+        <div class="perfil">
+          <span class="avatar grande" aria-hidden="true">{{ auth.user()?.firstName?.[0] }}{{ auth.user()?.lastName?.[0] }}</span>
+          <h2 id="datos-titulo">Datos</h2>
+        </div>
+        <dl class="ficha">
           <div><dt>Nombre</dt><dd>{{ auth.fullName() }}</dd></div>
           <div><dt>Correo</dt><dd>{{ auth.user()?.email }}</dd></div>
           <div><dt>Rol</dt><dd>{{ auth.user()?.role?.name }}</dd></div>
@@ -25,7 +28,7 @@ import { ToastService } from '../../shared/toast.service';
         <p class="nota">Para corregir sus datos o cambiar de rol, pídalo al administrador del sistema.</p>
       </section>
 
-      <section class="panel bloque" aria-labelledby="clave-titulo">
+      <section class="bloque entrada clave" aria-labelledby="clave-titulo">
         <h2 id="clave-titulo">Cambiar contraseña</h2>
         <p class="nota">Al cambiarla se cierran sus sesiones en otros dispositivos.</p>
         @if (error()) {
@@ -63,20 +66,20 @@ import { ToastService } from '../../shared/toast.service';
     </div>
   `,
   styles: `
-    .columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: var(--e-5); align-items: start; max-width: 60rem; }
-    .bloque { padding: var(--e-6); }
-    h2 { font-size: var(--texto-lg); margin-bottom: var(--e-4); }
-    dl { margin: 0 0 var(--e-4); border-top: 1px solid var(--linea); }
-    dl div { display: grid; grid-template-columns: 5rem 1fr; gap: var(--e-3); padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); }
-    dt { font-size: var(--texto-sm); color: var(--tinta-tenue); font-weight: 600; }
-    dd { margin: 0; overflow-wrap: anywhere; }
-    .nota { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--e-5); }
+    .columnas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-16); align-items: start; }
+    .bloque { padding-top: var(--e-5); border-top: 1px solid var(--linea-fuerte); }
+    .clave { animation-delay: 80ms; }
+    .perfil { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-6); }
+    .avatar.grande { width: 3.5rem; height: 3.5rem; font-size: var(--texto-lg); }
+    h2 { font-size: var(--texto-xl); letter-spacing: -0.04em; }
+    .clave h2 { margin-bottom: var(--e-2); }
+    .ficha { margin-bottom: var(--e-5); border-top-color: var(--linea); }
+    .nota { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--e-6); }
     .aviso { margin-bottom: var(--e-5); }
-    form { display: grid; gap: var(--e-5); justify-items: start; }
+    form { display: grid; gap: var(--e-5); justify-items: start; max-width: 28rem; }
     form .campo { width: 100%; }
-    @media (max-width: 37.49em) {
-      .columnas { grid-template-columns: 1fr; }
-      .bloque { padding: var(--e-4); }
+    @media (max-width: 51.99em) {
+      .columnas { grid-template-columns: 1fr; gap: var(--e-12); }
       form .btn { width: 100%; }
     }
   `,

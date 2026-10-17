@@ -1,9 +1,9 @@
-// Estilos compartidos por las pantallas de autenticación.
-h2 { font-size: var(--texto-2xl); margin-bottom: var(--e-2); }
-.intro { color: var(--tinta-suave); margin-bottom: var(--e-8); }
+// Pantallas de autenticación: titular grande, una sola acción principal.
+h2 { font-size: var(--texto-2xl); line-height: 1.02; letter-spacing: -0.045em; }
+.intro { margin: var(--e-3) 0 var(--e-8); font-size: var(--texto-md); color: var(--tinta-suave); }
 form { display: grid; gap: var(--e-5); }
 .aviso { margin-bottom: var(--e-6); }
 .fila { display: flex; justify-content: space-between; align-items: baseline; gap: var(--e-3); }
-.fila a { font-size: var(--texto-sm); font-weight: 600; }
+.fila a { font-size: var(--texto-sm); }
 .volver { margin-top: var(--e-6); font-size: var(--texto-sm); }
 .btn-principal { margin-top: var(--e-2); }

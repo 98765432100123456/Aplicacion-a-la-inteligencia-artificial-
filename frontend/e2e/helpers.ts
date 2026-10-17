@@ -16,6 +16,8 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
 
 /** 0 violaciones de axe (WCAG 2.1 A/AA). */
 export async function expectAccessible(page: Page) {
+  // Las animaciones de entrada parten de opacidad 0: se mide el contraste ya en reposo.
+  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
 }
@@ -26,10 +28,10 @@ export async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow).toBeLessThanOrEqual(0);
 }
 
-/** Botones y controles visibles de al menos 44 px de alto. */
+/** Botones y controles visibles de al menos 44 px de alto (en el control segmentado, la etiqueta es el objetivo táctil). */
 export async function expectTouchTargets(page: Page) {
   const small = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('button, .btn, input:not([type=checkbox]), select, nav a')]
+    [...document.querySelectorAll<HTMLElement>('button, .btn, input:not([type=checkbox]):not([type=radio]), select, nav a, .segmentado label')]
       .filter((el) => el.offsetParent !== null)
       .filter((el) => el.getBoundingClientRect().height < 43.5)
       .map((el) => el.outerHTML.slice(0, 80)),

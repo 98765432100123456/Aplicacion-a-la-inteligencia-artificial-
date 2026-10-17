@@ -5,13 +5,17 @@
 } @else if (!ready()) {
   <p class="cargando" role="status">Cargando…</p>
 } @else {
-  <div class="titulo">
-    <h1>{{ isNew ? 'Nuevo rol' : role()!.name }}</h1>
+  <div class="titulo entrada">
+    <h1 class="titular">{{ isNew ? 'Nuevo rol' : role()!.name }}</h1>
     @if (role(); as r) {
-      @if (!r.active) {
-        <span class="sello sello-inactivo">Inactivo</span>
-      }
-      <p class="meta cifras">{{ r.userCount }} {{ r.userCount === 1 ? 'usuario' : 'usuarios' }} con este rol</p>
+      <p class="meta">
+        @if (!r.active) {
+          <span class="estado estado-inactivo">Inactivo</span>
+        } @else {
+          <span class="estado estado-activo">Activo</span>
+        }
+        <span class="cifras">{{ r.userCount }} {{ r.userCount === 1 ? 'usuario' : 'usuarios' }} con este rol</span>
+      </p>
     }
   </div>
 
@@ -19,8 +23,8 @@
     <p class="aviso aviso-error" role="alert">{{ error() }}</p>
   }
 
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <section class="panel bloque" aria-labelledby="datos-titulo">
+  <form class="entrada" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="bloque datos" aria-labelledby="datos-titulo">
       <h2 id="datos-titulo">Datos del rol</h2>
       <div class="rejilla">
         <div class="campo">
@@ -47,7 +51,7 @@
       </div>
     </section>
 
-    <section class="panel bloque" aria-labelledby="permisos-titulo">
+    <section class="bloque" aria-labelledby="permisos-titulo">
       <div class="permisos-cabeza">
         <h2 id="permisos-titulo">Permisos</h2>
         <span class="cifras contador" aria-live="polite">{{ count() }} seleccionados</span>
@@ -56,27 +60,25 @@
         <p class="aviso">El rol Administrador conserva todos los permisos para que siempre haya quien gestione la seguridad.</p>
       }
       @for (g of groups(); track g.module) {
-        <div class="grupo-permisos">
-        <fieldset [disabled]="readOnly() || lockedPermissions()">
-          <legend>
-            <label class="checkbox grupo">
-              <input
-                type="checkbox"
-                [checked]="groupState(g) === 'todos'"
-                [indeterminate]="groupState(g) === 'algunos'"
-                (change)="toggleGroup(g, $any($event.target).checked)"
-              />
-              <span>{{ g.module }}</span>
-            </label>
-          </legend>
+        <fieldset class="grupo" [disabled]="readOnly() || lockedPermissions()">
+          <legend class="visually-hidden">{{ g.module }}</legend>
+          <label class="interruptor cabeza-grupo">
+            <span>{{ g.module }}</span>
+            <input
+              type="checkbox"
+              role="switch"
+              [checked]="groupState(g) === 'todos'"
+              [indeterminate]="groupState(g) === 'algunos'"
+              (change)="toggleGroup(g, $any($event.target).checked)"
+            />
+          </label>
           @for (p of g.items; track p.key) {
-            <label class="checkbox">
-              <input type="checkbox" [checked]="isChecked(p.key)" (change)="toggle(p.key, $any($event.target).checked)" />
+            <label class="interruptor">
               <span>{{ p.label }}</span>
+              <input type="checkbox" role="switch" [checked]="isChecked(p.key)" (change)="toggle(p.key, $any($event.target).checked)" />
             </label>
           }
         </fieldset>
-        </div>
       }
     </section>
 

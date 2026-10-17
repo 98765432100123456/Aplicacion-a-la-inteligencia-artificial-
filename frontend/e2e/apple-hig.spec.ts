@@ -20,7 +20,7 @@ test.describe('Apariencia del sistema', () => {
       await expectAccessible(page);
     }
     const fondo = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    expect(fondo).toBe('rgb(17, 22, 19)');
+    expect(fondo).toBe('rgb(14, 18, 16)');
   });
 
   test('con contraste aumentado los bordes de los campos se refuerzan', async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe('Teclado y modales', () => {
     await login(page);
     const menu = page.getByRole('button', { name: 'Menú' });
     await menu.click();
-    await expect(page.getByRole('link', { name: 'Inicio' })).toBeFocused();
+    await expect(page.getByRole('navigation', { name: 'Principal' }).getByRole('link', { name: 'Inicio' })).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(menu).toBeFocused();
     await expect(menu).toHaveAttribute('aria-expanded', 'false');

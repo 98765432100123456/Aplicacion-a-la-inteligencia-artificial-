@@ -11,70 +11,81 @@ import { PageHeader } from '../../shared/page-header';
   selector: 'app-roles-page',
   imports: [RouterLink, DatePipe, PageHeader],
   template: `
-    <app-page-header heading="Roles y permisos" description="Cada rol agrupa los permisos que reciben sus usuarios. Los cambios aplican de inmediato.">
+    <app-page-header heading="Roles y permisos" description="Cada rol agrupa lo que pueden hacer sus usuarios. Los cambios aplican de inmediato.">
       @if (canManage) {
         <a class="btn btn-principal" routerLink="/roles/nuevo">Nuevo rol</a>
       }
     </app-page-header>
 
     @if (error()) {
-      <div class="panel vacio">
+      <div class="vacio">
         <p class="aviso aviso-error" role="alert">{{ error() }}</p>
         <button type="button" class="btn btn-secundario" (click)="load()">Reintentar</button>
       </div>
     } @else if (roles() === null) {
       <p class="cargando" role="status">Cargando roles…</p>
     } @else {
-      <ul class="roles">
-        @for (r of roles(); track r.id) {
-          <li class="panel" [class.inactivo]="!r.active">
-            <div class="cabeza">
+      <ul class="roles entrada">
+        @for (r of roles(); track r.id; let i = $index) {
+          <li [class.inactivo]="!r.active" [style.--i]="i">
+            <div class="principal">
               <h2><a [routerLink]="['/roles', r.id]">{{ r.name }}</a></h2>
-              @if (!r.active) {
-                <span class="sello sello-inactivo">Inactivo</span>
-              } @else if (r.isSystem) {
-                <span class="sello sello-activo">Rol base</span>
+              @if (r.description) {
+                <p class="desc">{{ r.description }}</p>
               }
+              <p class="marcas">
+                @if (!r.active) {
+                  <span class="estado estado-inactivo">Inactivo</span>
+                } @else if (r.isSystem) {
+                  <span class="estado estado-activo">Rol base</span>
+                } @else {
+                  <span class="estado estado-activo">Activo</span>
+                }
+                <span class="cifras">Actualizado el {{ r.updatedAt | date: 'd MMM y' }}</span>
+              </p>
             </div>
-            @if (r.description) {
-              <p class="desc">{{ r.description }}</p>
-            }
             <dl class="datos">
-              <div><dt>Permisos</dt><dd class="cifras">{{ r.permissions.length }}</dd></div>
-              <div><dt>Usuarios</dt><dd class="cifras">{{ r.userCount }}</dd></div>
-              <div><dt>Actualizado</dt><dd class="cifras">{{ r.updatedAt | date: 'd MMM y' }}</dd></div>
+              <div><dd class="cifras">{{ r.permissions.length }}</dd><dt>permisos</dt></div>
+              <div><dd class="cifras">{{ r.userCount }}</dd><dt>{{ r.userCount === 1 ? 'usuario' : 'usuarios' }}</dt></div>
             </dl>
+            <svg class="flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
           </li>
         }
       </ul>
     }
   `,
   styles: `
-    .roles { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-3); }
+    .roles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea-fuerte); animation-delay: 60ms; }
     li {
-      position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
-      gap: var(--e-1) var(--e-8); padding: var(--e-5) var(--e-6); transition: border-color var(--dur-rapida) var(--curva);
+      position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center;
+      gap: var(--e-4) var(--e-10); padding: var(--e-6) 0; border-bottom: 1px solid var(--linea);
     }
-    li:hover { border-color: var(--acento); }
-    li:focus-within { outline: 3px solid var(--foco); outline-offset: 2px; }
-    .cabeza { display: flex; align-items: center; gap: var(--e-3); flex-wrap: wrap; }
-    h2 { font-size: var(--texto-lg); }
-    h2 a { color: var(--tinta); text-decoration: none; }
+    h2 { font-size: var(--texto-xl); letter-spacing: -0.04em; }
+    h2 a { color: var(--tinta); text-decoration: none; font-weight: 700; }
     h2 a:focus-visible { outline: none; }
-    /* Toda la tarjeta es clicable sin anidar enlaces */
-    h2 a::after { content: ''; position: absolute; inset: 0; border-radius: var(--radio-panel); }
-    .desc { grid-column: 1; color: var(--tinta-suave); font-size: var(--texto-sm); }
-    .datos { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: var(--e-8); margin: 0; }
-    .datos div { display: grid; text-align: right; }
-    dt { font-size: var(--texto-xs); color: var(--tinta-tenue); font-weight: 600; }
-    dd { margin: 0; font-weight: 700; font-size: var(--texto-lg); }
+    /* Toda la fila es clicable sin anidar enlaces */
+    h2 a::after { content: ''; position: absolute; inset: 0; }
+    li:focus-within { outline: 3px solid var(--foco); outline-offset: 4px; border-radius: 6px; }
+    .desc { margin-top: var(--e-2); color: var(--tinta-suave); max-width: 36rem; }
+    .marcas { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-5); margin-top: var(--e-3); font-size: var(--texto-sm); color: var(--tinta-suave); font-weight: 600; }
+    .datos { display: flex; gap: var(--e-8); margin: 0; }
+    .datos div { display: grid; justify-items: end; line-height: 1.1; }
+    dd { margin: 0; font-size: var(--texto-2xl); font-weight: 700; letter-spacing: -0.05em; }
+    dt { font-size: var(--texto-sm); color: var(--tinta-suave); font-weight: 600; }
+    .flecha { width: 1.375rem; height: 1.375rem; fill: none; stroke: var(--tinta-suave); stroke-width: 2; transition: transform var(--dur-media) var(--curva); }
+    @media (hover: hover) and (pointer: fine) {
+      li:hover h2 a { color: var(--acento); }
+      li:hover .flecha { transform: translateX(4px); stroke: var(--tinta); }
+    }
     .inactivo h2 a, .inactivo dd { color: var(--tinta-suave); }
-    .cargando { color: var(--tinta-tenue); }
-    .vacio { display: grid; justify-items: start; gap: var(--e-4); padding: var(--e-6); }
+    .cargando { color: var(--tinta-suave); }
+    .vacio { display: grid; justify-items: start; gap: var(--e-4); }
     @media (max-width: 44.99em) {
-      li { grid-template-columns: 1fr; padding: var(--e-4); }
-      .datos { grid-column: 1; grid-row: auto; gap: var(--e-6); margin-top: var(--e-3); }
-      .datos div { text-align: left; }
+      li { grid-template-columns: 1fr auto; gap: var(--e-4); padding: var(--e-5) 0; }
+      .datos { grid-column: 1; gap: var(--e-6); }
+      .datos div { justify-items: start; }
+      dd { font-size: var(--texto-xl); }
+      .flecha { grid-column: 2; grid-row: 1 / span 2; }
     }
   `,
 })

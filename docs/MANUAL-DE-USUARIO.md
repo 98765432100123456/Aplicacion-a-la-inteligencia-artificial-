@@ -49,7 +49,7 @@ La sección **Usuarios** presenta la lista de personas con acceso a la plataform
 
 **Búsqueda y filtros**
 
-El campo **Buscar** localiza usuarios por nombre, apellido, correo o número de documento. Los filtros **Rol** y **Estado** limitan la lista a un rol específico o a los usuarios activos o inactivos. Los filtros aplicados se conservan en la dirección de la página, de modo que pueden compartirse o recuperarse al recargar.
+El campo **Buscar** localiza usuarios por nombre, apellido, correo o número de documento. El filtro **Rol** y el selector **Estado** (Todos, Activos, Inactivos) limitan la lista a un rol específico o a los usuarios activos o inactivos. Los filtros aplicados se conservan en la dirección de la página, de modo que pueden compartirse o recuperarse al recargar.
 
 **Creación de un usuario**
 
@@ -81,7 +81,7 @@ La sección **Roles y permisos** muestra cada rol con su número de permisos, el
 
 **Creación de un rol**
 
-Se selecciona **Nuevo rol** y se indican el nombre, un código interno en mayúsculas, que no puede modificarse después, y una descripción opcional. Los permisos se agrupan por módulo; la casilla de cada módulo marca o desmarca todos sus permisos a la vez. El rol se guarda con **Crear rol**.
+Se selecciona **Nuevo rol** y se indican el nombre, un código interno en mayúsculas, que no puede modificarse después, y una descripción opcional. Los permisos se agrupan por módulo; cada permiso se activa con un interruptor y el interruptor de cada módulo activa o desactiva todos sus permisos a la vez. El rol se guarda con **Crear rol**.
 
 **Edición de un rol**
 
@@ -103,6 +103,6 @@ Desde esta sección se cambia la contraseña: se escribe la contraseña actual, 
 Uso en teléfono móvil y accesibilidad
 -------------------------------------
 
-En pantallas pequeñas, el menú se abre con el botón ubicado en la esquina superior izquierda y se cierra al elegir una sección, al tocar fuera de él o con la tecla `Escape`. La lista de usuarios se presenta como bloques con las acciones al pie de cada uno.
+En pantallas pequeñas, el menú se abre con el botón ubicado en la esquina superior derecha y se cierra al elegir una sección, al tocar fuera de él o con la tecla `Escape`; al final del menú se encuentran el nombre de la persona y el botón **Cerrar sesión**. La lista de usuarios se presenta como fichas con las acciones al pie de cada una, y los formularios se abren como hojas que suben desde el borde inferior.
 
 La aplicación adopta automáticamente el modo claro u oscuro configurado en el dispositivo y responde a la preferencia de contraste aumentado. Todas las funciones pueden usarse con el teclado y con lectores de pantalla, y la interfaz se reorganiza cuando se aumenta el tamaño de letra del navegador.

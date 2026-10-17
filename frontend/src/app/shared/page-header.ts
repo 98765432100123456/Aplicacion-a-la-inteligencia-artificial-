@@ -1,12 +1,13 @@
 import { Component, input } from '@angular/core';
 
+/** Encabezado de pantalla: titular grande de letras juntas, bajada y acciones. */
 @Component({
   selector: 'app-page-header',
   template: `
     <div class="texto">
-      <h1>{{ heading() }}</h1>
+      <h1 class="titular">{{ heading() }}</h1>
       @if (description()) {
-        <p>{{ description() }}</p>
+        <p class="bajada">{{ description() }}</p>
       }
     </div>
     <div class="acciones"><ng-content /></div>
@@ -14,13 +15,14 @@ import { Component, input } from '@angular/core';
   styles: `
     :host {
       display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-      gap: var(--e-4) var(--e-6); margin-bottom: var(--e-6);
+      gap: var(--e-5) var(--e-8); margin-bottom: var(--e-10);
     }
-    h1 { font-size: var(--texto-2xl); }
-    p { margin-top: var(--e-1); color: var(--tinta-suave); max-width: 40rem; }
     .acciones { display: flex; gap: var(--e-3); flex-wrap: wrap; }
     .acciones:empty { display: none; }
-    @media (max-width: 37.49em) { .acciones, .acciones ::ng-deep .btn { width: 100%; } }
+    @media (max-width: 37.49em) {
+      :host { margin-bottom: var(--e-8); }
+      .acciones, .acciones ::ng-deep .btn { width: 100%; }
+    }
   `,
 })
 export class PageHeader {

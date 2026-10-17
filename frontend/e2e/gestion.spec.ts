@@ -66,15 +66,15 @@ test.describe('Gestión de roles', () => {
     await page.getByRole('link', { name: 'Nuevo rol' }).click();
     await page.getByLabel('Nombre').fill(`Rol de prueba ${code}`);
     await page.getByLabel('Código').fill(code);
-    await page.getByRole('checkbox', { name: 'Reportes', exact: true }).check();
-    await page.getByRole('checkbox', { name: 'Consultar fincas' }).check();
+    await page.getByRole('switch', { name: 'Reportes', exact: true }).check();
+    await page.getByRole('switch', { name: 'Consultar fincas' }).check();
     await expect(page.getByText('2 seleccionados')).toBeVisible();
     await expectAccessible(page);
     await page.getByRole('button', { name: 'Crear rol' }).click();
 
     await expect(page).toHaveURL(/\/roles$/);
     await page.getByRole('link', { name: `Rol de prueba ${code}` }).click();
-    await expect(page.getByRole('checkbox', { name: 'Consultar fincas' })).toBeChecked();
+    await expect(page.getByRole('switch', { name: 'Consultar fincas' })).toBeChecked();
     await page.getByRole('button', { name: 'Inactivar rol' }).click();
     await page.getByRole('dialog', { name: 'Inactivar rol' }).getByRole('button', { name: 'Inactivar' }).click();
     await expect(page.locator('.titulo').getByText('Inactivo')).toBeVisible();
@@ -85,6 +85,6 @@ test.describe('Gestión de roles', () => {
     await page.goto('/roles');
     await page.getByRole('link', { name: 'Administrador' }).click();
     await expect(page.getByText('conserva todos los permisos')).toBeVisible();
-    await expect(page.getByRole('checkbox', { name: 'Consultar usuarios' })).toBeDisabled();
+    await expect(page.getByRole('switch', { name: 'Consultar usuarios' })).toBeDisabled();
   });
 });

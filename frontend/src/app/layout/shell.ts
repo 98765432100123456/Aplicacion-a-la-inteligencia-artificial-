@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter } from 'rxjs';
 import { AuthService } from '../core/auth.service';
 import { P } from '../core/models';
+import { Logo } from '../shared/logo';
 
 interface NavItem {
   path: string;
@@ -13,127 +14,147 @@ interface NavItem {
 const NAV: NavItem[] = [
   { path: '/inicio', label: 'Inicio' },
   { path: '/usuarios', label: 'Usuarios', permissions: [P.USUARIOS_VER, P.USUARIOS_GESTIONAR] },
-  { path: '/roles', label: 'Roles y permisos', permissions: [P.ROLES_VER] },
+  { path: '/roles', label: 'Roles', permissions: [P.ROLES_VER] },
   { path: '/mi-cuenta', label: 'Cuenta' },
 ];
 
+/** Estructura de la aplicación: barra superior translúcida y contenido centrado. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo],
   template: `
     <a class="saltar" href="#contenido">Saltar al contenido</a>
     <header class="barra">
-      <button
-        #menuButton
-        type="button"
-        class="menu"
-        (click)="menuOpen.set(!menuOpen())"
-        [attr.aria-expanded]="menuOpen()"
-        aria-controls="navegacion"
-      >
-        <svg class="icono" viewBox="0 0 22 22" aria-hidden="true">
-          <path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" stroke-width="1.8" />
-        </svg>
-        <span class="visually-hidden">Menú</span>
-      </button>
-      <a class="marca" routerLink="/inicio" translate="no">
-        <svg class="icono" viewBox="0 0 28 28" aria-hidden="true">
-          <rect x="1" y="1" width="26" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="M7 14.5l4.5 4.5L21 9" fill="none" stroke="currentColor" stroke-width="2.4" />
-        </svg>
-        ICA Bienestar Animal
-      </a>
+      <div class="interior">
+        <a class="marca" routerLink="/inicio" aria-label="ICA Bienestar, inicio"><app-logo /></a>
+
+        <nav #nav id="navegacion" class="enlaces" [class.abierto]="menuOpen()" aria-label="Principal">
+          <ul>
+            @for (item of items(); track item.path) {
+              <li>
+                <a [routerLink]="item.path" routerLinkActive="activo" ariaCurrentWhenActive="page">{{ item.label }}</a>
+              </li>
+            }
+          </ul>
+          <div class="sesion-movil">
+            <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+            <span class="quien"><b>{{ auth.fullName() }}</b><small>{{ auth.user()?.role?.name }}</small></span>
+            <button type="button" class="btn btn-secundario btn-sm" (click)="auth.logout()">Cerrar sesión</button>
+          </div>
+        </nav>
+
+        <div class="sesion">
+          <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+          <span class="quien"><b>{{ auth.fullName() }}</b><small>{{ auth.user()?.role?.name }}</small></span>
+          <button type="button" class="btn btn-secundario btn-sm" (click)="auth.logout()">Cerrar sesión</button>
+        </div>
+
+        <button
+          #menuButton
+          type="button"
+          class="menu"
+          (click)="menuOpen.set(!menuOpen())"
+          [attr.aria-expanded]="menuOpen()"
+          aria-controls="navegacion"
+        >
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+            <path [attr.d]="menuOpen() ? 'M6 6l12 12M18 6L6 18' : 'M4 8h16M4 16h16'" />
+          </svg>
+          <span class="visually-hidden">Menú</span>
+        </button>
+      </div>
     </header>
 
-    <div class="cuerpo">
-      <nav #nav id="navegacion" class="lateral" [class.abierto]="menuOpen()" aria-label="Principal">
-        <ul>
-          @for (item of items(); track item.path) {
-            <li>
-              <a [routerLink]="item.path" routerLinkActive="activo" ariaCurrentWhenActive="page">{{ item.label }}</a>
-            </li>
-          }
-        </ul>
-        <div class="sesion">
-          <p class="nombre">{{ auth.fullName() }}</p>
-          <p class="rol">{{ auth.user()?.role?.name }}</p>
-          <button type="button" class="btn btn-secundario btn-bloque" (click)="auth.logout()">Cerrar sesión</button>
-        </div>
-      </nav>
-      @if (menuOpen()) {
-        <div class="velo" (click)="menuOpen.set(false)" aria-hidden="true"></div>
-      }
-      <main id="contenido" tabindex="-1" [attr.inert]="menuOpen() || null">
-        <router-outlet />
-      </main>
-    </div>
+    @if (menuOpen()) {
+      <div class="velo" (click)="menuOpen.set(false)" aria-hidden="true"></div>
+    }
+
+    <main id="contenido" tabindex="-1" [attr.inert]="menuOpen() || null">
+      <router-outlet />
+    </main>
   `,
   styles: `
     :host { display: block; min-height: 100dvh; }
     .saltar {
-      position: absolute; left: var(--e-2); top: -4rem; z-index: 60; padding: var(--e-2) var(--e-4);
-      background: var(--superficie); border-radius: var(--radio-control);
+      position: absolute; left: var(--e-3); top: -5rem; z-index: 70; padding: var(--e-3) var(--e-4);
+      background: var(--tinta); color: var(--fondo); border-radius: var(--radio-control); text-decoration: none;
     }
-    .saltar:focus { top: var(--e-2); }
-    .barra { display: none; }
-    /* Los íconos crecen con el tamaño de texto (typography.md › Supporting Dynamic Type). */
-    .icono { width: 1.5rem; height: 1.5rem; flex: none; }
-    .marca {
-      display: flex; align-items: center; gap: var(--e-2); color: var(--acento-fuerte);
-      font-weight: 700; text-decoration: none;
+    .saltar:focus { top: var(--e-3); }
+
+    /* Barra translúcida: única capa funcional que flota sobre el contenido (HIG materials.md) */
+    .barra {
+      position: sticky; top: 0; z-index: 40;
+      background: color-mix(in srgb, var(--fondo) 80%, transparent);
+      -webkit-backdrop-filter: saturate(1.6) blur(20px); backdrop-filter: saturate(1.6) blur(20px);
+      border-bottom: 1px solid color-mix(in srgb, var(--tinta) 8%, transparent);
     }
-    .cuerpo { display: grid; grid-template-columns: 15.5rem 1fr; min-height: 100dvh; }
-    .lateral {
-      position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column;
-      padding: var(--e-6) var(--e-4); background: var(--superficie); border-right: 1px solid var(--linea);
+    @media (prefers-reduced-transparency: reduce) {
+      .barra { background: var(--fondo); -webkit-backdrop-filter: none; backdrop-filter: none; }
     }
-    .lateral::before {
-      content: 'ICA Bienestar Animal'; display: block; padding: 0 var(--e-3) var(--e-6);
-      font-weight: 700; color: var(--acento-fuerte);
+    .interior {
+      display: flex; align-items: center; gap: var(--e-6); height: 4.25rem;
+      width: min(75rem, 100% - 2 * var(--margen)); margin-inline: auto;
     }
-    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-1); }
+    .marca { display: inline-flex; align-items: center; min-height: 2.75rem; text-decoration: none; }
+
+    .enlaces { flex: 1; }
+    ul { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--e-1); }
     li a {
-      display: flex; align-items: center; min-height: var(--alto-control); padding: 0 var(--e-3);
-      border-radius: var(--radio-control); color: var(--tinta-suave); font-weight: 500; text-decoration: none;
+      display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 var(--e-4);
+      border-radius: 999px; color: var(--tinta-suave); font-weight: 700; font-size: var(--texto-sm); text-decoration: none;
+      transition: background-color var(--dur-rapida) ease, color var(--dur-rapida) ease;
     }
-    li a.activo { background: var(--acento-suave); color: var(--acento-fuerte); font-weight: 700; box-shadow: inset 3px 0 0 var(--acento); }
-    .sesion { margin-top: auto; padding: var(--e-4) var(--e-3) 0; border-top: 1px solid var(--linea); }
-    .nombre { font-weight: 600; font-size: var(--texto-sm); overflow-wrap: anywhere; }
-    .rol { font-size: var(--texto-sm); color: var(--tinta-tenue); margin-bottom: var(--e-3); }
-    main { min-width: 0; padding: var(--e-8) clamp(var(--e-4), 4vw, var(--e-12)) var(--e-16); }
-    main:focus { outline: none; }
+    li a.activo { color: var(--tinta); background: color-mix(in srgb, var(--tinta) 8%, transparent); }
+    @media (hover: hover) and (pointer: fine) {
+      li a:hover { color: var(--tinta); background: color-mix(in srgb, var(--tinta) 6%, transparent); }
+    }
+
+    .sesion { display: flex; align-items: center; gap: var(--e-3); }
+    .quien { display: grid; line-height: 1.2; }
+    .quien b { font-size: var(--texto-sm); }
+    .quien small { font-size: var(--texto-xs); color: var(--tinta-suave); font-weight: 600; }
+    .sesion-movil { display: none; }
+    .avatar { width: 2.25rem; height: 2.25rem; font-size: var(--texto-xs); }
+
+    .menu {
+      display: none; place-items: center; width: 2.75rem; height: 2.75rem; margin-left: auto;
+      border: 1px solid var(--linea-control); border-radius: 999px; background: var(--superficie); color: var(--tinta); cursor: pointer;
+    }
+    .icono { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
     .velo { display: none; }
 
+    main { display: block; width: min(75rem, 100% - 2 * var(--margen)); margin-inline: auto; padding: var(--e-12) 0 var(--e-24); }
+    main:focus { outline: none; }
+
     @media (max-width: 63.99em) {
-      .barra {
-        position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: var(--e-2);
-        height: 3.5rem; padding: 0 var(--e-2); border-bottom: 1px solid var(--linea);
-        /* Capa funcional flotante: translúcida sobre el contenido (materials.md, liquid-glass.md) */
-        background: color-mix(in srgb, var(--superficie) 82%, transparent);
-        -webkit-backdrop-filter: saturate(180%) blur(16px);
-        backdrop-filter: saturate(180%) blur(16px);
-      }
-      .menu {
-        display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 0;
-        border-radius: var(--radio-control); background: transparent; color: var(--tinta); cursor: pointer;
-      }
-      .menu:hover { background: var(--fondo); }
-      .cuerpo { grid-template-columns: 1fr; min-height: calc(100dvh - 3.5rem); }
-      .lateral {
-        position: fixed; z-index: 40; top: 3.5rem; left: 0; bottom: 0; height: auto; width: min(18rem, 85vw);
-        transform: translateX(-100%); visibility: hidden; background: var(--superficie-elevada); overflow-y: auto; overscroll-behavior: contain;
-        transition: transform 300ms var(--curva-cajon), visibility 300ms;
-      }
-      .lateral::before { display: none; }
-      .lateral.abierto { transform: none; visibility: visible; box-shadow: var(--sombra-flotante); }
-      .velo { display: block; position: fixed; inset: 3.5rem 0 0; z-index: 35; background: var(--velo); }
-      main { padding-top: var(--e-6); }
+      .quien small { display: none; }
     }
-    @media (max-width: 63.99em) and (prefers-reduced-transparency: reduce) {
-      .barra { background: var(--superficie); -webkit-backdrop-filter: none; backdrop-filter: none; }
-    }
-    @media (hover: hover) and (pointer: fine) {
-      li a:hover { background: var(--fondo); color: var(--tinta); }
+
+    @media (max-width: 51.99em) {
+      .interior { height: 3.75rem; }
+      .sesion { display: none; }
+      .menu { display: grid; }
+      /* Menú desplegable bajo la barra: entra desde arriba con la curva de iOS */
+      .enlaces {
+        position: fixed; left: 0; right: 0; top: 3.75rem; z-index: 45; flex: none;
+        padding: var(--e-3) var(--margen) var(--e-6); background: var(--superficie-elevada);
+        border-bottom: 1px solid var(--linea); box-shadow: var(--sombra-flotante);
+        opacity: 0; visibility: hidden; transform: translateY(-8px);
+        transition: opacity var(--dur-media) var(--curva-cajon), transform var(--dur-media) var(--curva-cajon), visibility 0s linear var(--dur-media);
+      }
+      .enlaces.abierto { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+      ul { flex-direction: column; gap: 0; }
+      li a { display: flex; min-height: 3.25rem; padding: 0 var(--e-2); border-radius: var(--radio-control); font-size: var(--texto-md); }
+      li + li a { border-top: 1px solid var(--linea); border-radius: 0; }
+      li a.activo { background: transparent; color: var(--acento); }
+      .sesion-movil {
+        display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--e-3);
+        margin-top: var(--e-3); padding-top: var(--e-4); border-top: 1px solid var(--linea-fuerte);
+      }
+      .sesion-movil .quien small { display: block; }
+      .sesion-movil .btn { grid-column: 1 / -1; }
+      .velo { display: block; position: fixed; inset: 3.75rem 0 0; z-index: 35; background: var(--velo); }
+      main { padding-top: var(--e-8); }
     }
   `,
 })
@@ -143,9 +164,15 @@ export class Shell {
   private readonly nav = viewChild.required<ElementRef<HTMLElement>>('nav');
   private readonly menuButton = viewChild.required<ElementRef<HTMLButtonElement>>('menuButton');
   private wasOpen = false;
+
   protected readonly items = computed(() => {
     this.auth.user();
     return NAV.filter((i) => !i.permissions || this.auth.can(...i.permissions));
+  });
+
+  protected readonly initials = computed(() => {
+    const u = this.auth.user();
+    return u ? `${u.firstName[0] ?? ''}${u.lastName[0] ?? ''}`.toUpperCase() : '';
   });
 
   constructor() {
@@ -153,7 +180,7 @@ export class Shell {
       .events.pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => this.menuOpen.set(false));
 
-    // Teclado: al abrir el cajón el foco entra en él; al cerrarlo vuelve al botón de menú.
+    // Teclado: al abrir el menú el foco entra en él; al cerrarlo vuelve al botón.
     effect(() => {
       const open = this.menuOpen();
       if (open) {

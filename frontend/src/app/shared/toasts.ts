@@ -15,22 +15,25 @@ import { ToastService } from './toast.service';
   `,
   styles: `
     .pila {
-      position: fixed; z-index: 50; left: 50%; bottom: var(--e-6); transform: translateX(-50%);
-      display: grid; gap: var(--e-2); width: min(28rem, calc(100vw - 2rem));
+      position: fixed; z-index: 80; left: 50%; bottom: calc(var(--e-6) + env(safe-area-inset-bottom)); transform: translateX(-50%);
+      display: grid; gap: var(--e-2); width: min(30rem, calc(100vw - 2rem));
+      pointer-events: none;
     }
+    /* El mensaje no bloquea el contenido que tiene debajo: solo el botón de cerrar recibe toques */
     .toast {
       display: flex; align-items: center; justify-content: space-between; gap: var(--e-3);
-      padding: var(--e-2) var(--e-2) var(--e-2) var(--e-4); border-radius: var(--radio-control);
+      padding: var(--e-2) var(--e-2) var(--e-2) var(--e-5); border-radius: 999px;
       background: var(--toast-fondo); color: var(--toast-texto); box-shadow: var(--sombra-flotante);
-      font-size: var(--texto-sm); font-weight: 500; animation: subir 240ms var(--curva);
+      font-size: var(--texto-sm); font-weight: 600; line-height: 1.35;
+      animation: subir 320ms var(--curva);
     }
-    .toast.error { background: var(--peligro); color: #ffffff; }
+    .toast.error { background: var(--peligro); color: #ffffff; border-radius: 18px; }
     button {
-      flex: none; width: 2.75rem; height: 2.75rem; border: 0; border-radius: var(--radio-control);
+      pointer-events: auto; flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%;
       background: transparent; color: inherit; font-size: 1.4rem; cursor: pointer;
     }
     button:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
-    @keyframes subir { from { opacity: 0; transform: translateY(8px); } }
+    @keyframes subir { from { opacity: 0; transform: translateY(100%) scale(0.98); } }
   `,
 })
 export class Toasts {

@@ -258,7 +258,7 @@ La aplicación Angular se organiza en las carpetas descritas a continuación. Ca
 |---|---|
 | `core/` | Servicios sin interfaz gráfica: sesión, acceso a la API, interceptor, guardas de rutas y modelos |
 | `shared/` | Componentes reutilizables: diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
-| `layout/` | Estructura principal con navegación lateral, que en pantallas pequeñas se convierte en un panel desplegable |
+| `layout/` | Estructura principal con barra superior translúcida, que en pantallas pequeñas se convierte en un menú desplegable |
 | `features/auth/` | Ingreso, recuperación y creación de contraseña |
 | `features/home/` | Pantalla de inicio |
 | `features/users/` | Gestión de usuarios |

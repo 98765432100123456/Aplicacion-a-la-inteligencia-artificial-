@@ -7,7 +7,10 @@
 <form class="filtros" [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
   <div class="campo buscar">
     <label for="f-buscar">Buscar</label>
-    <input id="f-buscar" class="control" type="search" formControlName="search" placeholder="Nombre, correo o documento…" autocomplete="off" spellcheck="false" />
+    <div class="con-icono">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+      <input id="f-buscar" class="control" type="search" formControlName="search" placeholder="Nombre, correo o documento…" autocomplete="off" spellcheck="false" />
+    </div>
   </div>
   @if (roles().length) {
     <div class="campo">
@@ -20,17 +23,17 @@
       </select>
     </div>
   }
-  <div class="campo">
-    <label for="f-estado">Estado</label>
-    <select id="f-estado" class="control" formControlName="active">
-      <option value="">Todos</option>
-      <option value="true">Activos</option>
-      <option value="false">Inactivos</option>
-    </select>
-  </div>
+  <fieldset class="campo estado-filtro">
+    <legend class="etiqueta">Estado</legend>
+    <div class="segmentado">
+      <label><input type="radio" formControlName="active" value="" />Todos</label>
+      <label><input type="radio" formControlName="active" value="true" />Activos</label>
+      <label><input type="radio" formControlName="active" value="false" />Inactivos</label>
+    </div>
+  </fieldset>
 </form>
 
-<section class="panel lista" aria-labelledby="lista-titulo" [attr.aria-busy]="loading()">
+<section class="lista entrada" aria-labelledby="lista-titulo" [attr.aria-busy]="loading()">
   <h2 id="lista-titulo" class="visually-hidden">Lista de usuarios</h2>
 
   @if (loadError()) {
@@ -64,20 +67,23 @@
         @for (u of users(); track u.id) {
           <tr [class.inactivo]="!u.active">
             <td class="persona">
-              <span class="nombre">{{ u.firstName }} {{ u.lastName }}</span>
-              <span class="correo">{{ u.email }}</span>
-              @if (u.documentNumber) {
-                <span class="doc cifras">Doc. {{ u.documentNumber }}</span>
-              }
+              <span class="avatar" aria-hidden="true">{{ u.firstName[0] }}{{ u.lastName[0] }}</span>
+              <span class="datos">
+                <span class="nombre">{{ u.firstName }} {{ u.lastName }}</span>
+                <span class="correo">{{ u.email }}</span>
+                @if (u.documentNumber) {
+                  <span class="doc cifras">Doc. {{ u.documentNumber }}</span>
+                }
+              </span>
             </td>
             <td class="rol" data-rotulo="Rol">{{ u.role.name }}</td>
-            <td class="estado" data-rotulo="Estado">
+            <td class="celda-estado" data-rotulo="Estado">
               @if (!u.active) {
-                <span class="sello sello-inactivo">Inactivo</span>
+                <span class="estado estado-inactivo">Inactivo</span>
               } @else if (u.locked) {
-                <span class="sello sello-alerta" title="Bloqueado por intentos fallidos durante 15 minutos">Bloqueado</span>
+                <span class="estado estado-alerta" title="Bloqueado por intentos fallidos durante 15 minutos">Bloqueado</span>
               } @else {
-                <span class="sello sello-activo">Activo</span>
+                <span class="estado estado-activo">Activo</span>
               }
             </td>
             <td class="ingreso cifras" data-rotulo="Último ingreso">
@@ -85,11 +91,11 @@
             </td>
             @if (canManage) {
               <td class="acciones">
-                <button type="button" class="btn btn-texto" (click)="openEdit(u)">
+                <button type="button" class="btn btn-texto btn-sm" (click)="openEdit(u)">
                   Editar<span class="visually-hidden"> a {{ u.firstName }} {{ u.lastName }}</span>
                 </button>
                 @if (u.id !== myId) {
-                  <button type="button" class="btn btn-texto" [class.peligro]="u.active" (click)="toggleStatus(u)">
+                  <button type="button" class="btn btn-texto btn-sm" [class.peligro]="u.active" (click)="toggleStatus(u)">
                     {{ u.active ? 'Inactivar' : 'Activar' }}<span class="visually-hidden"> a {{ u.firstName }} {{ u.lastName }}</span>
                   </button>
                 }
@@ -109,8 +115,8 @@
       <span class="cifras" aria-live="polite">{{ rangeText() }}</span>
       @if (lastPage() > 1) {
       <div>
-        <button type="button" class="btn btn-secundario" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">Anterior</button>
-        <button type="button" class="btn btn-secundario" [disabled]="page() >= lastPage() || loading()" (click)="goTo(page() + 1)">Siguiente</button>
+        <button type="button" class="btn btn-secundario btn-sm" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">Anterior</button>
+        <button type="button" class="btn btn-secundario btn-sm" [disabled]="page() >= lastPage() || loading()" (click)="goTo(page() + 1)">Siguiente</button>
       </div>
       }
     </nav>
