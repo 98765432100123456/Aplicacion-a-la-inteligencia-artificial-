@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor U as Usuario
+    participant W as Angular
+    participant A as API
+    participant D as PostgreSQL
+    U->>W: correo + contraseña
+    W->>A: POST /api/auth/login
+    A->>D: buscar usuario por correo
+    alt no existe
+        A->>A: compara contra un hash ficticio (mismo tiempo de respuesta)
+        A-->>W: 401 "Correo o contraseña incorrectos."
+    else contraseña incorrecta
+        A->>D: intentos += 1 (al 5.º bloquea 15 min)
+        A-->>W: 401 mismo mensaje
+    else correcta pero usuario o rol inactivo
+        A-->>W: 401 "Su usuario está inactivo…"
+    else correcta
+        A->>D: reinicia intentos, guarda último ingreso, auditoría
+        A-->>W: 200 { accessToken, user, permissions }
+        W->>W: guarda token en sessionStorage y abre la ruta pedida
+    end

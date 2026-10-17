@@ -1,0 +1,57 @@
+flowchart LR
+    USR(["Usuario"])
+    ADM(["Administrador"])
+    EVA(["Evaluador"])
+    CON(["Consultor externo"])
+    IA[["Servicio de IA"]]
+    MAIL[["Servidor de correo"]]
+
+    subgraph SEG["Módulo de seguridad · implementado"]
+        direction TB
+        CU01(["CU01 Iniciar sesión"])
+        CU02(["CU02 Recuperar contraseña"])
+        CU03(["CU03 Cambiar contraseña"])
+        CU04(["CU04 Gestionar usuarios"])
+        CU05(["CU05 Gestionar roles y permisos"])
+        CU06(["CU06 Consultar bitácora"])
+    end
+
+    subgraph FIN["Fincas y catálogos"]
+        direction TB
+        CU07(["CU07 Gestionar fincas"])
+        CU08(["CU08 Registrar inventario"])
+        CU09(["CU09 Gestionar catálogos"])
+    end
+
+    subgraph PAR["Parametrización"]
+        direction TB
+        CU10(["CU10 Configurar lista de chequeo por especie"])
+        CU11(["CU11 Definir ponderaciones y niveles"])
+    end
+
+    subgraph EV["Evaluación y diagnóstico"]
+        direction TB
+        CU12(["CU12 Diligenciar evaluación"])
+        CU13(["CU13 Adjuntar evidencias"])
+        CU14(["CU14 Calcular puntaje y diagnóstico"])
+        CU15(["CU15 Revisar recomendaciones IA"])
+        CU16(["CU16 Validar y cerrar evaluación"])
+    end
+
+    subgraph REP["Reportes"]
+        direction TB
+        CU17(["CU17 Consultar historial y tableros"])
+        CU18(["CU18 Descargar reportes"])
+        CU19(["CU19 Emitir certificado"])
+    end
+
+    ADM & EVA & CON -->|«generaliza»| USR
+    USR --- CU01 & CU02 & CU03
+    ADM --- CU04 & CU05 & CU06 & CU09 & CU10 & CU11 & CU16 & CU19
+    EVA --- CU07 & CU08 & CU12 & CU13 & CU15
+    CON --- CU17 & CU18
+    CU02 -.->|«include»| MAIL
+    CU04 -.->|«include» invitación| MAIL
+    CU12 -.->|«include»| CU14
+    CU14 -.->|«extend»| IA
+    CU19 -.->|«include»| MAIL

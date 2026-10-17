@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph FE["Interfaz web · Angular 20"]
+        direction TB
+        RT[Rutas y guardas<br/>authGuard · permissionGuard · unsavedChangesGuard]
+        FT[Pantallas<br/>auth · home · users · roles · account]
+        SH[Componentes compartidos<br/>logo · dialog · toasts · page-header · password-input]
+        CO[Núcleo<br/>AuthService · ApiService · authInterceptor · demoApiInterceptor]
+        RT --> FT --> SH
+        FT --> CO
+    end
+
+    subgraph BE["Servicio de aplicación · NestJS 11"]
+        direction TB
+        GU[Guardas globales<br/>Throttler · JwtAuthGuard · PermissionsGuard]
+        AU[AuthModule]
+        US[UsersModule]
+        RO[RolesModule]
+        AD[AuditModule]
+        MA[MailModule]
+        HE[HealthController]
+        GU --> AU & US & RO
+        AU & US --> MA
+        AU & US & RO --> AD
+    end
+
+    DB[(PostgreSQL 16<br/>TypeORM · migraciones)]
+    SMTP[[Servidor SMTP]]
+
+    CO -- "HTTPS /api · JSON · Bearer JWT" --> GU
+    AU & US & RO & AD --> DB
+    MA --> SMTP

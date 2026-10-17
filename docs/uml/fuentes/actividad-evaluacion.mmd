@@ -1,0 +1,29 @@
+flowchart TD
+    I((Inicio)) --> A[Evaluador selecciona finca y especie]
+    A --> B{¿Existe lista de chequeo publicada para la especie?}
+    B -- No --> B1[Avisar al administrador] --> F((Fin))
+    B -- Sí --> C[Crear evaluación en estado BORRADOR]
+    C --> D[Diligenciar sección]
+    D --> E[Adjuntar evidencias y observaciones]
+    E --> G[Guardado parcial con fecha y hora]
+    G --> H{¿Quedan secciones?}
+    H -- Sí, más tarde --> P[Pausar: estado EN_PROCESO] --> D
+    H -- Sí --> D
+    H -- No --> J{¿Obligatorias completas?}
+    J -- No --> J1[Señalar preguntas pendientes] --> D
+    J -- Sí --> K[Finalizar: estado FINALIZADA]
+    K --> L[Calcular puntajes por criterio y total]
+    L --> M[Clasificar nivel de bienestar]
+    M --> N[Generar hallazgos y alertas críticas]
+    N --> O{¿Servicio de IA disponible?}
+    O -- Sí --> O1[Solicitar recomendaciones a la IA]
+    O -- No --> O2[Usar recomendaciones por reglas]
+    O1 --> Q[Evaluador revisa y ajusta recomendaciones]
+    O2 --> Q
+    Q --> R[Construir plan de mejora]
+    R --> S[Administrador valida: estado VALIDADA]
+    S --> T{¿Nivel certificable?}
+    T -- Sí --> T1[Emitir certificado y enviarlo por correo]
+    T -- No --> U
+    T1 --> U[Cerrar evaluación: estado CERRADA]
+    U --> F

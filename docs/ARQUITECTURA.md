@@ -284,7 +284,7 @@ Cada ambiente dispone de su propia instancia de Cloud SQL y de sus propios secre
 **Base de datos**
 
 ```bash
-gcloud sql instances create ica-bienestar-db --database-version=POSTGRES_16 --region=us-central1 --tier=db-g1-small
+gcloud sql instances create ica-bienestar-db --database-version=POSTGRES_16 --region=us-central1 --tier=db-g1-small --backup-start-time=06:00 --enable-point-in-time-recovery
 gcloud sql databases create ica_bienestar --instance=ica-bienestar-db
 gcloud sql users create ica --instance=ica-bienestar-db --password=<clave>
 ```

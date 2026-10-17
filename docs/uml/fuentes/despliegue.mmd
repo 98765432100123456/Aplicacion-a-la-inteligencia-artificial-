@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph CL["«dispositivo» Computador, tableta o teléfono"]
+        NAV[Navegador moderno]
+    end
+
+    subgraph GCP["«nube» Google Cloud · ambientes dev, pruebas y producción"]
+        direction TB
+        FH["«nodo» Firebase Hosting<br/>artefacto: dist/frontend/browser"]
+        CR["«nodo» Cloud Run<br/>contenedor: API NestJS · Node 22"]
+        SQL[("«nodo» Cloud SQL<br/>PostgreSQL 16 · respaldo diario")]
+        SM["«nodo» Secret Manager<br/>JWT_SECRET · DB_PASSWORD · SMTP"]
+        GCS[("«nodo» Cloud Storage<br/>evidencias y certificados")]
+        LOG["«nodo» Cloud Logging y Monitoring"]
+        AI["«nodo» Servicio de IA<br/>recomendaciones"]
+    end
+
+    GH["«nodo» GitHub<br/>repositorio y GitHub Actions"]
+
+    NAV -- HTTPS --> FH
+    FH -- "reescritura /api/**" --> CR
+    CR -- "conector Cloud SQL · socket Unix" --> SQL
+    CR --> SM
+    CR -.->|próximos sprints| GCS
+    CR -.->|próximos sprints| AI
+    CR --> LOG
+    GH -.->|"compilación y pruebas en CI;<br/>despliegue con gcloud y firebase"| FH & CR

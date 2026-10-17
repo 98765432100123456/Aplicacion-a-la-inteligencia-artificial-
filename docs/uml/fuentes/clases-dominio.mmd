@@ -1,0 +1,136 @@
+classDiagram
+    direction LR
+    class Rol {
+        +uuid id
+        +string codigo
+        +string nombre
+        +string[] permisos
+        +bool esSistema
+        +bool activo
+    }
+    class Usuario {
+        +uuid id
+        +string nombres
+        +string apellidos
+        +string correo
+        +string documento
+        +bool activo
+        +int intentosFallidos
+        +Date bloqueadoHasta
+        +nombreCompleto() string
+        +estaBloqueado() bool
+    }
+    class Finca {
+        +uuid id
+        +string nombre
+        +string propietario
+        +string vereda
+        +decimal latitud
+        +decimal longitud
+    }
+    class Especie {
+        +uuid id
+        +string codigo
+        +string nombre
+        +bool activa
+    }
+    class InventarioAnimal {
+        +int cantidad
+        +Date fechaRegistro
+    }
+    class GrupoEtario {
+        +string nombre
+        +int mesesMin
+        +int mesesMax
+    }
+    class ListaChequeo {
+        +int version
+        +EstadoLista estado
+        +publicar()
+    }
+    class Criterio {
+        +string codigo
+        +Dimension dimension
+        +decimal peso
+    }
+    class Indicador {
+        +string nombre
+        +decimal peso
+        +bool esCritico
+    }
+    class Pregunta {
+        +string texto
+        +TipoRespuesta tipo
+        +bool obligatoria
+        +decimal peso
+    }
+    class NivelBienestar {
+        +string nombre
+        +decimal puntajeMin
+        +decimal puntajeMax
+        +bool certificable
+    }
+    class Evaluacion {
+        +uuid id
+        +EstadoEvaluacion estado
+        +Date fechaVisita
+        +decimal puntajeTotal
+        +guardarParcial()
+        +finalizar()
+        +validar()
+        +cerrar()
+    }
+    class Respuesta {
+        +json valor
+        +decimal puntaje
+        +string observacion
+    }
+    class Evidencia {
+        +string rutaAlmacenamiento
+        +string tipoMime
+        +long tamano
+    }
+    class Hallazgo {
+        +TipoHallazgo tipo
+        +string descripcion
+        +int severidad
+    }
+    class Recomendacion {
+        +OrigenRecomendacion origen
+        +string textoOriginal
+        +string texto
+    }
+    class AccionMejora {
+        +string descripcion
+        +string responsable
+        +Prioridad prioridad
+        +Date plazo
+    }
+    class Certificado {
+        +string codigo
+        +Date emitido
+        +Date vigenteHasta
+    }
+
+    Rol "1" <-- "0..*" Usuario : tiene
+    Finca "0..*" -- "1..*" Especie : cría
+    Finca "1" *-- "0..*" InventarioAnimal
+    InventarioAnimal "0..*" --> "1" GrupoEtario
+    Especie "1" *-- "1..*" GrupoEtario
+    Especie "1" -- "1..*" ListaChequeo : versiones
+    ListaChequeo "1" *-- "1..*" Criterio
+    Criterio "1" *-- "0..*" Criterio : subcriterios
+    Criterio "1" *-- "1..*" Indicador
+    Indicador "1" *-- "1..*" Pregunta
+    ListaChequeo "1" *-- "1..*" NivelBienestar
+    Evaluacion "0..*" --> "1" Finca
+    Evaluacion "0..*" --> "1" ListaChequeo
+    Evaluacion "0..*" --> "1" Usuario : evaluador
+    Evaluacion "1" *-- "0..*" Respuesta
+    Respuesta "0..*" --> "1" Pregunta
+    Evaluacion "1" *-- "0..*" Evidencia
+    Evaluacion "0..*" --> "0..1" NivelBienestar
+    Evaluacion "1" *-- "0..*" Hallazgo
+    Hallazgo "1" -- "0..*" Recomendacion
+    Recomendacion "1" -- "0..*" AccionMejora
+    Evaluacion "1" -- "0..1" Certificado

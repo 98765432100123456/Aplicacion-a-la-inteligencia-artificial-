@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor U as Usuario
+    participant W as Angular
+    participant A as API
+    participant D as PostgreSQL
+    participant M as Correo
+    U->>W: escribe su correo
+    W->>A: POST /api/auth/forgot-password
+    A->>D: ¿existe y está activo?
+    opt sí
+        A->>D: invalida enlaces anteriores y guarda SHA-256 del token nuevo (vence en 30 min)
+        A->>M: enlace /restablecer-contrasena?token=…
+    end
+    A-->>W: 200 con el mismo mensaje exista o no el correo
+    U->>W: abre el enlace
+    W->>A: GET /api/auth/reset-password/validate
+    A-->>W: { valid, correo enmascarado }
+    U->>W: nueva contraseña (2 veces)
+    W->>A: POST /api/auth/reset-password
+    A->>D: transacción: nuevo hash, password_changed_at, token usado, auditoría
+    A-->>W: 200 → pantalla de ingreso

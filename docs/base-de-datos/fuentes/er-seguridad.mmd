@@ -1,0 +1,46 @@
+erDiagram
+    roles ||--o{ users : "asigna"
+    users ||--o{ password_reset_tokens : "solicita"
+    users ||--o{ audit_logs : "actor de"
+
+    roles {
+        uuid id PK
+        varchar code UK "ADMIN, EVALUADOR, CONSULTOR..."
+        varchar name
+        varchar description
+        text[] permissions
+        bool is_system
+        bool active
+    }
+    users {
+        uuid id PK
+        varchar first_name
+        varchar last_name
+        varchar email UK
+        varchar document_number
+        varchar phone
+        varchar password_hash "bcrypt, 12 rondas"
+        uuid role_id FK
+        bool active
+        int failed_login_attempts
+        timestamptz locked_until
+        timestamptz last_login_at
+        timestamptz password_changed_at
+    }
+    password_reset_tokens {
+        uuid id PK
+        uuid user_id FK
+        varchar token_hash UK "SHA-256"
+        timestamptz expires_at
+        timestamptz used_at
+    }
+    audit_logs {
+        bigint id PK
+        uuid actor_id
+        varchar action
+        varchar entity
+        varchar entity_id
+        jsonb detail
+        varchar ip
+        timestamptz created_at
+    }

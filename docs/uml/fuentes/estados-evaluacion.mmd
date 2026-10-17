@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> BORRADOR : crear evaluación
+    BORRADOR --> EN_PROCESO : guardar primera sección
+    EN_PROCESO --> EN_PROCESO : guardado parcial
+    EN_PROCESO --> FINALIZADA : finalizar [obligatorias completas]
+    FINALIZADA --> EN_PROCESO : devolver con observaciones
+    FINALIZADA --> VALIDADA : validar (administrador)
+    VALIDADA --> CERRADA : cerrar [plan de mejora registrado]
+    CERRADA --> [*]
+    note right of FINALIZADA
+        Al entrar se calculan puntajes,
+        nivel, hallazgos y recomendaciones
+    end note
+    note right of CERRADA
+        Solo lectura. Habilita
+        reporte y certificado
+    end note
