@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Entrega Semana 12 · ICA Bienestar Animal</title>
+<style>
+  @font-face { font-family: 'Manrope'; font-weight: 200 800; src: url('../../../frontend/node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Manrope'; font-weight: 200 800; src: url('../../../frontend/node_modules/@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2') format('woff2'); unicode-range: U+0100-024F; }
+  @font-face { font-family: 'Unbounded'; font-weight: 700; src: url('../../../frontend/node_modules/@fontsource/unbounded/files/unbounded-latin-700-normal.woff2') format('woff2'); }
+
+  @page { size: A4; margin: 16mm 16mm 18mm;
+    @bottom-left { content: "ICA Bienestar Animal · Entrega Semana 12"; font: 7.5pt 'Manrope', sans-serif; color: #59625c; }
+    @bottom-right { content: counter(page); font: 7.5pt 'Manrope', sans-serif; color: #59625c; } }
+  @page portada { margin: 0; @bottom-left { content: none; } @bottom-right { content: none; } }
+  :root { --noche:#0e1210; --fondo:#f2f3f0; --tinta:#1a1f1c; --suave:#59625c; --linea:#dde1dc; --accion:#4cc77f; --acento:#1d6b40; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: 'Manrope', system-ui, sans-serif; color: var(--tinta); font-size: 10.5pt; line-height: 1.5; }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.035em; line-height: 1.05; }
+  h2 { font-size: 26pt; font-weight: 800; margin-bottom: 4mm; }
+  h3 { font-size: 12.5pt; font-weight: 800; letter-spacing: -0.02em; margin: 5mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  .bajada { font-size: 12pt; color: var(--suave); max-width: 150mm; margin-bottom: 5mm; }
+  section { break-before: page; }
+  .regla { border-top: 1.4pt solid var(--tinta); }
+  table { width: 100%; border-collapse: collapse; margin: 1.5mm 0 4mm; font-size: 9pt; break-inside: auto; }
+  tr { break-inside: avoid; }
+  th { text-align: left; font-size: 8.5pt; color: var(--suave); font-weight: 700; padding: 2mm 3mm 2mm 0; border-bottom: 0.6pt solid var(--linea); border-top: 1.4pt solid var(--tinta); }
+  td { padding: 1.6mm 3mm 1.6mm 0; border-bottom: 0.6pt solid var(--linea); vertical-align: top; }
+  code { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 8.8pt; background: #eef0ec; padding: 0.2mm 1.2mm; border-radius: 1mm; }
+  pre { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 8pt; line-height: 1.4; background: #f5f6f3; border: 0.6pt solid var(--linea); border-radius: 3mm; padding: 4mm 5mm; margin: 0 0 5mm; white-space: pre; break-inside: avoid; }
+  figure { margin: 0 0 5mm; break-inside: avoid; }
+  figure img { display: block; width: 100%; border: 0.6pt solid var(--linea); border-radius: 3mm; }
+  figcaption { font-size: 8.5pt; color: var(--suave); margin-top: 1.5mm; }
+  .punto { display: inline-block; width: 2mm; height: 2mm; border-radius: 50%; background: var(--acento); margin-right: 1.5mm; vertical-align: 0.3mm; }
+  .punto.gris { background: #aab2ac; }
+
+  /* Portada */
+  .portada { page: portada; height: 297mm; padding: 22mm 20mm; background: var(--noche); color: #f2f3f0; display: grid; grid-template-rows: auto 1fr auto; break-after: page; }
+  .logo { display: flex; align-items: center; gap: 3mm; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 13pt; }
+  .logo svg { width: 9mm; height: 9mm; }
+  .portada h1 { font-size: 46pt; font-weight: 800; letter-spacing: -0.05em; line-height: 0.98; color: #fff; align-self: end; margin-bottom: 8mm; }
+  .portada .sub { font-size: 14pt; color: #a9b3ac; max-width: 130mm; margin-bottom: 14mm; }
+  .ficha { display: grid; grid-template-columns: 42mm 1fr; border-top: 1pt solid #3a423d; font-size: 10pt; }
+  .ficha dt, .ficha dd { margin: 0; padding: 2.6mm 0; border-bottom: 1pt solid #232a26; }
+  .ficha dt { color: #a9b3ac; font-weight: 600; }
+  .ficha dd { font-weight: 700; }
+  .etiqueta { display: inline-block; padding: 1.4mm 4mm; border-radius: 99px; background: var(--accion); color: var(--noche); font-weight: 800; font-size: 9pt; margin-bottom: 6mm; }
+
+  /* Rejillas */
+  .cifras { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1.4pt solid var(--tinta); border-bottom: 0.6pt solid var(--linea); margin-bottom: 6mm; }
+  .cifras div { padding: 4mm 3mm 4mm 0; }
+  .cifras div + div { border-left: 0.6pt solid var(--linea); padding-left: 4mm; }
+  .cifras b { display: block; font-size: 24pt; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .cifras span { font-size: 8.5pt; color: var(--suave); font-weight: 700; }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .tel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; align-items: start; }
+  .tel img { border-radius: 4mm; }
+  .escritorio-movil { display: grid; grid-template-columns: 1fr 42mm; gap: 5mm; align-items: start; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <div class="logo">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#4cc77f"/><path d="M9 16.5l4.6 4.6L23 11.4" fill="none" stroke="#0e1210" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    ICA Bienestar
+  </div>
+  <div style="align-self:end">
+    <span class="etiqueta">Entrega del proyecto · Semana 12</span>
+    <h1>Bienestar animal, evaluado en campo.</h1>
+    <p class="sub">Código del proyecto, repositorio Git, diseños de interfaz, diagramas UML y diseño de la base de datos.</p>
+  </div>
+  <dl class="ficha">
+    <dt>Asignatura</dt><dd>Aplicación a la Inteligencia Artificial</dd>
+    <dt>Docente</dt><dd>PhD. Paola Andrea Valencia A.</dd>
+    <dt>Responsable</dt><dd>Juan Esteban Niño Naranjo · arquitectura y módulo de seguridad</dd>
+    <dt>Repositorio</dt><dd>github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-</dd>
+    <dt>Versión</dt><dd>v0.2.0 · octubre de 2026</dd>
+  </dl>
+</div>
+
+<section style="break-before: auto">
+  <h2>Resumen de la entrega</h2>
+  <p class="bajada">ICA Bienestar Animal es una aplicación web para evaluar el bienestar animal en fincas con listas de chequeo por especie, puntaje automático, diagnóstico y recomendaciones con inteligencia artificial. Esta entrega cierra el primer sprint: el módulo de seguridad funciona de extremo a extremo y el resto del sistema queda diseñado.</p>
+
+  <div class="cifras">
+    <div><b>70</b><span>pruebas automatizadas en verde</span></div>
+    <div><b>29</b><span>tablas en el modelo de datos</span></div>
+    <div><b>10</b><span>diagramas UML</span></div>
+    <div><b>32</b><span>capturas de interfaz</span></div>
+  </div>
+
+  <h3>Evidencias solicitadas</h3>
+  <table>
+    <tr><th style="width:32%">Evidencia</th><th>Dónde se encuentra</th></tr>
+    <tr><td><b>Código del proyecto</b></td><td><code>backend/</code> (NestJS 11, TypeORM, PostgreSQL) y <code>frontend/</code> (Angular 20). Organización descrita en la sección Código del proyecto.</td></tr>
+    <tr><td><b>Repositorio Git</b></td><td>Rama <code>main</code>, historial de commits descriptivos, integración continua en GitHub Actions y etiqueta de versión <code>v0.2.0</code>.</td></tr>
+    <tr><td><b>Diseños de interfaz</b></td><td><code>docs/disenos/</code>: ocho pantallas en escritorio y teléfono, modo claro y oscuro. Sistema visual en <code>docs/SISTEMA-DE-DISENO.md</code>.</td></tr>
+    <tr><td><b>UML</b></td><td><code>docs/uml/DIAGRAMAS-UML.md</code>: casos de uso, clases, secuencia, actividad, estados, componentes y despliegue.</td></tr>
+    <tr><td><b>Diseño de la base de datos</b></td><td><code>docs/base-de-datos/</code>: diagramas entidad relación, script SQL validado y diccionario de datos.</td></tr>
+  </table>
+
+  <h3>Estado por módulo</h3>
+  <table>
+    <tr><th style="width:32%">Módulo</th><th style="width:22%">Estado</th><th>Requerimientos</th></tr>
+    <tr><td>Seguridad</td><td><span class="punto"></span>Implementado</td><td>RF01 a RF04, RF34 parcial, RNF05, RNF07, RNF08, RNF12 a RNF14</td></tr>
+    <tr><td>Fincas y catálogos</td><td><span class="punto gris"></span>Diseñado</td><td>RF05 a RF08, RF35, RF38</td></tr>
+    <tr><td>Parametrización de especies</td><td><span class="punto gris"></span>Diseñado</td><td>RF09 a RF12, RNF17, RNF28</td></tr>
+    <tr><td>Evaluación</td><td><span class="punto gris"></span>Diseñado</td><td>RF13 a RF21, RF36</td></tr>
+    <tr><td>Diagnóstico y recomendaciones con IA</td><td><span class="punto gris"></span>Diseñado</td><td>RF22 a RF27, RNF25, RNF26</td></tr>
+    <tr><td>Reportes y certificación</td><td><span class="punto gris"></span>Diseñado</td><td>RF28 a RF33, RF38, RF40</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Código del proyecto</h2>
+  <p class="bajada">Dos aplicaciones independientes que se comunican por HTTPS con una API REST. Cada carpeta tiene una sola responsabilidad y cada módulo del servicio sigue el patrón controlador, servicio y entidad.</p>
+
+  <div class="dos">
+<pre>backend/src
+├── auth/         ingreso, token, recuperación
+├── users/        gestión de usuarios
+├── roles/        roles y catálogo de permisos
+├── audit/        bitácora de auditoría
+├── mail/         envío de correos
+├── common/       guardas, decoradores,
+│                 política de contraseñas
+├── config/       variables de entorno validadas
+├── database/     migraciones y datos iniciales
+└── health/       verificación de estado</pre>
+<pre>frontend/src/app
+├── core/         sesión, API, interceptores,
+│                 guardas de rutas, modelos
+├── shared/       logo, diálogo, mensajes,
+│                 encabezado, contraseña
+├── layout/       barra superior y menú
+└── features/
+    ├── auth/     ingreso y recuperación
+    ├── home/     inicio
+    ├── users/    usuarios
+    ├── roles/    roles y permisos
+    └── account/  cuenta</pre>
+  </div>
+
+  <h3>Decisiones de organización</h3>
+  <table>
+    <tr><th style="width:32%">Práctica</th><th>Aplicación en el código</th></tr>
+    <tr><td>Módulos por funcionalidad</td><td>Cada requerimiento vive en su carpeta; los módulos futuros (fincas, evaluación) se agregan sin tocar los existentes.</td></tr>
+    <tr><td>Seguridad por defecto</td><td>Tres guardas globales: límite de peticiones, token JWT y permisos. Una ruta es pública solo si se marca con <code>@Public()</code>.</td></tr>
+    <tr><td>Validación en ambos extremos</td><td>DTO con <code>class-validator</code> en la API y formularios reactivos en Angular con los mismos mensajes.</td></tr>
+    <tr><td>Configuración externa</td><td>Variables de entorno validadas al arrancar; en producción las credenciales vienen de Secret Manager.</td></tr>
+    <tr><td>Esquema versionado</td><td>La base solo cambia mediante migraciones de TypeORM.</td></tr>
+    <tr><td>Componentes reutilizables</td><td>Diálogo, mensajes y encabezado compartidos; el sistema visual se define una vez en <code>styles.scss</code>.</td></tr>
+    <tr><td>Modo demostración</td><td>Un interceptor simula la API en el navegador para revisar la interfaz sin servidor ni base de datos.</td></tr>
+  </table>
+
+  <h3>Pruebas</h3>
+  <table>
+    <tr><th style="width:32%">Conjunto</th><th style="width:14%">Pruebas</th><th>Qué verifica</th></tr>
+    <tr><td>Unitarias del servicio (Jest)</td><td>3</td><td>Guarda de permisos</td></tr>
+    <tr><td>Integración del servicio (Jest y Supertest)</td><td>21</td><td>Ingreso, bloqueo, recuperación, usuarios, roles y permisos contra PostgreSQL real</td></tr>
+    <tr><td>Unitarias de la interfaz (Karma)</td><td>9</td><td>Sesión, política de contraseñas y mensajes de error</td></tr>
+    <tr><td>Extremo a extremo (Playwright y axe-core)</td><td>37</td><td>Flujos completos en escritorio y teléfono, accesibilidad WCAG 2.1 AA, modo oscuro, texto al 200 % y teclado</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Repositorio Git</h2>
+  <p class="bajada">Todo el proyecto está en la rama <code>main</code>: código, documentación, diagramas y capturas. Cada commit describe un cambio completo y verificable, y la integración continua compila y prueba cada envío.</p>
+
+  <h3>Historial de commits</h3>
+  <table>
+    <tr><th style="width:14%">Commit</th><th style="width:15%">Fecha</th><th>Descripción</th></tr>
+    <tr><td><code>9e7890b</code></td><td>2026-10-17</td><td>Diagramas UML y diseño completo de la base de datos</td></tr>
+    <tr><td><code>f54ad06</code></td><td>2026-10-17</td><td>Rediseño visual de la interfaz con identidad propia</td></tr>
+    <tr><td><code>2580160</code></td><td>2026-10-15</td><td>Aclara la descripción del comando para teléfono móvil</td></tr>
+    <tr><td><code>bde26aa</code></td><td>2026-10-15</td><td>Modo demostración: ver la aplicación sin backend ni base de datos</td></tr>
+    <tr><td><code>7f1e714</code></td><td>2026-10-15</td><td>Manual de instalación: descarga desde la rama main</td></tr>
+    <tr><td><code>95c6330</code></td><td>2026-10-15</td><td>Documentación formal sin numerales</td></tr>
+    <tr><td><code>ae142c0</code></td><td>2026-10-14</td><td>Aplica las guías de Apple (HIG) al frontend e instala skills de diseño</td></tr>
+    <tr><td><code>2fa2c26</code></td><td>2026-10-14</td><td>Frontend Angular, infraestructura y documentación de arquitectura</td></tr>
+    <tr><td><code>054383d</code></td><td>2026-10-14</td><td>Backend NestJS: autenticación, roles, usuarios y recuperación de contraseña</td></tr>
+    <tr><td><code>df4bc5f</code></td><td>2026-10-09</td><td>Initial commit</td></tr>
+  </table>
+
+  <h3>Integración continua</h3>
+  <p>El archivo <code>.github/workflows/ci.yml</code> ejecuta dos trabajos en cada envío a <code>main</code> y en cada solicitud de integración:</p>
+  <table>
+    <tr><th style="width:32%">Trabajo</th><th>Pasos</th></tr>
+    <tr><td>Servicio de aplicación</td><td>Levanta PostgreSQL 16, instala dependencias, verifica tipos, ejecuta pruebas unitarias y de integración, y compila.</td></tr>
+    <tr><td>Interfaz web</td><td>Instala dependencias, ejecuta las pruebas unitarias en Chrome sin ventana y compila la versión de producción.</td></tr>
+  </table>
+
+  <h3>Buenas prácticas aplicadas</h3>
+  <table>
+    <tr><th style="width:32%">Práctica</th><th>Aplicación</th></tr>
+    <tr><td>Archivos excluidos</td><td><code>.gitignore</code> excluye dependencias, compilados y archivos <code>.env</code>; el repositorio incluye <code>.env.example</code> sin secretos.</td></tr>
+    <tr><td>Versiones</td><td>Etiqueta <code>v0.2.0</code> sobre el commit de esta entrega.</td></tr>
+    <tr><td>Estrategia de ramas</td><td>Documentada en <code>docs/RAMAS.md</code> para los próximos sprints: <code>feature/&lt;módulo&gt;</code> desde <code>develop</code> y publicación en <code>main</code>.</td></tr>
+    <tr><td>Documentación junto al código</td><td>Los diagramas se guardan como código Mermaid y se versionan con el proyecto.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Diseños de interfaz</h2>
+  <p class="bajada">La interfaz muestra el producto antes de prometerlo y organiza la información como un libro de registro: titulares grandes, filas separadas por líneas y un solo verde para la acción principal. Se adapta a teléfono, tableta y computador, y sigue la preferencia de modo oscuro del dispositivo.</p>
+
+  <h3>Fundamentos visuales</h3>
+  <table>
+    <tr><th style="width:32%">Elemento</th><th>Decisión</th></tr>
+    <tr><td>Tipografía</td><td>Manrope para la interfaz, con titulares de peso 800 y letras juntas; Unbounded solo en el logotipo.</td></tr>
+    <tr><td>Color</td><td>Verde pasto <code>#4cc77f</code> con texto oscuro (contraste 8.8:1) para la acción principal; fondo <code>#f2f3f0</code> y noche <code>#0e1210</code>.</td></tr>
+    <tr><td>Componentes</td><td>Botones en píldora, interruptores para permisos, control segmentado, punto de estado, hojas inferiores en el teléfono y barra superior translúcida.</td></tr>
+    <tr><td>Movimiento</td><td>Curva de salida <code>cubic-bezier(0.23, 1, 0.32, 1)</code>, presión a <code>scale(0.97)</code> y entradas escalonadas; se desactiva con movimiento reducido.</td></tr>
+    <tr><td>Accesibilidad</td><td>Cero violaciones WCAG 2.1 AA en axe-core, objetivos táctiles de 44 px, foco visible, texto ampliado al 200 % sin desbordamiento.</td></tr>
+  </table>
+
+  <figure><img src="../../disenos/login-light-1440.png" alt=""><figcaption>Ingreso en escritorio. El teléfono muestra un ejemplo ilustrativo del módulo de evaluación.</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../disenos/inicio-light-1440.png" alt=""><figcaption>Inicio: cifras del sistema y hoja de ruta de los próximos sprints.</figcaption></figure>
+  <figure><img src="../../disenos/usuarios-light-1440.png" alt=""><figcaption>Gestión de usuarios con búsqueda, filtro por rol y control segmentado de estado.</figcaption></figure>
+</section>
+
+<section>
+  <div class="escritorio-movil">
+    <figure><img src="../../disenos/roles-light-1440.png" alt=""><figcaption>Roles y permisos.</figcaption></figure>
+    <figure><img src="../../disenos/rol-light-390.png" alt=""><figcaption>Editor de rol en el teléfono, con interruptores por módulo.</figcaption></figure>
+  </div>
+  <figure><img src="../../disenos/cuenta-light-1440.png" alt=""><figcaption>Cuenta: datos de la persona y cambio de contraseña.</figcaption></figure>
+</section>
+
+<section>
+  <h3 style="margin-top:0">Teléfono</h3>
+  <div class="tel">
+    <figure><img src="../../disenos/login-light-390.png" alt=""><figcaption>Ingreso</figcaption></figure>
+    <figure><img src="../../disenos/usuarios-light-390.png" alt=""><figcaption>Usuarios como fichas</figcaption></figure>
+    <figure><img src="../../disenos/dialogo-light-390.png" alt=""><figcaption>Formulario en hoja inferior</figcaption></figure>
+    <figure><img src="../../disenos/menu-light-390.png" alt=""><figcaption>Menú desplegable</figcaption></figure>
+  </div>
+  <h3>Modo oscuro</h3>
+  <div class="tel">
+    <figure><img src="../../disenos/login-dark-390.png" alt=""><figcaption>Ingreso</figcaption></figure>
+    <figure><img src="../../disenos/usuarios-dark-390.png" alt=""><figcaption>Usuarios</figcaption></figure>
+    <figure><img src="../../disenos/dialogo-dark-390.png" alt=""><figcaption>Formulario</figcaption></figure>
+    <figure><img src="../../disenos/menu-dark-390.png" alt=""><figcaption>Menú</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <figure><img src="../../disenos/inicio-dark-1440.png" alt=""><figcaption>Inicio en modo oscuro.</figcaption></figure>
+  <figure><img src="../../disenos/usuarios-dark-1440.png" alt=""><figcaption>Usuarios en modo oscuro.</figcaption></figure>
+</section>
+
+<section>
+  <h2>Diagramas UML</h2>
+  <p class="bajada">Los diagramas del módulo de seguridad describen el código existente; los de evaluación y diagnóstico describen el diseño de los próximos sprints. Todos se generan desde código Mermaid guardado en <code>docs/uml/fuentes/</code>.</p>
+  <figure><img src="../../uml/casos-de-uso.png" alt="" style="max-height:200mm; width:auto; margin:0 auto"><figcaption>Casos de uso. Los tres actores heredan del actor Usuario el acceso a la plataforma.</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../uml/clases-dominio.png" alt=""><figcaption>Clases del dominio del sistema completo.</figcaption></figure>
+  <figure><img src="../../uml/clases-backend.png" alt=""><figcaption>Clases del servicio de aplicación implementado: controladores, servicios, guardas y entidades.</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../uml/secuencia-ingreso.png" alt=""><figcaption>Secuencia de ingreso, con bloqueo tras cinco intentos y respuesta uniforme para no revelar si el correo existe.</figcaption></figure>
+  <figure><img src="../../uml/secuencia-crear-usuario.png" alt=""><figcaption>Secuencia de creación de usuario con invitación por correo.</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../uml/secuencia-recuperacion.png" alt=""><figcaption>Secuencia de recuperación de contraseña con enlace de un solo uso.</figcaption></figure>
+  <figure><img src="../../uml/estados-evaluacion.png" alt="" style="max-height:95mm; width:auto"><figcaption>Estados de una evaluación (RF36).</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../uml/actividad-evaluacion.png" alt="" style="max-height:235mm; width:auto; margin:0 auto"><figcaption>Actividad de una evaluación, con la alternativa por reglas cuando el servicio de IA no está disponible (RNF26).</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../uml/componentes.png" alt=""><figcaption>Componentes de la interfaz y del servicio de aplicación.</figcaption></figure>
+  <figure><img src="../../uml/despliegue.png" alt=""><figcaption>Despliegue en Google Cloud. Los nodos con líneas punteadas se incorporan en los próximos sprints.</figcaption></figure>
+</section>
+
+<section>
+  <h2>Diseño de la base de datos</h2>
+  <p class="bajada">PostgreSQL 16 en Cloud SQL. El modelo cubre los ocho módulos del documento de requerimientos en 29 tablas, en tercera forma normal, y se validó ejecutando el script completo sobre una base vacía.</p>
+  <figure><img src="../../base-de-datos/er-completo.png" alt=""><figcaption>Diagrama entidad relación del sistema completo. El detalle de columnas está en el diccionario de datos.</figcaption></figure>
+</section>
+
+<section>
+  <figure><img src="../../base-de-datos/er-seguridad.png" alt="" style="max-height:78mm; width:auto; margin:0 auto"><figcaption>Módulo de seguridad implementado, con todas sus columnas.</figcaption></figure>
+
+  <h3>Tablas por módulo</h3>
+  <table>
+    <tr><th style="width:30%">Módulo</th><th>Tablas</th></tr>
+    <tr><td>Seguridad <span class="punto"></span></td><td><code>roles</code>, <code>users</code>, <code>password_reset_tokens</code>, <code>audit_logs</code></td></tr>
+    <tr><td>Catálogos</td><td><code>departments</code>, <code>municipalities</code>, <code>species</code>, <code>age_groups</code>, <code>producer_types</code>, <code>production_systems</code></td></tr>
+    <tr><td>Fincas</td><td><code>farms</code>, <code>farm_species</code>, <code>farm_inventory</code></td></tr>
+    <tr><td>Parametrización</td><td><code>checklists</code>, <code>criteria</code>, <code>indicators</code>, <code>questions</code>, <code>question_options</code>, <code>welfare_levels</code></td></tr>
+    <tr><td>Evaluación</td><td><code>evaluations</code>, <code>evaluation_status_history</code>, <code>evaluation_answers</code>, <code>criterion_scores</code>, <code>evidences</code></td></tr>
+    <tr><td>Diagnóstico</td><td><code>findings</code>, <code>recommendations</code>, <code>improvement_actions</code></td></tr>
+    <tr><td>Reportes</td><td><code>certificates</code>, <code>notifications</code></td></tr>
+  </table>
+
+  <h3>Decisiones de diseño</h3>
+  <table>
+    <tr><th style="width:30%">Decisión</th><th>Justificación</th></tr>
+    <tr><td>Listas de chequeo versionadas</td><td>Cada evaluación conserva la versión con que se diligenció; un índice único parcial permite una sola versión publicada por especie (RNF28).</td></tr>
+    <tr><td>Llave compuesta finca y especie</td><td>Impide evaluar una especie que la finca no tiene registrada.</td></tr>
+    <tr><td>Respuestas en JSONB</td><td>Un solo campo admite los siete tipos de respuesta del RF12.</td></tr>
+    <tr><td>Puntajes almacenados</td><td>El historial y los tableros no recalculan cada evaluación, y el resultado no cambia si luego se ajustan las ponderaciones.</td></tr>
+    <tr><td>Texto original de la IA</td><td>Se conserva junto al texto revisado por el evaluador, para trazabilidad (RNF25).</td></tr>
+    <tr><td>Evidencias fuera de la base</td><td>Se guarda la ruta del objeto en Cloud Storage (RNF11).</td></tr>
+    <tr><td>Eliminación lógica de fincas</td><td>Conserva el historial de evaluaciones.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Criterios de evaluación</h2>
+  <p class="bajada">Relación entre los criterios de la entrega y la evidencia que los sustenta.</p>
+  <table>
+    <tr><th style="width:26%">Criterio</th><th>Evidencia</th></tr>
+    <tr><td><b>Organización del código</b></td><td>Separación en interfaz y servicio; módulos por funcionalidad; guardas globales; configuración validada; migraciones; componentes reutilizables; 70 pruebas automatizadas; manuales de instalación y de usuario.</td></tr>
+    <tr><td><b>Uso adecuado de Git</b></td><td>Historial en <code>main</code> con commits descriptivos por cambio completo; integración continua en GitHub Actions; <code>.gitignore</code> y <code>.env.example</code> sin secretos; etiqueta <code>v0.2.0</code>; estrategia de ramas documentada.</td></tr>
+    <tr><td><b>Calidad del diseño</b></td><td>Sistema visual propio documentado; capturas en dos tamaños y dos modos; accesibilidad verificada; diez diagramas UML; modelo de datos completo en tercera forma normal con script validado y diccionario de datos.</td></tr>
+  </table>
+
+  <h3>Revisión con la lista de buenas prácticas</h3>
+  <table>
+    <tr><th style="width:30%">Práctica</th><th>Cómo se atendió</th></tr>
+    <tr><td>Requerimientos y módulos definidos</td><td>Los requerimientos funcionales y no funcionales del documento se agruparon en ocho módulos; el plan de trabajo indica el estado de cada uno.</td></tr>
+    <tr><td>Arquitectura</td><td>Documentada en <code>docs/ARQUITECTURA.md</code> y en los diagramas de componentes y despliegue.</td></tr>
+    <tr><td>Revisión del código y pruebas</td><td>Pruebas unitarias, de integración y de extremo a extremo en verde antes de cada envío.</td></tr>
+    <tr><td>Lectura de registros</td><td>Errores del servicio en Cloud Logging; bitácora de auditoría propia para acciones críticas.</td></tr>
+    <tr><td>Seguridad</td><td>bcrypt, JWT con revocación al cambiar contraseña o rol, bloqueo por intentos, límite de peticiones y secretos fuera del código.</td></tr>
+    <tr><td>Diseño de la base de datos</td><td>Modelo completo antes de construir los módulos siguientes.</td></tr>
+    <tr><td>Validación de datos</td><td>En la interfaz, en los DTO del servicio y con restricciones en la base.</td></tr>
+    <tr><td>Diseño móvil</td><td>Probado a 390 px de ancho en cada pantalla; formularios como hojas inferiores.</td></tr>
+    <tr><td>Funciones esenciales primero</td><td>El primer sprint entrega solo la seguridad, base de todos los módulos.</td></tr>
+    <tr><td>Costos y ambiente de producción</td><td>Servicios administrados que escalan a cero (Cloud Run) y una instancia pequeña de Cloud SQL; ambientes separados de desarrollo, pruebas y producción.</td></tr>
+    <tr><td>Casos reales y revisión final</td><td>Datos de ejemplo realistas, modo demostración y revisión de diseño con las guías de Apple.</td></tr>
+  </table>
+</section>
+
+</body>
+</html>

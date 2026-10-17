@@ -28,6 +28,7 @@ Documentación del proyecto
 
 | Documento | Contenido |
 |---|---|
+| [Entrega de la semana 12](docs/entrega/Entrega-Semana-12-ICA-Bienestar-Animal.pdf) | Documento PDF con el código, el uso de Git, los diseños de interfaz, los diagramas UML y el diseño de la base de datos |
 | [Arquitectura del sistema](docs/ARQUITECTURA.md) | Diagramas, conexión entre la interfaz, la API y la base de datos, modelo de datos, servicios de la API y despliegue |
 | [Manual de instalación](docs/MANUAL-DE-INSTALACION.md) | Requisitos, puesta en marcha en un equipo local y consulta desde un teléfono móvil |
 | [Manual de usuario](docs/MANUAL-DE-USUARIO.md) | Uso de cada pantalla según el rol del usuario |
