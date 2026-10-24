@@ -194,5 +194,7 @@ Problemas frecuentes
 | El ingreso responde "Demasiados intentos seguidos" | Se superó el límite de peticiones por minuto. Basta con esperar un minuto |
 | El ingreso indica que la cuenta está bloqueada | Hubo cinco intentos fallidos. La cuenta se desbloquea a los 15 minutos o al restablecer la contraseña |
 | `npm` no se reconoce como comando | Node.js no está instalado, o la terminal se abrió antes de instalarlo. Debe instalarse Node.js y abrirse una terminal nueva |
+| PowerShell indica que no se puede cargar `npm.ps1` porque la ejecución de scripts está deshabilitada | Windows bloquea los scripts de PowerShell por defecto. Se habilitan una sola vez para el usuario con `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`, o se usa `npm.cmd` en lugar de `npm` |
+| `psql` no se reconoce como comando | La carpeta de PostgreSQL no está en la ruta del sistema. Se usa la ruta completa, por ejemplo `& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres` |
 | `cd frontend` indica que la ruta no existe | La terminal está en una carpeta exterior. Debe ubicarse en la carpeta que contiene `backend` y `frontend` |
 | El puerto 4200 o 3000 ya está en uso | Otro proceso ocupa el puerto. Debe cerrarse ese proceso o la terminal anterior de la aplicación |
