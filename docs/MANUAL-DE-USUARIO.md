@@ -41,6 +41,13 @@ Inicio
 
 La pantalla de inicio saluda a la persona e indica el rol con el que ingresó. Para quienes gestionan usuarios, muestra además el número de usuarios activos, de usuarios inactivos y de roles configurados; cada cifra conduce a la lista correspondiente.
 
+Debajo se encuentra la guía de bienestar animal, basada en la *Metodología para evaluar el bienestar animal en las especies bovina y bufalina* del ICA (versión 2.0, 2023). La guía presenta:
+
+- **Libertades y su peso.** Las cinco libertades se agrupan en cuatro bloques, con el peso de cada uno en la calificación del predio. Al seleccionar un bloque se muestra qué revisa el evaluador, los cuidados recomendados en la finca y la señal de alerta.
+- **Niveles de resultado.** La escala de cuatro niveles (bajo, medio, alto y excelente) con sus rangos de referencia de 0 a 5.
+- **Cálculo de la muestra.** A partir del inventario de crías, jóvenes y adultos se obtienen el tipo de productor, la metodología que aplica, la muestra mínima para la inspección visual y su reparto por grupo de edad.
+- **Tipos de indicador.** Las fuentes de los indicadores y los métodos con que se verifican.
+
 
 Gestión de usuarios
 -------------------

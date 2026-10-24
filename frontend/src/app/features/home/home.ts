@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 import { P } from '../../core/models';
+import { GuiaBienestar } from './guia-bienestar';
 
 interface Resumen {
   activos: number;
@@ -23,7 +24,7 @@ const RUTA = [
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [RouterLink, GuiaBienestar],
   template: `
     <section class="saludo entrada">
       <h1 class="titular">Hola, {{ auth.user()?.firstName }}.</h1>
@@ -57,6 +58,8 @@ const RUTA = [
         }
       </section>
     }
+
+    <app-guia-bienestar />
 
     <section class="ruta" aria-labelledby="ruta-titulo">
       <div class="ruta-texto">
