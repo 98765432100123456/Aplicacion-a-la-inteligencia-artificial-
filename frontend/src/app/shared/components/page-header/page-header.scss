@@ -1,0 +1,10 @@
+:host {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: var(--e-5) var(--e-8); margin-bottom: var(--e-10);
+}
+.acciones { display: flex; gap: var(--e-3); flex-wrap: wrap; }
+.acciones:empty { display: none; }
+@media (max-width: 37.49em) {
+  :host { margin-bottom: var(--e-8); }
+  .acciones, .acciones ::ng-deep .btn { width: 100%; }
+}

@@ -2,11 +2,11 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuditService } from '../audit/audit.service';
-import { AuthUser } from '../common/auth-user';
-import { User } from '../users/user.entity';
+import { AuthUser } from '../common/interfaces/auth-user';
+import { User } from '../users/entities/user.entity';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
-import { ALL_PERMISSIONS, BASE_ROLES } from './permissions';
-import { Role } from './role.entity';
+import { ALL_PERMISSIONS, BASE_ROLES } from './constants/permissions';
+import { Role } from './entities/role.entity';
 
 export interface RoleView {
   id: string;

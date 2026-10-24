@@ -1,0 +1,45 @@
+.saludo { margin-bottom: var(--e-10); }
+.aviso { margin-bottom: var(--e-8); }
+
+/* Libro de cuentas: cifras grandes separadas por líneas verticales */
+.libro {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  border-top: 1px solid var(--linea-fuerte); border-bottom: 1px solid var(--linea); margin-bottom: var(--e-16);
+  animation-delay: 60ms;
+}
+.dato {
+  display: grid; gap: var(--e-2); padding: var(--e-6) var(--e-6) var(--e-6) 0;
+  color: var(--tinta); text-decoration: none; font-weight: 400;
+}
+.dato + .dato { padding-left: var(--e-6); border-left: 1px solid var(--linea); }
+.valor { font-size: var(--texto-3xl); font-weight: 700; line-height: 1; letter-spacing: -0.05em; }
+.rotulo { color: var(--tinta-suave); font-size: var(--texto-sm); font-weight: 700; }
+@media (hover: hover) and (pointer: fine) {
+  .dato:hover .rotulo { color: var(--acento); text-decoration: underline; text-underline-offset: 3px; }
+}
+.cargando { padding: var(--e-6) 0; color: var(--tinta-suave); }
+
+.ruta { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: var(--e-10); align-items: start; }
+.ruta h2 { font-size: var(--texto-2xl); letter-spacing: -0.045em; }
+.ruta-texto p { margin-top: var(--e-3); color: var(--tinta-suave); max-width: 24rem; }
+.ruta-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea-fuerte); }
+.ruta-lista li {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--e-4);
+  padding: var(--e-4) 0; border-bottom: 1px solid var(--linea);
+}
+.ruta-lista div { display: grid; gap: 0.125rem; }
+.ruta-lista b { font-size: var(--texto-md); letter-spacing: -0.01em; }
+.ruta-lista div span { font-size: var(--texto-sm); color: var(--tinta-suave); }
+@media (prefers-reduced-motion: no-preference) {
+  .ruta-lista li { animation: entrar 360ms var(--curva) both; animation-delay: calc(120ms + var(--i) * 45ms); }
+}
+
+@media (max-width: 47.49em) {
+  .libro { grid-template-columns: 1fr; }
+  .dato, .dato + .dato { padding: var(--e-4) 0; border-left: 0; }
+  .dato + .dato { border-top: 1px solid var(--linea); }
+  .dato { grid-template-columns: auto 1fr; align-items: baseline; gap: var(--e-4); }
+  .valor { font-size: var(--texto-2xl); min-width: 3ch; }
+  .ruta { grid-template-columns: 1fr; gap: var(--e-6); }
+  .ruta-lista li { align-items: flex-start; }
+}

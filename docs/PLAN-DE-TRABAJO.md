@@ -19,10 +19,10 @@ Primer sprint: seguridad e infraestructura
 
 | Código | Requerimiento | Estado | Ubicación |
 |---|---|---|---|
-| RF01 | Gestión de autenticación | Implementado | `backend/src/auth`, `frontend/src/app/features/auth/login.ts` |
+| RF01 | Gestión de autenticación | Implementado | `backend/src/auth`, `frontend/src/app/features/auth/login/` |
 | RF02 | Gestión de roles | Implementado | `backend/src/roles`, `frontend/src/app/features/roles` |
 | RF03 | Registro de usuarios: creación, edición, activación e inactivación | Implementado | `backend/src/users`, `frontend/src/app/features/users` |
-| RF04 | Recuperación de acceso por correo electrónico | Implementado | `auth/password-reset.service.ts`, `features/auth/forgot-password.ts`, `features/auth/reset-password.ts` |
+| RF04 | Recuperación de acceso por correo electrónico | Implementado | `auth/password-reset.service.ts`, `features/auth/forgot-password/`, `features/auth/reset-password/` |
 | RF34 | Trazabilidad de acciones | Base disponible | La tabla `audit_logs` registra los eventos de ingreso, seguridad, usuarios y roles. Falta auditar las evaluaciones y construir la pantalla de consulta asociada al permiso `auditoria.ver` |
 
 **Requerimientos no funcionales**

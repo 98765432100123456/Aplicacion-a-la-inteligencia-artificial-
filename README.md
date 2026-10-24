@@ -54,7 +54,7 @@ npm install
 npm run demo
 ```
 
-La aplicación queda disponible en `http://localhost:4200`, con el correo `admin@ica-bienestar.local` y la contraseña `CambiarEsta.2026`. Las cuentas `evaluador@ica-bienestar.local` y `consultor@ica-bienestar.local`, con la misma contraseña, permiten observar la aplicación con otros roles. El enlace **Restablecer datos** del aviso superior devuelve los datos a su estado inicial.
+La aplicación queda disponible en `http://localhost:4200`, con el correo `admin@ica-bienestar.local` y la contraseña `CambiarEsta.2026`. Las cuentas `evaluador@ica-bienestar.local` y `consultor@ica-bienestar.local`, con la misma contraseña, permiten observar la aplicación con otros roles. Estos usuarios de prueba se definen en `frontend/src/app/core/demo/datos-demo.ts`; los usuarios reales se guardan en la tabla `users` de PostgreSQL. El enlace **Restablecer datos** del aviso superior devuelve los datos a su estado inicial.
 
 
 Puesta en marcha
@@ -104,9 +104,9 @@ Estructura del repositorio
 | `backend/src/mail/` | Envío de correo electrónico |
 | `backend/src/database/` | Migraciones y carga de datos iniciales |
 | `backend/test/` | Pruebas de extremo a extremo de la API |
-| `frontend/src/app/core/` | Sesión, acceso a la API y protección de rutas |
-| `frontend/src/app/shared/` | Componentes reutilizables |
-| `frontend/src/app/features/` | Pantallas, organizadas por módulo |
+| `frontend/src/app/core/` | Servicios, interceptores, guardas, modelos, utilidades y modo demostración, cada uno en su carpeta |
+| `frontend/src/app/shared/` | Componentes, servicios y utilidades reutilizables |
+| `frontend/src/app/features/` | Pantallas organizadas por módulo; cada componente en su carpeta con `.ts`, `.html` y `.scss` |
 | `frontend/e2e/` | Pruebas con Playwright |
 | `docs/` | Documentación del proyecto |
 | `.claude/agents/` | Agentes especializados de agency-agents para el desarrollo con Claude Code |

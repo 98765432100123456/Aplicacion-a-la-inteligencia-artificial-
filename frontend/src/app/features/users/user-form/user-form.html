@@ -1,0 +1,64 @@
+@if (serverError()) {
+  <p class="aviso aviso-error" role="alert">{{ serverError() }}</p>
+}
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="rejilla">
+    <div class="campo">
+      <label for="u-nombres">Nombres</label>
+      <input id="u-nombres" class="control" formControlName="firstName" autocomplete="off" [attr.aria-invalid]="bad('firstName') || null" [attr.aria-describedby]="bad('firstName') ? 'e-firstName' : null" />
+      @if (bad('firstName')) { <span class="error" id="e-firstName">{{ messages.firstName }}</span> }
+    </div>
+    <div class="campo">
+      <label for="u-apellidos">Apellidos</label>
+      <input id="u-apellidos" class="control" formControlName="lastName" autocomplete="off" [attr.aria-invalid]="bad('lastName') || null" [attr.aria-describedby]="bad('lastName') ? 'e-lastName' : null" />
+      @if (bad('lastName')) { <span class="error" id="e-lastName">{{ messages.lastName }}</span> }
+    </div>
+    <div class="campo completo">
+      <label for="u-correo">Correo electrónico</label>
+      <input id="u-correo" class="control" type="email" placeholder="nombre@dominio.co" formControlName="email" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" [attr.aria-invalid]="bad('email') || null" [attr.aria-describedby]="bad('email') ? 'e-email' : null" />
+      @if (bad('email')) { <span class="error" id="e-email">{{ messages.email }}</span> }
+    </div>
+    <div class="campo">
+      <label for="u-doc">Documento <span class="opcional">(opcional)</span></label>
+      <input id="u-doc" class="control" formControlName="documentNumber" placeholder="1020304050" autocomplete="off" [attr.aria-invalid]="bad('documentNumber') || null" [attr.aria-describedby]="bad('documentNumber') ? 'e-documentNumber' : null" />
+      @if (bad('documentNumber')) { <span class="error" id="e-documentNumber">{{ messages.documentNumber }}</span> }
+    </div>
+    <div class="campo">
+      <label for="u-tel">Teléfono <span class="opcional">(opcional)</span></label>
+      <input id="u-tel" class="control" type="tel" placeholder="300 123 4567" formControlName="phone" autocomplete="off" inputmode="tel" [attr.aria-invalid]="bad('phone') || null" [attr.aria-describedby]="bad('phone') ? 'e-phone' : null" />
+      @if (bad('phone')) { <span class="error" id="e-phone">{{ messages.phone }}</span> }
+    </div>
+    <div class="campo completo">
+      <label for="u-rol">Rol</label>
+      <select id="u-rol" class="control" formControlName="roleId" [attr.aria-invalid]="bad('roleId') || null" [attr.aria-describedby]="isSelf() ? 'ayuda-rol' : bad('roleId') ? 'e-roleId' : null">
+        <option value="" disabled>Seleccione…</option>
+        @for (r of roleOptions(); track r.id) {
+          <option [value]="r.id" [disabled]="!r.active">{{ r.name }}{{ r.active ? '' : ' (inactivo)' }}</option>
+        }
+      </select>
+      @if (isSelf()) {
+        <span class="ayuda" id="ayuda-rol">No puede cambiar su propio rol.</span>
+      }
+      @if (bad('roleId')) { <span class="error" id="e-roleId">{{ messages.roleId }}</span> }
+    </div>
+  </div>
+
+  @if (!user()) {
+    <p class="aviso">Al guardar, la persona recibe un correo para definir su contraseña. El enlace vence en 72 horas.</p>
+  } @else if (user()!.active) {
+    <div class="acceso">
+      <div>
+        <p class="etiqueta">Acceso</p>
+        <p class="ayuda">Si la persona no recibió la invitación u olvidó su contraseña.</p>
+      </div>
+      <button type="button" class="btn btn-secundario" (click)="sendLink.emit(user()!)">Enviar enlace de acceso</button>
+    </div>
+  }
+
+  <div class="botones">
+    <button type="button" class="btn btn-secundario" (click)="cancel.emit()">Cancelar</button>
+    <button type="submit" class="btn btn-principal" [disabled]="saving()">
+      @if (saving()) { <span class="spinner" aria-hidden="true"></span> Guardando… } @else { {{ user() ? 'Guardar cambios' : 'Crear usuario' }} }
+    </button>
+  </div>
+</form>

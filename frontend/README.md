@@ -35,7 +35,7 @@ La interfaz invoca siempre la ruta relativa `/api`, de modo que la interfaz y el
 - **Contenedores:** el servidor nginx, configurado en `nginx.conf`, redirige `/api/` hacia el contenedor del servicio.
 - **Producción:** Firebase Hosting, configurado en `firebase.json`, redirige `/api/**` hacia el servicio en Cloud Run.
 
-En el modo demostración, el interceptor `core/demo-api.interceptor.ts` responde las peticiones a `/api` dentro del navegador con las mismas reglas y mensajes del servicio real, y guarda los datos en el almacenamiento local del navegador.
+En el modo demostración, el interceptor `core/demo/demo-api.interceptor.ts` responde las peticiones a `/api` dentro del navegador con las mismas reglas y mensajes del servicio real, y guarda los datos en el almacenamiento local del navegador. Los usuarios y roles de prueba están en `core/demo/datos-demo.ts`; las rutas simuladas, en `core/demo/rutas/`.
 
 El token de acceso se conserva en el almacenamiento de la sesión del navegador y se elimina al cerrarlo.
 
@@ -45,14 +45,23 @@ Organización del código
 
 | Ruta | Responsabilidad |
 |---|---|
-| `src/app/core/` | Servicio de sesión, acceso a la API, interceptor de autenticación, guardas de rutas y modelos |
-| `src/app/shared/` | Componentes reutilizables: logotipo, diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
-| `src/app/layout/` | Estructura con barra superior translúcida, que en pantallas pequeñas se convierte en un menú desplegable |
-| `src/app/features/auth/` | Ingreso, recuperación de contraseña y creación de contraseña |
-| `src/app/features/home/` | Pantalla de inicio |
-| `src/app/features/users/` | Gestión de usuarios |
-| `src/app/features/roles/` | Gestión de roles y permisos |
+| `src/app/core/services/` | Sesión (`auth.service.ts`) y acceso a la API (`api.service.ts`) |
+| `src/app/core/interceptors/` | Interceptor que agrega el token y cierra la sesión vencida |
+| `src/app/core/guards/` | Guardas de rutas: sesión, permisos y cambios sin guardar |
+| `src/app/core/models/` | Tipos de datos que intercambian la interfaz y la API |
+| `src/app/core/utils/` | Mensajes de error de la API y ruta de regreso después de ingresar |
+| `src/app/core/demo/` | Modo demostración: datos de prueba, almacenamiento en el navegador y rutas simuladas |
+| `src/app/shared/components/` | Componentes reutilizables: logotipo, diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
+| `src/app/shared/services/` | Servicio de mensajes emergentes |
+| `src/app/shared/utils/` | Política de contraseñas y utilidades de formularios |
+| `src/app/layout/shell/` | Estructura con barra superior translúcida, que en pantallas pequeñas se convierte en un menú desplegable |
+| `src/app/features/auth/` | Ingreso, recuperación y creación de contraseña, con el marco común de esas pantallas |
+| `src/app/features/home/` | Pantalla de inicio y guía de bienestar animal; los datos de la norma están en `data/` |
+| `src/app/features/users/` | Lista de usuarios y formulario de usuario |
+| `src/app/features/roles/` | Lista de roles y editor de permisos |
 | `src/app/features/account/` | Datos de la cuenta y cambio de contraseña |
+
+Cada componente tiene su propia carpeta con tres archivos: la lógica en `.ts`, la plantilla en `.html` y los estilos en `.scss`. Por ejemplo, la pantalla de ingreso está en `features/auth/login/` con `login.ts`, `login.html` y `avisos.ts`; sus estilos son los comunes de `features/auth/auth.scss`.
 | `src/styles.scss` | Sistema de diseño: colores, tipografía, espaciado y componentes base |
 | `e2e/` | Pruebas de extremo a extremo |
 

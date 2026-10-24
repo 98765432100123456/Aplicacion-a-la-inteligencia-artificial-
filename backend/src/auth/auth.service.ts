@@ -4,11 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { DataSource, IsNull, MoreThan, Repository } from 'typeorm';
 import { AuditService } from '../audit/audit.service';
-import { AuthUser, JwtPayload } from '../common/auth-user';
-import { User } from '../users/user.entity';
+import { AuthUser, JwtPayload } from '../common/interfaces/auth-user';
+import { User } from '../users/entities/user.entity';
 import { ChangePasswordDto, LoginDto, ResetPasswordDto } from './dto/auth.dto';
-import { toAuthUser } from './jwt.strategy';
-import { PasswordResetToken } from './password-reset-token.entity';
+import { toAuthUser } from './strategies/jwt.strategy';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
 import { hashToken, PasswordResetService } from './password-reset.service';
 
 export const BCRYPT_ROUNDS = 12;

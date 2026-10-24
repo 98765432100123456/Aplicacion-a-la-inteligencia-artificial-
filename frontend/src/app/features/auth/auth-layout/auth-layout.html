@@ -1,0 +1,42 @@
+<div class="marco">
+  <section class="heroe" aria-labelledby="heroe-titulo">
+    <app-logo [claro]="true" />
+    <div class="copia">
+      <h1 id="heroe-titulo">Bienestar animal, evaluado en campo.</h1>
+      <p>Listas de chequeo por especie, puntaje automático y un plan de mejora para cada finca.</p>
+    </div>
+
+    <figure class="escenario" aria-label="Ejemplo ilustrativo de una evaluación en el teléfono">
+      <figcaption>Ejemplo ilustrativo del módulo de evaluación</figcaption>
+      <div class="telefono" aria-hidden="true">
+        <div class="pantalla">
+          <p class="t-sup">Evaluación de bovinos</p>
+          <p class="t-finca">Finca La Esperanza</p>
+          <div class="t-puntaje">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" class="pista" />
+              <circle cx="60" cy="60" r="50" class="avance" />
+            </svg>
+            <span><b>82</b><small>de 100</small></span>
+          </div>
+          <p class="t-nivel">Nivel bueno</p>
+          <ul class="t-lista">
+            <li><i class="ok"></i>Alimentación y agua<em>5/5</em></li>
+            <li><i class="ok"></i>Alojamiento<em>6/6</em></li>
+            <li><i class="medio"></i>Salud y manejo<em>3/5</em></li>
+            <li><i></i>Comportamiento<em>0/4</em></li>
+          </ul>
+          <span class="t-boton">Continuar evaluación</span>
+        </div>
+      </div>
+    </figure>
+
+    <p class="pie">Proyecto académico de la asignatura Aplicación a la Inteligencia Artificial.</p>
+  </section>
+
+  <main class="formulario" id="contenido">
+    <div class="hoja entrada">
+      <ng-content />
+    </div>
+  </main>
+</div>

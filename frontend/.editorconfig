@@ -1,4 +1,4 @@
-# Editor configuration, see https://editorconfig.org
+# Formato común para los editores: https://editorconfig.org
 root = true
 
 [*]

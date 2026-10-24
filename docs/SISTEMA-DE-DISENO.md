@@ -106,16 +106,16 @@ Componentes
 
 | Componente | Clase o archivo | Descripción |
 |---|---|---|
-| Logotipo | `shared/logo.ts` | Sello verde con marca de verificación y el nombre en Unbounded |
-| Encabezado de página | `shared/page-header.ts` | Titular, bajada y acción principal alineada a la derecha |
+| Logotipo | `shared/components/logo/` | Sello verde con marca de verificación y el nombre en Unbounded |
+| Encabezado de página | `shared/components/page-header/` | Titular, bajada y acción principal alineada a la derecha |
 | Botones | `.btn-principal`, `.btn-secundario`, `.btn-fantasma`, `.btn-peligro`, `.btn-texto` | Píldoras de 48 px; la versión `.btn-sm` mide 44 px, el mínimo táctil |
 | Interruptor | `.interruptor` | Casilla con `role="switch"` dibujada como el interruptor de iOS; admite el estado intermedio en los grupos de permisos |
 | Control segmentado | `.segmentado` | Filtro de estado con opciones excluyentes (Todos, Activos, Inactivos) |
 | Punto de estado | `.estado-activo`, `.estado-inactivo`, `.estado-alerta` | Punto de color seguido de la palabra |
-| Libro de cifras | `.libro` en `features/home/home.ts` | Cifras grandes separadas por líneas verticales, sin tarjetas |
+| Libro de cifras | `.libro` en `features/home/home/` | Cifras grandes separadas por líneas verticales, sin tarjetas |
 | Ficha | `.ficha` | Lista de pares rótulo y valor separados por líneas |
-| Diálogo y hoja | `shared/dialog.ts` | Diálogo centrado en escritorio; hoja inferior con agarradera en el teléfono |
-| Mensajes emergentes | `shared/toasts.ts` | Píldora oscura que sube desde abajo y no bloquea el contenido que cubre |
+| Diálogo y hoja | `shared/components/dialog/` | Diálogo centrado en escritorio; hoja inferior con agarradera en el teléfono |
+| Mensajes emergentes | `shared/components/toasts/` | Píldora oscura que sube desde abajo y no bloquea el contenido que cubre |
 
 
 Estados interactivos

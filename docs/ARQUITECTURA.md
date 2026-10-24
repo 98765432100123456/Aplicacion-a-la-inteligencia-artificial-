@@ -52,7 +52,7 @@ La interfaz web invoca siempre la ruta relativa `/api`, de modo que ambos compon
 | Contenedores locales | nginx redirige `/api/` hacia el contenedor `api` | `frontend/nginx.conf` |
 | Producción | Firebase Hosting redirige `/api/**` hacia el servicio de Cloud Run `ica-bienestar-api` | `frontend/firebase.json` |
 
-Cada petición incluye la cabecera `Authorization: Bearer <token>`, agregada por el interceptor `core/auth.interceptor.ts`. Cuando el servicio responde con el código 401, el interceptor cierra la sesión y redirige a la pantalla de ingreso. El token se conserva en `sessionStorage` y se elimina al cerrar el navegador.
+Cada petición incluye la cabecera `Authorization: Bearer <token>`, agregada por el interceptor `core/interceptors/auth.interceptor.ts`. Cuando el servicio responde con el código 401, el interceptor cierra la sesión y redirige a la pantalla de ingreso. El token se conserva en `sessionStorage` y se elimina al cerrar el navegador.
 
 **Servicio de aplicación y base de datos**
 
@@ -91,7 +91,7 @@ Toda petición atraviesa tres guardas globales, en el orden indicado en la tabla
 | `JwtAuthGuard` | Exige un token válido, salvo en las rutas marcadas con `@Public()`. La estrategia vuelve a consultar el usuario en cada petición, de modo que una inactivación, un cambio de rol o un cambio de contraseña surten efecto de inmediato |
 | `PermissionsGuard` | Verifica los permisos exigidos con `@RequirePermissions(...)` frente a los permisos del rol del usuario (RNF07) |
 
-La incorporación de un módulo nuevo, como fincas o evaluaciones, consiste en crear su carpeta en `src/`, registrar sus permisos en `roles/permissions.ts` y proteger cada ruta con `@RequirePermissions`.
+La incorporación de un módulo nuevo, como fincas o evaluaciones, consiste en crear su carpeta en `src/`, registrar sus permisos en `roles/constants/permissions.ts` y proteger cada ruta con `@RequirePermissions`.
 
 
 Modelo de datos del primer sprint

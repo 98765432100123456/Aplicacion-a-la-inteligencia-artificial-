@@ -1,0 +1,52 @@
+<app-page-header heading="Cuenta" description="Sus datos de acceso y la contraseña con la que ingresa." />
+
+<div class="columnas">
+  <section class="bloque entrada" aria-labelledby="datos-titulo">
+    <div class="perfil">
+      <span class="avatar grande" aria-hidden="true">{{ auth.user()?.firstName?.[0] }}{{ auth.user()?.lastName?.[0] }}</span>
+      <h2 id="datos-titulo">Datos</h2>
+    </div>
+    <dl class="ficha">
+      <div><dt>Nombre</dt><dd>{{ auth.fullName() }}</dd></div>
+      <div><dt>Correo</dt><dd>{{ auth.user()?.email }}</dd></div>
+      <div><dt>Rol</dt><dd>{{ auth.user()?.role?.name }}</dd></div>
+    </dl>
+    <p class="nota">Para corregir sus datos o cambiar de rol, pídalo al administrador del sistema.</p>
+  </section>
+
+  <section class="bloque entrada clave" aria-labelledby="clave-titulo">
+    <h2 id="clave-titulo">Cambiar contraseña</h2>
+    <p class="nota">Al cambiarla se cierran sus sesiones en otros dispositivos.</p>
+    @if (error()) {
+      <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+    }
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="campo">
+        <label for="actual">Contraseña actual</label>
+        <app-password-input inputId="actual" formControlName="current" [invalid]="bad('current')" />
+        @if (bad('current')) {
+          <span class="error">Escriba su contraseña actual.</span>
+        }
+      </div>
+      <div class="campo">
+        <label for="nueva">Nueva contraseña</label>
+        <app-password-input inputId="nueva" autocomplete="new-password" formControlName="password" [invalid]="bad('password')" describedBy="ayuda-nueva" />
+        <span [class]="bad('password') ? 'error' : 'ayuda'" id="ayuda-nueva">{{ hint }}</span>
+      </div>
+      <div class="campo">
+        <label for="confirmar">Repita la nueva contraseña</label>
+        <app-password-input inputId="confirmar" autocomplete="new-password" formControlName="confirm" [invalid]="mismatch()" />
+        @if (mismatch()) {
+          <span class="error">Las contraseñas no coinciden.</span>
+        }
+      </div>
+      <button class="btn btn-principal" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <span class="spinner" aria-hidden="true"></span> Guardando…
+        } @else {
+          Cambiar contraseña
+        }
+      </button>
+    </form>
+  </section>
+</div>

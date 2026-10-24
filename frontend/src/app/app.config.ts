@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
-import { authInterceptor } from './core/auth.interceptor';
-import { demoApiInterceptor } from './core/demo-api.interceptor';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { demoApiInterceptor } from './core/demo/demo-api.interceptor';
 
 registerLocaleData(localeEsCo);
 

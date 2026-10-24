@@ -1,0 +1,175 @@
+<section class="bloque" aria-labelledby="libertades-titulo">
+  <header class="encabezado">
+    <h2 id="libertades-titulo">Cómo califica el ICA un predio.</h2>
+    <p>La metodología oficial para bovinos y bufalinos agrupa las cinco libertades del animal en cuatro bloques. No pesan igual: la salud vale la mitad de la nota.</p>
+  </header>
+
+  <div class="balanza" role="tablist" aria-label="Libertades y su peso en la calificación">
+    @for (l of libertades; track l.id; let i = $index) {
+      <button
+        #pestana
+        type="button"
+        role="tab"
+        class="tramo"
+        [id]="'tab-' + l.id"
+        [style.flex-grow]="l.peso"
+        [attr.aria-selected]="i === activa()"
+        [attr.aria-controls]="'panel-' + l.id"
+        [tabIndex]="i === activa() ? 0 : -1"
+        (click)="activa.set(i)"
+        (keydown)="mover($event, i)"
+      >
+        <span class="peso cifras">{{ l.peso }} %</span>
+        <span class="nombre-corto">{{ l.corto }}</span>
+      </button>
+    }
+  </div>
+
+  @for (l of libertades; track l.id; let i = $index) {
+    @if (i === activa()) {
+      <div class="detalle" role="tabpanel" [id]="'panel-' + l.id" [attr.aria-labelledby]="'tab-' + l.id">
+        <div class="panel-intro">
+          <h3>{{ l.nombre }}</h3>
+          <p class="pesa">Pesa <b class="cifras">{{ l.peso }} %</b> de la calificación del predio.</p>
+          <h4>Qué revisa el evaluador</h4>
+          <ul class="revisa">
+            @for (e of l.evalua; track e) { <li>{{ e }}</li> }
+          </ul>
+        </div>
+        <div class="panel-cuidados">
+          <h4>Cuidados en la finca</h4>
+          <ul class="cuidados">
+            @for (c of l.cuidados; track c) {
+              <li>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" /></svg>
+                <span>{{ c }}</span>
+              </li>
+            }
+          </ul>
+          <p class="alerta"><span class="estado estado-alerta">Señal de alerta</span> {{ l.alerta }}</p>
+        </div>
+      </div>
+    }
+  }
+</section>
+
+<section class="bloque" aria-labelledby="escala-titulo">
+  <header class="encabezado">
+    <h2 id="escala-titulo">Cuatro niveles de resultado.</h2>
+    <p>Al cerrar la evaluación, el predio queda en uno de cuatro niveles. La norma usa como referencia una escala de 0 a 5.</p>
+  </header>
+
+  <div class="regla" aria-hidden="true">
+    @for (n of niveles; track n.nombre) {
+      <span class="franja" [class]="'franja ' + n.tono" [style.flex-grow]="n.hasta - n.desde"></span>
+    }
+  </div>
+  <div class="marcas cifras" aria-hidden="true">
+    <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+  </div>
+
+  <dl class="niveles">
+    @for (n of niveles; track n.nombre) {
+      <div>
+        <dt><i [class]="n.tono" aria-hidden="true"></i>{{ n.nombre }}</dt>
+        <dd class="cifras">{{ n.rango }}</dd>
+      </div>
+    }
+  </dl>
+
+  <p class="aviso aviso-advertencia urgente">
+    Un resultado bajo en cualquiera de las libertades obliga a tomar acciones correctivas con urgencia, aunque el promedio del predio sea bueno.
+  </p>
+</section>
+
+<section class="bloque calculo" aria-labelledby="muestra-titulo">
+  <header class="encabezado">
+    <h2 id="muestra-titulo">¿A cuántos animales hay que revisar?</h2>
+    <p>Escriba el inventario por grupo de edad. La metodología define el tipo de productor y la muestra mínima para la inspección visual.</p>
+  </header>
+
+  <div class="calculadora">
+    <div class="entrada-datos">
+      <fieldset class="inventario">
+        <legend>Inventario del predio</legend>
+        @for (g of grupos; track g.id; let i = $index) {
+          <div class="campo">
+            <label [for]="'inv-' + g.id">{{ g.nombre }}</label>
+            <input
+              class="control cifras"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="1"
+              [id]="'inv-' + g.id"
+              [value]="inventario()[i]"
+              (input)="cambiar(i, $any($event.target).value)"
+            />
+          </div>
+        }
+        <p class="nota">Si en la finca hay bovinos y búfalos, se hacen dos evaluaciones independientes, una por especie.</p>
+      </fieldset>
+      <table class="tabla-muestra">
+        <caption>Muestra mínima según la norma</caption>
+        <thead><tr><th scope="col">Animales en el predio</th><th scope="col">Muestra mínima</th></tr></thead>
+        <tbody>
+          @for (f of tablaMuestra; track f.rango) {
+            <tr [class.actual]="f.id === filaActual()">
+              <td class="cifras">{{ f.rango }}</td>
+              <td class="cifras">{{ f.muestra }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resultado" aria-live="polite">
+      <div class="fila">
+        <span>Animales en el predio</span>
+        <b class="cifras">{{ total() }}</b>
+      </div>
+      <div class="fila">
+        <span>Tipo de productor</span>
+        <b>{{ productorTexto() }}</b>
+      </div>
+      <p class="metodologia">{{ metodologia() }}</p>
+
+      @if (muestra(); as m) {
+        <div class="muestra">
+          <span class="muestra-valor cifras">{{ m }}</span>
+          <span class="muestra-rotulo">animales como mínimo en la muestra</span>
+        </div>
+        <ul class="reparto">
+          @for (g of grupos; track g.id; let i = $index) {
+            <li><b class="cifras">{{ reparto()[i] }}</b> {{ g.nombre.toLowerCase() }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="sin-muestra">
+          @if (total() === 0) { Escriba cuántos animales hay en cada grupo. }
+          @else { Con 50 animales o menos aplica el capítulo de pequeño productor, que tiene su propia escala de calificación. }
+        </p>
+      }
+    </div>
+  </div>
+
+</section>
+
+<section class="bloque" aria-labelledby="indicadores-titulo">
+  <header class="encabezado">
+    <h2 id="indicadores-titulo">Qué mira el evaluador.</h2>
+    <p>Cada indicador se apoya en una de tres fuentes y se verifica con uno de tres métodos: {{ metodosTexto }}.</p>
+  </header>
+  <dl class="tipos">
+    @for (t of tipos; track t.nombre) {
+      <div>
+        <dt>{{ t.nombre }}</dt>
+        <dd>{{ t.ejemplo }}</dd>
+      </div>
+    }
+  </dl>
+</section>
+
+<p class="fuente">
+  Fuente: Instituto Colombiano Agropecuario, <cite>Metodología para evaluar el bienestar animal en las especies bovina y bufalina</cite>, versión 2.0 (2023), expedida en cumplimiento de la Resolución 253 de 2020 del Ministerio de Agricultura y Desarrollo Rural. Análisis de la norma: Angie Caterin Patiño Hernández, Universidad Cooperativa de Colombia. Los cuidados son prácticas de manejo de referencia y no reemplazan la asistencia de un médico veterinario.
+</p>

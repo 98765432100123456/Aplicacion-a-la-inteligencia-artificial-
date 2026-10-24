@@ -1,17 +1,17 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Archivos que Git no debe versionar.
 
-# Compiled output
+# Compilados
 /dist
 /tmp
 /out-tsc
 /bazel-out
 
-# Node
+# Dependencias de Node
 /node_modules
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
+# Editores y entornos de desarrollo
 .idea/
 .project
 .classpath
@@ -28,7 +28,7 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-# Miscellaneous
+# Cachés y reportes
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -38,6 +38,6 @@ testem.log
 /typings
 __screenshots__/
 
-# System files
+# Archivos del sistema operativo
 .DS_Store
 Thumbs.db

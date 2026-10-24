@@ -78,7 +78,7 @@ El modelo está en tercera forma normal. Cada tabla tiene una llave primaria, lo
 
 Se admiten tres desnormalizaciones deliberadas:
 
-- **`roles.permissions` como arreglo de texto.** Los permisos son un catálogo fijo definido en el código (`backend/src/roles/permissions.ts`), y el arreglo evita una tabla intermedia y una consulta adicional en cada petición autenticada.
+- **`roles.permissions` como arreglo de texto.** Los permisos son un catálogo fijo definido en el código (`backend/src/roles/constants/permissions.ts`), y el arreglo evita una tabla intermedia y una consulta adicional en cada petición autenticada.
 - **`evaluations.total_score` y `criterion_scores`.** Son valores calculables a partir de las respuestas, pero se guardan para que el historial, los tableros y los reportes no recalculen cada evaluación (RNF09, RNF10) y para que el puntaje no cambie si más adelante se modifican las ponderaciones.
 - **`evaluation_answers.value` como JSONB.** Las preguntas admiten siete tipos de respuesta (RF12); una sola columna JSONB evita siete columnas casi siempre vacías.
 

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
-import { PASSWORD_MESSAGE, PASSWORD_PATTERN } from '../../common/password-policy';
+import { PASSWORD_MESSAGE, PASSWORD_PATTERN } from '../../common/utils/password-policy';
 
 const toEmail = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim().toLowerCase() : value);
 

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Ip, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { AuthUser } from '../common/auth-user';
+import { AuthUser } from '../common/interfaces/auth-user';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthService } from './auth.service';

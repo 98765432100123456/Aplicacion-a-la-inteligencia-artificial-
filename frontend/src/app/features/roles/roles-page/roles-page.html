@@ -1,0 +1,42 @@
+<app-page-header heading="Roles y permisos" description="Cada rol agrupa lo que pueden hacer sus usuarios. Los cambios aplican de inmediato.">
+  @if (canManage) {
+    <a class="btn btn-principal" routerLink="/roles/nuevo">Nuevo rol</a>
+  }
+</app-page-header>
+
+@if (error()) {
+  <div class="vacio">
+    <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="load()">Reintentar</button>
+  </div>
+} @else if (roles() === null) {
+  <p class="cargando" role="status">Cargando roles…</p>
+} @else {
+  <ul class="roles entrada">
+    @for (r of roles(); track r.id; let i = $index) {
+      <li [class.inactivo]="!r.active" [style.--i]="i">
+        <div class="principal">
+          <h2><a [routerLink]="['/roles', r.id]">{{ r.name }}</a></h2>
+          @if (r.description) {
+            <p class="desc">{{ r.description }}</p>
+          }
+          <p class="marcas">
+            @if (!r.active) {
+              <span class="estado estado-inactivo">Inactivo</span>
+            } @else if (r.isSystem) {
+              <span class="estado estado-activo">Rol base</span>
+            } @else {
+              <span class="estado estado-activo">Activo</span>
+            }
+            <span class="cifras">Actualizado el {{ r.updatedAt | date: 'd MMM y' }}</span>
+          </p>
+        </div>
+        <dl class="datos">
+          <div><dd class="cifras">{{ r.permissions.length }}</dd><dt>permisos</dt></div>
+          <div><dd class="cifras">{{ r.userCount }}</dd><dt>{{ r.userCount === 1 ? 'usuario' : 'usuarios' }}</dt></div>
+        </dl>
+        <svg class="flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+      </li>
+    }
+  </ul>
+}

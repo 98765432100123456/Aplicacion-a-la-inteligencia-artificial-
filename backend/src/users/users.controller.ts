@@ -1,9 +1,9 @@
 import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthUser } from '../common/auth-user';
+import { AuthUser } from '../common/interfaces/auth-user';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
-import { PERMISSIONS } from '../roles/permissions';
+import { PERMISSIONS } from '../roles/constants/permissions';
 import { CreateUserDto, ListUsersQuery, UpdateUserDto, UserStatusDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 

@@ -61,14 +61,16 @@ Organización del código
 |---|---|
 | `src/auth/` | Inicio de sesión, estrategia JWT, recuperación y cambio de contraseña |
 | `src/users/` | Consulta, creación, edición, activación e inactivación de usuarios |
-| `src/roles/` | Roles y catálogo de permisos (`permissions.ts`) |
+| `src/roles/` | Roles y catálogo de permisos (`constants/permissions.ts`) |
 | `src/audit/` | Bitácora de acciones críticas |
 | `src/mail/` | Envío de correos y plantillas |
-| `src/common/` | Decoradores, guardas de acceso y política de contraseñas |
+| `src/common/` | Decoradores, guardas de acceso, tipos compartidos, paginación y política de contraseñas |
 | `src/config/` | Lectura de la configuración y de la conexión a la base de datos |
 | `src/database/` | Fuente de datos, migraciones y carga inicial |
 | `src/health/` | Verificación de disponibilidad |
 | `test/` | Pruebas de extremo a extremo |
+
+Dentro de cada módulo, el controlador, el servicio y el módulo de Nest están en la raíz de su carpeta; las entidades de TypeORM en `entities/`, los objetos de entrada validados en `dto/` y, cuando aplica, las estrategias en `strategies/` y las constantes en `constants/`. En `src/common/`, las guardas están en `guards/`, los decoradores en `decorators/`, los tipos compartidos en `interfaces/` y las funciones auxiliares en `utils/`.
 
 
 Seguridad

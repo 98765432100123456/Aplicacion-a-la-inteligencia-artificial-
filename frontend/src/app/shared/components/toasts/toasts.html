@@ -1,0 +1,8 @@
+<div class="pila" role="status" aria-live="polite" (mouseenter)="toasts.pause()" (mouseleave)="toasts.resume()" (focusin)="toasts.pause()" (focusout)="toasts.resume()">
+  @for (t of toasts.toasts(); track t.id) {
+    <div class="toast" [class.error]="t.kind === 'error'">
+      <span>{{ t.text }}</span>
+      <button type="button" (click)="toasts.dismiss(t.id)" aria-label="Cerrar mensaje">×</button>
+    </div>
+  }
+</div>

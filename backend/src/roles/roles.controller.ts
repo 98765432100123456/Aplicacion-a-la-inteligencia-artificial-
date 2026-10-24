@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthUser } from '../common/auth-user';
+import { AuthUser } from '../common/interfaces/auth-user';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
 import { CreateRoleDto, RoleStatusDto, UpdateRoleDto } from './dto/role.dto';
-import { PERMISSION_CATALOG, PERMISSIONS } from './permissions';
+import { PERMISSION_CATALOG, PERMISSIONS } from './constants/permissions';
 import { RolesService } from './roles.service';
 
 @ApiTags('Roles')

@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthUser } from '../auth-user';
+import { AuthUser } from '../interfaces/auth-user';
 import { PERMISSIONS_KEY } from '../decorators/require-permissions.decorator';
 
 /** Control de acceso por permisos del rol (RNF07). */

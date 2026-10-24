@@ -6,12 +6,12 @@ import { Brackets, Repository } from 'typeorm';
 import { AuditService } from '../audit/audit.service';
 import { BCRYPT_ROUNDS } from '../auth/auth.service';
 import { PasswordResetService } from '../auth/password-reset.service';
-import { AuthUser } from '../common/auth-user';
-import { Page } from '../common/pagination';
-import { BASE_ROLES } from '../roles/permissions';
-import { Role } from '../roles/role.entity';
+import { AuthUser } from '../common/interfaces/auth-user';
+import { Page } from '../common/utils/pagination';
+import { BASE_ROLES } from '../roles/constants/permissions';
+import { Role } from '../roles/entities/role.entity';
 import { CreateUserDto, ListUsersQuery, UpdateUserDto } from './dto/user.dto';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 
 export interface UserView {
   id: string;

@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import * as bcrypt from 'bcryptjs';
 import dataSource from './data-source';
-import { Role } from '../roles/role.entity';
-import { User } from '../users/user.entity';
-import { ALL_PERMISSIONS, BASE_ROLES, PERMISSIONS } from '../roles/permissions';
+import { Role } from '../roles/entities/role.entity';
+import { User } from '../users/entities/user.entity';
+import { ALL_PERMISSIONS, BASE_ROLES, PERMISSIONS } from '../roles/constants/permissions';
 
 /**
  * Crea los roles base (RF02) y el primer administrador. Es idempotente:

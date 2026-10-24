@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { ArrayUnique, IsArray, IsBoolean, IsIn, IsOptional, IsString, Length, Matches, MaxLength } from 'class-validator';
-import { ALL_PERMISSIONS } from '../permissions';
+import { ALL_PERMISSIONS } from '../constants/permissions';
 
 const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
 

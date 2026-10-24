@@ -1,0 +1,16 @@
+.columnas { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-16); align-items: start; }
+.bloque { padding-top: var(--e-5); border-top: 1px solid var(--linea-fuerte); }
+.clave { animation-delay: 80ms; }
+.perfil { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-6); }
+.avatar.grande { width: 3.5rem; height: 3.5rem; font-size: var(--texto-lg); }
+h2 { font-size: var(--texto-xl); letter-spacing: -0.04em; }
+.clave h2 { margin-bottom: var(--e-2); }
+.ficha { margin-bottom: var(--e-5); border-top-color: var(--linea); }
+.nota { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--e-6); }
+.aviso { margin-bottom: var(--e-5); }
+form { display: grid; gap: var(--e-5); justify-items: start; max-width: 28rem; }
+form .campo { width: 100%; }
+@media (max-width: 51.99em) {
+  .columnas { grid-template-columns: 1fr; gap: var(--e-12); }
+  form .btn { width: 100%; }
+}

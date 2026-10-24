@@ -5,9 +5,9 @@ import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { MailService } from '../src/mail/mail.service';
-import { ALL_PERMISSIONS, PERMISSIONS } from '../src/roles/permissions';
-import { Role } from '../src/roles/role.entity';
-import { User } from '../src/users/user.entity';
+import { ALL_PERMISSIONS, PERMISSIONS } from '../src/roles/constants/permissions';
+import { Role } from '../src/roles/entities/role.entity';
+import { User } from '../src/users/entities/user.entity';
 import { setupApp } from '../src/setup-app';
 
 const ADMIN = { email: 'admin@prueba.co', password: 'Administra2026' };

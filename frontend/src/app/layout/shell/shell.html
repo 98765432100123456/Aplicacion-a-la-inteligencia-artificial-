@@ -1,0 +1,49 @@
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<header class="barra">
+  <div class="interior">
+    <a class="marca" routerLink="/inicio" aria-label="ICA Bienestar, inicio"><app-logo /></a>
+
+    <nav #nav id="navegacion" class="enlaces" [class.abierto]="menuOpen()" aria-label="Principal">
+      <ul>
+        @for (item of items(); track item.path) {
+          <li>
+            <a [routerLink]="item.path" routerLinkActive="activo" ariaCurrentWhenActive="page">{{ item.label }}</a>
+          </li>
+        }
+      </ul>
+      <div class="sesion-movil">
+        <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+        <span class="quien"><b>{{ auth.fullName() }}</b><small>{{ auth.user()?.role?.name }}</small></span>
+        <button type="button" class="btn btn-secundario btn-sm" (click)="auth.logout()">Cerrar sesión</button>
+      </div>
+    </nav>
+
+    <div class="sesion">
+      <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+      <span class="quien"><b>{{ auth.fullName() }}</b><small>{{ auth.user()?.role?.name }}</small></span>
+      <button type="button" class="btn btn-secundario btn-sm" (click)="auth.logout()">Cerrar sesión</button>
+    </div>
+
+    <button
+      #menuButton
+      type="button"
+      class="menu"
+      (click)="menuOpen.set(!menuOpen())"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="navegacion"
+    >
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+        <path [attr.d]="menuOpen() ? 'M6 6l12 12M18 6L6 18' : 'M4 8h16M4 16h16'" />
+      </svg>
+      <span class="visually-hidden">Menú</span>
+    </button>
+  </div>
+</header>
+
+@if (menuOpen()) {
+  <div class="velo" (click)="menuOpen.set(false)" aria-hidden="true"></div>
+}
+
+<main id="contenido" tabindex="-1" [attr.inert]="menuOpen() || null">
+  <router-outlet />
+</main>

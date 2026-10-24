@@ -1,0 +1,114 @@
+:host { display: block; }
+.bloque { margin-bottom: var(--e-16); }
+.encabezado { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-10); align-items: end; margin-bottom: var(--e-8); }
+h2 { font-size: var(--texto-2xl); letter-spacing: -0.045em; line-height: 1.02; }
+.encabezado p { color: var(--tinta-suave); max-width: 32rem; }
+h3 { font-size: var(--texto-xl); letter-spacing: -0.035em; line-height: 1.1; }
+h4 { font-size: var(--texto-sm); font-weight: 800; margin: var(--e-6) 0 var(--e-3); }
+
+/* Balanza de pesos: el ancho de cada tramo es su peso real en la nota */
+.balanza { display: flex; gap: 3px; }
+.tramo {
+  position: relative; flex-basis: 0; min-width: 0; min-height: 6.5rem; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;
+  padding: var(--e-4); border: 0; border-radius: 6px; cursor: pointer; text-align: left;
+  background: var(--acento-suave); color: var(--tinta); font: inherit;
+  transition: background-color var(--dur-rapida) ease, color var(--dur-rapida) ease, transform var(--dur-presion) var(--curva);
+}
+.tramo:first-child { border-radius: var(--radio-panel) 6px 6px var(--radio-panel); }
+.tramo:last-child { border-radius: 6px var(--radio-panel) var(--radio-panel) 6px; }
+.tramo:active { transform: scale(0.98); }
+.tramo[aria-selected='true'] { background: var(--tinta); color: var(--fondo); box-shadow: inset 0 -4px 0 var(--accion); }
+@media (hover: hover) and (pointer: fine) {
+  .tramo[aria-selected='false']:hover { background: color-mix(in srgb, var(--acento) 22%, var(--superficie)); }
+}
+.peso { font-size: var(--texto-2xl); font-weight: 800; letter-spacing: -0.05em; line-height: 1; white-space: nowrap; }
+.nombre-corto { font-size: var(--texto-sm); font-weight: 700; overflow-wrap: anywhere; }
+
+.detalle {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-10);
+  margin-top: var(--e-6); padding-top: var(--e-6); border-top: 1px solid var(--linea-fuerte);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .detalle { animation: entrar 320ms var(--curva) both; }
+}
+.pesa { margin-top: var(--e-2); color: var(--tinta-suave); }
+.pesa b { color: var(--tinta); }
+.revisa { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--e-2); color: var(--tinta-suave); }
+.cuidados { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea); }
+.cuidados li { display: grid; grid-template-columns: 1.25rem 1fr; gap: var(--e-3); padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); }
+.cuidados svg { width: 1.25rem; height: 1.25rem; margin-top: 0.15rem; fill: none; stroke: var(--acento); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.alerta { margin-top: var(--e-4); color: var(--tinta-suave); font-size: var(--texto-sm); }
+.alerta .estado { margin-right: var(--e-2); }
+
+/* Regla de niveles */
+.regla { display: flex; gap: 3px; height: 0.875rem; }
+.franja { flex-basis: 0; border-radius: 3px; }
+.franja:first-child { border-radius: 999px 3px 3px 999px; }
+.franja:last-child { border-radius: 3px 999px 999px 3px; }
+.bajo { background: var(--alerta); }
+.medio { background: var(--maiz); }
+.alto { background: color-mix(in srgb, var(--accion) 55%, var(--superficie)); }
+.excelente { background: var(--accion); }
+.marcas { display: flex; justify-content: space-between; margin-top: var(--e-2); font-size: var(--texto-xs); color: var(--tinta-suave); }
+.niveles { display: grid; grid-template-columns: repeat(4, 1fr); margin: var(--e-6) 0 0; border-top: 1px solid var(--linea-fuerte); }
+.niveles div { padding: var(--e-4) var(--e-4) var(--e-4) 0; border-bottom: 1px solid var(--linea); }
+.niveles div + div { padding-left: var(--e-4); border-left: 1px solid var(--linea); }
+.niveles dt { display: flex; align-items: center; gap: var(--e-2); font-weight: 800; font-size: var(--texto-lg); letter-spacing: -0.02em; }
+.niveles dt i { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex: none; }
+.niveles dd { margin: var(--e-1) 0 0; color: var(--tinta-suave); font-size: var(--texto-sm); }
+.urgente { margin-top: var(--e-6); }
+
+/* Calculadora de muestra */
+.calculadora { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-10); align-items: start; }
+.inventario { margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e-4); }
+.inventario legend { padding: 0; margin-bottom: var(--e-3); font-weight: 800; font-size: var(--texto-sm); }
+.campo { display: grid; gap: var(--e-2); }
+.campo label { font-weight: 700; font-size: var(--texto-sm); }
+.campo input { width: 100%; }
+.nota { grid-column: 1 / -1; margin-top: var(--e-2); font-size: var(--texto-sm); color: var(--tinta-suave); }
+.resultado { border-top: 1px solid var(--linea-fuerte); }
+.fila { display: flex; justify-content: space-between; align-items: baseline; gap: var(--e-4); padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); }
+.fila span { color: var(--tinta-suave); font-weight: 600; }
+.fila b { font-size: var(--texto-lg); letter-spacing: -0.02em; text-transform: capitalize; }
+.metodologia { padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); font-size: var(--texto-sm); color: var(--tinta-suave); }
+.muestra { display: flex; align-items: baseline; gap: var(--e-3); padding-top: var(--e-6); }
+.muestra-valor { font-size: var(--texto-3xl); font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--acento); }
+.muestra-rotulo { font-weight: 700; color: var(--tinta-suave); }
+.reparto { list-style: none; margin: var(--e-4) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-6); color: var(--tinta-suave); }
+.reparto b { color: var(--tinta); font-size: var(--texto-lg); }
+.sin-muestra { padding-top: var(--e-4); color: var(--tinta-suave); }
+
+.tabla-muestra { width: 100%; margin-top: var(--e-8); border-collapse: collapse; font-size: var(--texto-sm); }
+.tabla-muestra caption { text-align: left; font-weight: 800; margin-bottom: var(--e-3); }
+.tabla-muestra th { text-align: left; padding: var(--e-2) var(--e-4) var(--e-2) 0; font-size: var(--texto-xs); color: var(--tinta-suave); border-top: 1px solid var(--linea-fuerte); border-bottom: 1px solid var(--linea); }
+.tabla-muestra td { padding: var(--e-3) var(--e-4) var(--e-3) 0; border-bottom: 1px solid var(--linea); }
+.tabla-muestra tr.actual td { font-weight: 800; color: var(--acento); }
+.tabla-muestra tr.actual td:first-child { box-shadow: inset 3px 0 0 var(--accion); padding-left: var(--e-3); }
+
+/* Tipos de indicador */
+.tipos { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid var(--linea-fuerte); }
+.tipos div { padding: var(--e-5) var(--e-6) var(--e-5) 0; border-bottom: 1px solid var(--linea); }
+.tipos div + div { padding-left: var(--e-6); border-left: 1px solid var(--linea); }
+.tipos dt { font-weight: 800; font-size: var(--texto-md); }
+.tipos dd { margin: var(--e-2) 0 0; color: var(--tinta-suave); font-size: var(--texto-sm); }
+
+.fuente { max-width: 48rem; margin: 0 0 var(--e-16); padding-top: var(--e-6); border-top: 1px solid var(--linea); font-size: var(--texto-xs); color: var(--tinta-suave); line-height: 1.55; }
+.fuente cite { font-style: italic; }
+
+@media (max-width: 56em) {
+  .encabezado, .detalle, .calculadora { grid-template-columns: 1fr; gap: var(--e-4); }
+  .encabezado { margin-bottom: var(--e-6); }
+  .detalle { gap: 0; }
+  .calculadora { gap: var(--e-8); }
+}
+@media (max-width: 47.49em) {
+  .bloque { margin-bottom: var(--e-12); }
+  .tramo { min-height: 4rem; padding: var(--e-3) var(--e-2); justify-content: center; align-items: center; }
+  .peso { font-size: var(--texto-md); letter-spacing: -0.03em; }
+  /* Solo se oculta a la vista: el lector de pantalla sigue leyendo el nombre */
+  .nombre-corto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .niveles { grid-template-columns: 1fr 1fr; }
+  .niveles div:nth-child(3) { padding-left: 0; border-left: 0; }
+  .tipos { grid-template-columns: 1fr; }
+  .tipos div, .tipos div + div { padding: var(--e-4) 0; border-left: 0; }
+}

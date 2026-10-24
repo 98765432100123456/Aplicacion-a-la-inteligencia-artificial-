@@ -1,0 +1,52 @@
+<section class="saludo entrada">
+  <h1 class="titular">Hola, {{ auth.user()?.firstName }}.</h1>
+  <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
+</section>
+
+@if (noPermission) {
+  <p class="aviso aviso-advertencia" role="status">Su rol no tiene acceso a la página que intentó abrir.</p>
+}
+
+@if (canManageUsers) {
+  <section class="libro entrada" aria-labelledby="resumen-titulo">
+    <h2 id="resumen-titulo" class="visually-hidden">Resumen de seguridad</h2>
+    @if (resumen(); as r) {
+      <a class="dato" routerLink="/usuarios" [queryParams]="{ estado: 'true' }">
+        <span class="valor cifras">{{ r.activos }}</span>
+        <span class="rotulo">Usuarios activos</span>
+      </a>
+      <a class="dato" routerLink="/usuarios" [queryParams]="{ estado: 'false' }">
+        <span class="valor cifras">{{ r.inactivos }}</span>
+        <span class="rotulo">Usuarios inactivos</span>
+      </a>
+      @if (r.roles !== null) {
+        <a class="dato" [routerLink]="canSeeRoles ? '/roles' : null">
+          <span class="valor cifras">{{ r.roles }}</span>
+          <span class="rotulo">Roles configurados</span>
+        </a>
+      }
+    } @else {
+      <p class="cargando" role="status">Cargando resumen…</p>
+    }
+  </section>
+}
+
+<app-guia-bienestar />
+
+<section class="ruta" aria-labelledby="ruta-titulo">
+  <div class="ruta-texto">
+    <h2 id="ruta-titulo">Lo que viene.</h2>
+    <p>La plataforma crece por módulos. Este sprint entrega la seguridad; los siguientes llevan la evaluación al campo.</p>
+  </div>
+  <ol class="ruta-lista">
+    @for (m of ruta; track m.modulo; let i = $index) {
+      <li [style.--i]="i">
+        <div>
+          <b>{{ m.modulo }}</b>
+          <span>{{ m.detalle }}</span>
+        </div>
+        <span class="estado" [class.estado-activo]="m.listo" [class.estado-inactivo]="!m.listo">{{ m.cuando }}</span>
+      </li>
+    }
+  </ol>
+</section>

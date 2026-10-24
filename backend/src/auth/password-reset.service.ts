@@ -5,8 +5,8 @@ import { createHash, randomBytes } from 'crypto';
 import { IsNull, Repository } from 'typeorm';
 import { AppConfig } from '../config/configuration';
 import { MailService } from '../mail/mail.service';
-import { User } from '../users/user.entity';
-import { PasswordResetToken } from './password-reset-token.entity';
+import { User } from '../users/entities/user.entity';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
 
 export const INVITATION_TTL_HOURS = 72;
 

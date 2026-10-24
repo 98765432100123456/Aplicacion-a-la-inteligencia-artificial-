@@ -1,0 +1,5 @@
+.logo { display: inline-flex; align-items: center; gap: 0.625rem; font-family: var(--fuente-logo); font-weight: 700; font-size: 1rem; letter-spacing: -0.02em; color: var(--tinta); white-space: nowrap; }
+.logo.claro { color: #fff; }
+.sello { width: 1.75rem; height: 1.75rem; flex: none; }
+.sello rect { fill: var(--accion); }
+.sello path { fill: none; stroke: var(--sobre-accion); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
