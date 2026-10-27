@@ -1,4 +1,5 @@
-# Entorno completo: MariaDB + API + web. Sirve para desarrollo y como base del servidor.
+# Entorno completo para desarrollo local: MariaDB + API + web, sin HTTPS.
+# El servidor de producción usa despliegue/docker-compose.servidor.yml (docs/DESPLIEGUE.md).
 #   docker compose up --build
 #   docker compose exec api node dist/database/seed.js
 # Web: http://localhost:8080   API: http://localhost:3000/api/health
@@ -36,6 +37,11 @@ services:
       FRONTEND_URL: http://localhost:8080
       SEED_ADMIN_EMAIL: admin@ica-bienestar.local
       SEED_ADMIN_PASSWORD: CambiarEsta.2026
+      # Opcionales: se toman del entorno de quien ejecuta docker compose.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY:-}
+      FIREBASE_AUTH_DOMAIN: ${FIREBASE_AUTH_DOMAIN:-}
     ports:
       - '3000:3000'
     depends_on:

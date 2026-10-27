@@ -9,7 +9,7 @@ export class FarmSpecies {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Farm, (f) => f.species, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
+  @ManyToOne(() => Farm, (f) => f.species, { nullable: false, onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   @JoinColumn({ name: 'farm_id' })
   farm: Farm;
 

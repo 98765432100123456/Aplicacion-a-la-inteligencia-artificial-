@@ -33,7 +33,7 @@ La interfaz invoca siempre la ruta relativa `/api`, de modo que la interfaz y el
 
 - **Desarrollo:** el archivo `proxy.conf.json` redirige `/api` hacia `http://localhost:3000`.
 - **Contenedores:** el servidor nginx, configurado en `nginx.conf`, redirige `/api/` hacia el contenedor del servicio.
-- **Producción:** Firebase Hosting, configurado en `firebase.json`, redirige `/api/**` hacia el servicio en Cloud Run.
+- **Producción:** nginx, configurado en `nginx.conf`, sirve la interfaz y reenvía `/api` al servicio de aplicación (ver `docs/DESPLIEGUE.md`).
 
 En el modo demostración, el interceptor `core/demo/demo-api.interceptor.ts` responde las peticiones a `/api` dentro del navegador con las mismas reglas y mensajes del servicio real, y guarda los datos en el almacenamiento local del navegador. Los usuarios y roles de prueba están en `core/demo/datos-demo.ts`; las rutas simuladas, en `core/demo/rutas/`.
 

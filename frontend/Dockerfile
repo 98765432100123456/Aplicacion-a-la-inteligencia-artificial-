@@ -1,5 +1,5 @@
-# Imagen opcional del frontend (nginx). En Google Cloud se recomienda Firebase Hosting;
-# esta imagen sirve para docker compose y para desplegar en Cloud Run si se prefiere.
+# Imagen del frontend: nginx sirve la aplicación y reenvía /api al servicio de aplicación
+# (ver docs/DESPLIEGUE.md).
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./

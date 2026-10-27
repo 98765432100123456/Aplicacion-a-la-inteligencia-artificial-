@@ -4,7 +4,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { DataSource } from 'typeorm';
 import { Public } from '../common/decorators/public.decorator';
 
-/** Usado por Cloud Run y docker compose para saber si la API y la base responden. */
+/** Usado por docker compose y por las pruebas de despliegue para saber si la API y la base responden. */
 @ApiTags('Salud')
 @Controller('health')
 export class HealthController {

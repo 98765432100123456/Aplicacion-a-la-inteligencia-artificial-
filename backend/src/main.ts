@@ -7,8 +7,9 @@ import { setupApp } from './setup-app';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // Cloud Run y el balanceador entregan la IP real en X-Forwarded-For.
-  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+  // Número de proxies delante de la API (Caddy y nginx en el servidor): así la IP real
+  // del cliente se toma de X-Forwarded-For y el límite de intentos es por persona.
+  app.getHttpAdapter().getInstance().set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 1));
   setupApp(app);
 
   if (process.env.NODE_ENV !== 'production') {

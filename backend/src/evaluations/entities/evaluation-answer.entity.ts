@@ -8,7 +8,7 @@ export class EvaluationAnswer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Evaluation, (e) => e.answers, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
+  @ManyToOne(() => Evaluation, (e) => e.answers, { nullable: false, onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   @JoinColumn({ name: 'evaluation_id' })
   evaluation: Evaluation;
 

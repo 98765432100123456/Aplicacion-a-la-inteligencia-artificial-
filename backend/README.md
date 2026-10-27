@@ -1,13 +1,13 @@
 Servicio de aplicación (API)
 ============================
 
-API REST de ICA Bienestar Animal, construida con NestJS 11, TypeORM y PostgreSQL. Atiende la autenticación, la recuperación de contraseña, la gestión de usuarios y roles y el registro de auditoría. Todas las rutas se publican bajo el prefijo `/api`.
+API REST de ICA Bienestar Animal, construida con NestJS 11, TypeORM y MariaDB. Atiende la autenticación (con correo y contraseña o con Firebase), el registro de propietarios, la recuperación de contraseña, la gestión de usuarios y roles, los predios, las evaluaciones, las recomendaciones con IA, los informes PDF y el registro de auditoría. Todas las rutas se publican bajo el prefijo `/api`.
 
 
 Requisitos
 ----------
 
-Node.js 22 y PostgreSQL 16, local o administrado en Cloud SQL.
+Node.js 22 y MariaDB 10.11 o posterior.
 
 
 Configuración
@@ -20,9 +20,9 @@ La configuración se lee de variables de entorno. El archivo `.env.example` cont
 | `NODE_ENV` | Ambiente de ejecución | `development` |
 | `PORT` | Puerto del servicio | `3000` |
 | `CORS_ORIGINS` | Orígenes permitidos, separados por coma | `http://localhost:4200` |
-| `DB_HOST`, `DB_PORT` | Servidor de PostgreSQL | `localhost`, `5432` |
+| `DB_HOST`, `DB_PORT` | Servidor de MariaDB | `127.0.0.1`, `3306` |
 | `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Credenciales y base de datos | `ica`, `ica_dev`, `ica_bienestar` |
-| `DB_SOCKET_PATH` | Socket del conector de Cloud SQL. Si se define, reemplaza a `DB_HOST` | vacío |
+| `DB_SOCKET_PATH` | Socket Unix de MariaDB en la misma máquina, por ejemplo `/run/mysqld/mysqld.sock`. Si se define, reemplaza a `DB_HOST` | vacío |
 | `DB_SSL` | Conexión cifrada con la base de datos | `false` |
 | `DB_MIGRATIONS_RUN` | Aplica las migraciones pendientes al iniciar | sin definir |
 | `JWT_SECRET` | Clave de firma de los tokens. En producción debe tener al menos 32 caracteres | valor de ejemplo |
@@ -32,6 +32,11 @@ La configuración se lee de variables de entorno. El archivo `.env.example` cont
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` | Servidor de correo. Sin `SMTP_HOST`, los correos se escriben en el registro del servicio. En producción es obligatorio | vacío |
 | `MAIL_FROM` | Remitente de los correos | `ICA Bienestar Animal <no-responder@ica-bienestar.local>` |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | Cuenta de administrador inicial que crea la carga de datos | `admin@ica-bienestar.local`, `CambiarEsta.2026` |
+| `TRUST_PROXY_HOPS` | Número de proxies delante del servicio, para tomar la IP real del cliente | `1` |
+| `ANTHROPIC_API_KEY` | Clave de la API de Claude. Sin ella, las recomendaciones se generan con reglas | vacío |
+| `AI_MODEL`, `AI_TIMEOUT_MS` | Modelo de IA y tiempo máximo de espera | `claude-opus-5-5`, `90000` |
+| `FIREBASE_PROJECT_ID`, `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN` | Proyecto de Firebase Authentication. Sin ellos, solo se ingresa con correo y contraseña | vacío |
+| `FIREBASE_PROVIDERS` | Proveedores habilitados, separados por coma | `google,facebook,microsoft` |
 | `THROTTLE_DISABLED` | Desactiva el límite de peticiones. Solo para pruebas locales; el servicio no inicia con este valor en producción | `false` |
 
 
@@ -42,7 +47,7 @@ Comandos
 |---|---|
 | `npm install` | Instala las dependencias |
 | `npm run migration:run` | Crea o actualiza las tablas de la base de datos |
-| `npm run seed` | Crea los roles base y el administrador inicial. Puede ejecutarse varias veces sin duplicar información |
+| `npm run seed` | Crea los roles base, las especies y el administrador inicial. Puede ejecutarse varias veces sin duplicar información |
 | `npm run start:dev` | Inicia el servicio en modo desarrollo, con recarga automática |
 | `npm run build` | Compila el servicio en `dist/` |
 | `npm run start:prod` | Inicia el servicio compilado |
@@ -59,9 +64,13 @@ Organización del código
 
 | Ruta | Responsabilidad |
 |---|---|
-| `src/auth/` | Inicio de sesión, estrategia JWT, recuperación y cambio de contraseña |
+| `src/auth/` | Inicio de sesión, estrategia JWT, registro de propietarios, ingreso con Firebase, recuperación y cambio de contraseña |
 | `src/users/` | Consulta, creación, edición, activación e inactivación de usuarios |
 | `src/roles/` | Roles y catálogo de permisos (`constants/permissions.ts`) |
+| `src/farms/` | Especies, predios, inventario y control de acceso por predio (`farm-access.ts`) |
+| `src/evaluations/` | Evaluaciones, respuestas, puntaje, recomendaciones, informes PDF e historial |
+| `src/ai/` | Recomendaciones con la API de Claude, con salida estructurada y respaldo por reglas |
+| `src/compartido/` | Copia de la carpeta `compartido/` de la raíz: norma, lista de chequeo, cálculo e informes. No se edita aquí |
 | `src/audit/` | Bitácora de acciones críticas |
 | `src/mail/` | Envío de correos y plantillas |
 | `src/common/` | Decoradores, guardas de acceso, tipos compartidos, paginación y política de contraseñas |
@@ -79,5 +88,7 @@ Seguridad
 Las contraseñas se almacenan cifradas con bcrypt y deben tener entre 10 y 72 caracteres, con al menos una letra y un número. Una cuenta se bloquea durante 15 minutos tras cinco intentos fallidos. El inicio de sesión y la solicitud de recuperación tienen límites de peticiones por minuto.
 
 Los enlaces de recuperación son de un solo uso y en la base de datos solo se guarda su huella SHA-256. En cada petición se vuelve a consultar el usuario autenticado, de modo que una inactivación, un cambio de rol o un cambio de contraseña surten efecto de inmediato. Las acciones críticas quedan registradas en la tabla `audit_logs`.
+
+La autenticación y la autorización están separadas. Firebase, cuando está configurado, solo confirma la identidad: el servicio valida el token con las llaves públicas de Google, el emisor y la audiencia del proyecto, y exige el correo verificado. Los permisos salen siempre del rol guardado en MariaDB. Un propietario solo ve los predios vinculados a su cuenta o registrados con su correo, y de ellos solo las evaluaciones finalizadas.
 
 El detalle de la arquitectura, el modelo de datos y la lista de servicios se encuentra en [docs/ARQUITECTURA.md](../docs/ARQUITECTURA.md).

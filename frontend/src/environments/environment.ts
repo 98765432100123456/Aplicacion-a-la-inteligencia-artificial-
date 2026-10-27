@@ -1,6 +1,6 @@
 /**
  * Producción: la API se sirve en el mismo dominio bajo /api
- * (Firebase Hosting reescribe /api/** hacia el servicio de Cloud Run).
+ * (en el servidor, nginx reenvía /api al servicio de aplicación).
  */
 export const environment = {
   production: true,
