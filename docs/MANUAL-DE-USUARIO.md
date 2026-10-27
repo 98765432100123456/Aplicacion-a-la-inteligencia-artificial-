@@ -24,27 +24,27 @@ Ingreso
 
 En la pantalla **Ingresar** se escriben el correo electrónico registrado y la contraseña, y se selecciona **Ingresar**. El botón **Mostrar** permite verificar la contraseña escrita antes de enviarla.
 
-Cuando los datos no son correctos, el sistema muestra el mensaje *Correo o contraseña incorrectos.* Después de cinco intentos fallidos consecutivos, la cuenta se bloquea durante 15 minutos; durante ese tiempo es posible recuperar el acceso mediante la recuperación de contraseña.
+Cuando los datos no son correctos, el sistema muestra el mensaje *Correo o contraseña incorrectos.* Después de varios intentos fallidos seguidos, Firebase bloquea temporalmente los intentos desde ese equipo; durante ese tiempo es posible recuperar el acceso mediante la recuperación de contraseña.
 
-**Ingreso con Google, Facebook o Microsoft.** Cuando la plataforma tiene habilitado este servicio, debajo del formulario aparecen los botones **Google**, **Facebook** y **Microsoft**. Al seleccionar uno se abre una ventana del proveedor para confirmar la identidad; el correo de esa cuenta debe estar verificado. Si la persona no tenía cuenta, se crea con el rol Propietario. El proveedor solo confirma quién es la persona: lo que puede ver y hacer lo define siempre su rol en la plataforma.
+**Ingreso con Google, Facebook o Microsoft.** Debajo del formulario aparecen los botones **Google**, **Facebook** y **Microsoft**. Al seleccionar uno se abre una ventana del proveedor para confirmar la identidad; el correo de esa cuenta debe estar verificado. Si la persona no tenía cuenta, se crea con el rol Propietario. El proveedor solo confirma quién es la persona: lo que puede ver y hacer lo define siempre su rol en la plataforma.
 
-La sesión se cierra al seleccionar **Cerrar sesión** en el menú, al cerrar el navegador o cuando transcurren ocho horas desde el ingreso. También se cierra de inmediato si el administrador inactiva la cuenta o cambia su rol.
+La sesión se cierra al seleccionar **Cerrar sesión** en el menú o al cerrar el navegador. Si el administrador inactiva la cuenta, la sesión se cierra de inmediato; si cambia el rol o sus permisos, el menú se actualiza sin necesidad de volver a ingresar.
 
 
 Registro de propietarios
 ------------------------
 
-Un propietario puede crear su propia cuenta desde la pantalla de ingreso, con el enlace **Cree su cuenta** de la pregunta *¿Es propietario de una finca?* Se escriben los nombres, los apellidos y el correo electrónico, que debe ser el mismo que el propietario dio al evaluador. El sistema envía un enlace, válido durante 72 horas, para definir la contraseña; así se confirma que el correo le pertenece.
+Un propietario puede crear su propia cuenta desde la pantalla de ingreso, con el enlace **Cree su cuenta** de la pregunta *¿Es propietario de una finca?* Se escriben los nombres, los apellidos, el correo electrónico, que debe ser el mismo que el propietario dio al evaluador, y una contraseña. El sistema envía un correo para confirmar la dirección; hasta que el propietario abre ese enlace, no puede ver sus predios. Después de confirmarlo, ingresa con su correo y su contraseña.
 
-Los predios aparecen en la cuenta cuando el evaluador registra ese correo en los datos del predio. Si el propietario ingresa y no ve su finca, la pantalla le indica qué correo debe darle al evaluador.
+Los predios aparecen en la cuenta cuando el evaluador registra ese correo en los datos del predio. Si el propietario ingresa y no ve su finca, la pantalla le indica si falta confirmar el correo o qué correo debe darle al evaluador.
 
 
 Recuperación de contraseña
 --------------------------
 
-Desde la pantalla de ingreso se selecciona **¿Olvidó su contraseña?**, se escribe el correo registrado y se selecciona **Enviar enlace**. Si el correo corresponde a una cuenta activa, el sistema envía un mensaje con un enlace para crear una nueva contraseña. Por seguridad, la respuesta en pantalla es la misma exista o no el correo.
+Desde la pantalla de ingreso se selecciona **¿Olvidó su contraseña?**, se escribe el correo registrado y se selecciona **Enviar enlace**. Si el correo corresponde a una cuenta, Firebase envía un mensaje con un enlace para crear una nueva contraseña. Por seguridad, la respuesta en pantalla es la misma exista o no el correo.
 
-El enlace es válido durante 30 minutos y solo puede usarse una vez. Al abrirlo, se escribe la nueva contraseña dos veces y se selecciona **Guardar contraseña**. La contraseña debe tener entre 10 y 72 caracteres e incluir al menos una letra y un número. Si el enlace venció o ya fue usado, la pantalla lo indica y ofrece solicitar uno nuevo.
+El enlace solo puede usarse una vez y vence al cabo de un tiempo. Al abrirlo, se escribe la nueva contraseña y se guarda. La contraseña debe tener entre 10 y 72 caracteres e incluir al menos una letra y un número. Si el enlace venció o ya fue usado, se solicita uno nuevo.
 
 
 Inicio
@@ -69,7 +69,7 @@ La sección **Predios** lista las fincas registradas, con su municipio, el total
 
 Con el permiso para gestionar predios se selecciona **Nuevo predio**. El formulario se organiza en cuatro bloques:
 
-- **Predio.** Nombre, departamento y municipio, y de forma opcional la vereda, la dirección o indicaciones para llegar, las coordenadas, el área en hectáreas y el sistema productivo.
+- **Predio.** Nombre, departamento y municipio, y de forma opcional la vereda, la dirección o indicaciones para llegar, las coordenadas, el área en hectáreas y el sistema productivo (lechería, carne o doble propósito). El sistema productivo define qué criterios se evalúan: por ejemplo, la castración no aplica en lechería y la mastitis no aplica en carne.
 - **Propietario.** Nombre y teléfono de contacto, y de forma opcional el documento y el correo. Con ese correo el propietario consulta el predio en la plataforma.
 - **Especies e inventario.** Para cada especie se registran las crías, los jóvenes y los adultos. Mientras se escriben, el formulario muestra el tipo de productor (pequeño, mediano o grande) y la muestra mínima de animales que exige la norma del ICA. Con **Agregar otra especie** se registran varias.
 - **Información adicional.** Datos útiles para la visita, como accesos, instalaciones u horarios de ordeño.
@@ -89,7 +89,7 @@ Al seleccionar un predio se abre su ficha, que reúne en un solo lugar:
 Evaluación
 ----------
 
-La evaluación presenta la fecha de la visita, el inventario, el tipo de productor y la muestra mínima, y debajo los indicadores de la lista de chequeo agrupados por libertad. Los indicadores críticos se marcan como **Crítico**.
+La evaluación presenta la fecha de la visita, el inventario, el tipo de productor y la muestra mínima, y debajo los 23 criterios de la norma del ICA con sus indicadores, agrupados por libertad. Solo aparecen los criterios que aplican al sistema productivo y al tamaño del predio: los registros documentales y el uso de medicamentos se exigen a medianos y grandes productores. Los indicadores críticos se marcan como **Crítico**.
 
 Cada indicador se responde con **Cumple**, **Cumple en parte**, **No cumple** o **No aplica**; algunos solo admiten cumple o no cumple. Con **Agregar observación** se registra lo observado, por ejemplo cuántos animales presentan una condición. Al final hay un espacio para la observación general de la visita.
 
@@ -140,11 +140,11 @@ El campo **Buscar** localiza usuarios por nombre, apellido, correo o número de 
 
 **Creación de un usuario**
 
-Se selecciona **Nuevo usuario** y se completan los nombres, los apellidos, el correo electrónico y el rol; el documento y el teléfono son opcionales. Al seleccionar **Crear usuario**, el sistema envía a la persona un correo con un enlace válido durante 72 horas para que defina su propia contraseña. El administrador no conoce ni transmite la contraseña en ningún momento. No es posible registrar dos usuarios con el mismo correo.
+Se selecciona **Nuevo usuario** y se completan los nombres, los apellidos, el correo electrónico y el rol; el documento y el teléfono son opcionales. Al seleccionar **Crear usuario**, el sistema crea la cuenta en Firebase y envía a la persona un correo con un enlace para que defina su propia contraseña. El administrador no conoce ni transmite la contraseña en ningún momento. No es posible registrar dos usuarios con el mismo correo.
 
 **Edición de un usuario**
 
-La opción **Editar** de cada fila permite modificar los datos y el rol. Cuando el rol de una persona cambia, su sesión abierta se cierra para que ingrese con los nuevos permisos. Desde la misma ventana, **Enviar enlace de acceso** remite a la persona un enlace para crear una nueva contraseña, útil cuando no recibió la invitación o la olvidó.
+La opción **Editar** de cada fila permite modificar los datos y el rol. El correo no se puede cambiar, porque identifica la cuenta; si está errado, se crea un usuario nuevo y se inactiva el anterior. Cuando el rol de una persona cambia, sus permisos se actualizan de inmediato, aunque tenga la sesión abierta. Desde la misma ventana, **Enviar enlace de acceso** remite a la persona un enlace para crear una nueva contraseña, útil cuando no recibió la invitación o la olvidó.
 
 Si se intenta cerrar la ventana con datos escritos y sin guardar, el sistema solicita confirmación con las opciones **Seguir editando** y **Descartar cambios**.
 
@@ -158,7 +158,6 @@ La opción **Inactivar** impide que la persona ingrese y cierra sus sesiones abi
 |---|---|
 | Activo | La persona puede ingresar |
 | Inactivo | El acceso está suspendido por un administrador |
-| Bloqueado | La cuenta superó el número de intentos fallidos y está bloqueada durante 15 minutos |
 
 
 Gestión de roles y permisos
@@ -184,7 +183,7 @@ Cuenta
 
 La sección **Cuenta** muestra el nombre, el correo y el rol de la persona. Para corregir esos datos debe solicitarse el cambio a un administrador.
 
-Desde esta sección se cambia la contraseña: se escribe la contraseña actual, la nueva y su confirmación, y se selecciona **Cambiar contraseña**. Al hacerlo, se cierran las sesiones abiertas en otros dispositivos.
+Desde esta sección se cambia la contraseña: se escribe la contraseña actual, la nueva y su confirmación, y se selecciona **Cambiar contraseña**. Quien ingresa con Google, Facebook o Microsoft cambia su contraseña en ese servicio.
 
 
 Uso en teléfono móvil y accesibilidad

@@ -74,6 +74,16 @@ test.describe('Teclado y modales', () => {
   test('el diálogo destructivo enfoca Cancelar por defecto', async ({ page }) => {
     await login(page);
     await page.goto('/usuarios');
+    // El administrador no puede inactivarse a sí mismo: se crea antes otro usuario.
+    const correo = `foco.${Date.now()}@ica-bienestar.local`;
+    await page.getByRole('button', { name: 'Nuevo usuario' }).click();
+    const nuevo = page.getByRole('dialog', { name: 'Nuevo usuario' });
+    await nuevo.getByLabel('Nombres').fill('Foco');
+    await nuevo.getByLabel('Apellidos').fill('Prueba');
+    await nuevo.getByLabel('Correo electrónico').fill(correo);
+    await nuevo.getByLabel('Rol').selectOption({ label: 'Consultor externo' });
+    await nuevo.getByRole('button', { name: 'Crear usuario' }).click();
+    await expect(nuevo).toBeHidden();
     const row = page.locator('tbody tr', { has: page.getByRole('button', { name: /Inactivar/ }) }).first();
     await row.getByRole('button', { name: /Inactivar/ }).click();
     const confirm = page.getByRole('dialog', { name: 'Inactivar usuario' });

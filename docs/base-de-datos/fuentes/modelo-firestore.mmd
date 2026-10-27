@@ -1,0 +1,99 @@
+erDiagram
+    roles ||--o{ usuarios : "rol"
+    usuarios ||--o{ predios : "creadoPor"
+    usuarios ||--o{ evaluaciones : "evaluadorId"
+    usuarios ||--o{ auditoria : "actorId"
+    especies ||--o{ predios : "especies[].especieId"
+    especies ||--o{ evaluaciones : "especieId"
+    predios ||--o{ evaluaciones : "predioId"
+    evaluaciones ||--o{ recomendaciones : "evaluacionId"
+    libertades ||--o{ criterios : "libertad"
+
+    roles {
+        string id "administrador, evaluador, consultor, propietario"
+        string nombre
+        string descripcion
+        array permisos
+        bool sistema
+        bool activo
+    }
+    usuarios {
+        string id "uid de Firebase Authentication"
+        string nombres
+        string apellidos
+        string correo
+        string documento
+        string telefono
+        string rol
+        bool activo
+        timestamp ultimoIngreso
+    }
+    especies {
+        string id "bovino, bufalino"
+        string nombre
+        bool activa
+    }
+    libertades {
+        string id "hambre_sed, dolor_enfermedad, molestias, temor_comportamiento"
+        string nombre
+        string codigo
+        number peso
+    }
+    niveles {
+        string id "bajo, medio, alto, excelente"
+        string nombre
+        number min
+        number max
+    }
+    criterios {
+        string id "suministro_agua, castracion..."
+        string nombre
+        string libertad
+        array sistemas
+        array tamanos
+        array indicadores
+        number orden
+        string version
+    }
+    predios {
+        string nombre
+        map propietario
+        string propietarioCorreo
+        string departamento
+        string municipio
+        string sistema
+        array especies
+        number totalAnimales
+        string creadoPor
+    }
+    evaluaciones {
+        string predioId
+        string propietarioCorreo
+        string especieId
+        string evaluadorId
+        string estado "borrador, finalizada"
+        string versionLista
+        string fechaVisita
+        map inventario
+        map respuestas
+        number puntaje
+        string nivel
+        map resultado
+        map recomendacion
+    }
+    recomendaciones {
+        string evaluacionId
+        string predioId
+        string propietarioCorreo
+        string origen "IA, REGLAS"
+        string resumen
+        array recomendaciones
+    }
+    auditoria {
+        string actorId
+        string accion
+        string entidad
+        string entidadId
+        map detalle
+        timestamp creadoEn
+    }

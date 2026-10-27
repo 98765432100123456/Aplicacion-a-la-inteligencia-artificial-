@@ -1,26 +1,21 @@
 sequenceDiagram
-    actor A as Administrador
+    actor Ad as Administrador
     participant W as Angular
-    participant G as Guardas JWT y permisos
-    participant S as UsersService
-    participant D as MariaDB
-    participant P as PasswordResetService
+    participant A2 as Authentication (instancia aparte)
+    participant F as Firestore
+    participant A as Firebase Authentication
     participant M as Correo
-    A->>W: completa el formulario Nuevo usuario
-    W->>W: valida campos obligatorios y formato
-    W->>G: POST /api/users con token Bearer
-    G->>G: verifica firma, vigencia y permiso usuarios.gestionar
-    G->>S: create(dto, actor)
-    S->>D: ¿existe el correo?
-    alt correo repetido
-        S-->>W: 409 "Ya existe un usuario con ese correo."
-    else correo libre
-        S->>D: ¿rol activo?
-        S->>D: INSERT users con contraseña aleatoria inutilizable
-        S->>P: sendInvitation(usuario, rol)
-        P->>D: guarda SHA-256 del token (vence en 72 h)
-        P->>M: enlace para definir la contraseña
-        S->>D: INSERT audit_logs user.created
-        S-->>W: 201 UserView
-        W-->>A: mensaje "Usuario creado. Enviamos a …"
+    Ad->>W: nombres, apellidos, correo y rol
+    W->>A2: createUserWithEmailAndPassword (contraseña aleatoria)
+    alt el correo ya existe
+        A2-->>W: auth/email-already-in-use
+        W-->>Ad: "Ya existe un usuario con el correo…"
+    else cuenta creada
+        A2-->>W: uid
+        W->>A2: signOut (el administrador conserva su sesión)
+        W->>F: lote: usuarios/{uid} + auditoria
+        F->>F: reglas: usuarios.gestionar y datos válidos
+        W->>A: sendPasswordResetEmail
+        A->>M: enlace para crear la contraseña
+        W-->>Ad: "Usuario creado. Enviamos a … el enlace"
     end

@@ -7,6 +7,7 @@ import { ErrorVisible } from '../../utils/http-error';
 import { enmascarar, ProveedorSesion } from './sesion';
 
 const INACTIVO = 'Su usuario está inactivo. Contacte al administrador del sistema.';
+const SIN_PERFIL = 'Su cuenta no tiene un perfil en la plataforma. Contacte al administrador del sistema.';
 
 /**
  * Sesión con Firebase Authentication. Firebase confirma la identidad; el rol y los
@@ -140,7 +141,9 @@ export class SesionFirebase implements ProveedorSesion {
     const { doc, getDoc } = fb.fs;
     let datos = await getDoc(doc(fb.db, 'usuarios', usuario.uid));
     if (!datos.exists()) {
-      // Primer ingreso con Google, Facebook o Microsoft: la cuenta nace como propietario.
+      // Solo el primer ingreso con Google, Facebook o Microsoft crea el perfil, como propietario.
+      // Una cuenta con contraseña sin perfil no recibe ningún rol por su cuenta.
+      if (!usuario.providerData.some((p) => p.providerId !== 'password')) throw new ErrorVisible(SIN_PERFIL);
       const [nombres, ...resto] = (usuario.displayName ?? usuario.email ?? 'Propietario').split(' ');
       await this.crearPropietario(fb, usuario, nombres, resto.join(' ') || '-');
       datos = await getDoc(doc(fb.db, 'usuarios', usuario.uid));

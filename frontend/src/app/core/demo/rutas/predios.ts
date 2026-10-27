@@ -4,7 +4,7 @@ import { DemoUser } from '../datos-demo';
 import { estado, fallo, guardar, limpiar, ok, Peticion, prohibido, puede, Respuesta } from '../almacen-demo';
 import { DemoFarm } from '../predios-demo';
 
-/** Simula /species y /farms con las reglas de backend/src/farms (control de acceso por predio, RNF07). */
+/** Simula especies y predios con las reglas de core/firebase/predios-evaluaciones.ts (acceso por predio, RNF07). */
 
 export const veTodos = (u: DemoUser) => puede(u, 'fincas.ver', 'fincas.gestionar');
 

@@ -1,0 +1,91 @@
+classDiagram
+    direction TB
+    class AuthService {
+        +user Signal~SessionUser~
+        +can(permisos) bool
+        +restore() bool
+        +login(correo, clave)
+        +loginWithProvider(proveedor)
+        +register(nombres, apellidos, correo, clave)
+        +changePassword(actual, nueva)
+        +forgotPassword(correo)
+        +logout()
+    }
+    class ProveedorSesion {
+        <<interface>>
+        +restaurar() SessionUser
+        +ingresar(correo, clave) SessionUser
+        +ingresarConProveedor(proveedor) SessionUser
+        +registrar(...) mensaje
+        +observar(alCambiar)
+    }
+    class SesionFirebase {
+        -sesionDe(usuario) SessionUser
+        -crearPropietario(usuario)
+    }
+    class SesionDemo
+    class ApiService {
+        +listUsers(filtros) Page~UserItem~
+        +createUser(datos) UserItem
+        +updateUser(id, datos) UserItem
+        +setUserStatus(id, activo) UserItem
+        +listRoles() RoleItem[]
+        +createRole(datos) RoleItem
+        +updateRole(id, datos) RoleItem
+    }
+    class UsuariosRolesFirebase {
+        -authSecundaria()
+        -exigirOtroAdministrador(id)
+    }
+    class FarmsApiService {
+        +listFarms(busqueda) FarmItem[]
+        +createFarm(datos) FarmItem
+        +updateFarm(id, datos) FarmItem
+        +history(predioId) EvaluationSummary[]
+        +startEvaluation(predioId, especieId) EvaluationDetail
+        +saveEvaluation(id, respuestas) EvaluationDetail
+        +finalize(id) EvaluationDetail
+        +downloadReport(id, tipo)
+    }
+    class PrediosEvaluacionesFirebase {
+        -alcance() Alcance
+        -ultimasEvaluaciones()
+        -guardarHistorial(lote, evaluacion, recomendaciones)
+    }
+    class Compartido {
+        <<módulo>>
+        +listaPara(especie, sistema, total) Indicador[]
+        +calificar(lista, respuestas) Resultado
+        +recomendacionesPorReglas(resultado, lista)
+        +informeTecnico(datos)
+        +informePropietario(datos)
+    }
+    class FirebaseIA {
+        <<módulo>>
+        +recomendarConIA(contexto) Recomendaciones
+    }
+    class Informes {
+        <<módulo>>
+        +generarInforme(evaluacion, tipo) Blob
+    }
+    class Firestore {
+        <<Firebase>>
+        usuarios
+        roles
+        predios
+        evaluaciones
+        recomendaciones
+        auditoria
+    }
+    AuthService --> ProveedorSesion
+    ProveedorSesion <|.. SesionFirebase
+    ProveedorSesion <|.. SesionDemo
+    ApiService --> UsuariosRolesFirebase
+    FarmsApiService --> PrediosEvaluacionesFirebase
+    FarmsApiService --> AuthService : permisos del usuario
+    PrediosEvaluacionesFirebase --> Compartido
+    PrediosEvaluacionesFirebase --> FirebaseIA
+    PrediosEvaluacionesFirebase --> Informes
+    SesionFirebase --> Firestore
+    UsuariosRolesFirebase --> Firestore
+    PrediosEvaluacionesFirebase --> Firestore

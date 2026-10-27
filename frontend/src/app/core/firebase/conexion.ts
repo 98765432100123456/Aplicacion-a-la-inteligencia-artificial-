@@ -23,7 +23,8 @@ async function conectar(): Promise<Firebase> {
   const [{ initializeApp }, fa, fs] = await Promise.all([import('firebase/app'), import('firebase/auth'), import('firebase/firestore')]);
   const ajustes = environment.firebase;
   const app = initializeApp(ajustes.config);
-  const auth = fa.getAuth(app);
+  // La sesión se cierra al cerrar el navegador, como corresponde a equipos compartidos en campo.
+  const auth = fa.initializeAuth(app, { persistence: fa.browserSessionPersistence, popupRedirectResolver: fa.browserPopupRedirectResolver });
   auth.languageCode = 'es';
   const db = fs.getFirestore(app);
   if (ajustes.emuladores) {
@@ -38,8 +39,10 @@ export async function authSecundaria() {
   const { initializeApp, getApps, getApp } = await import('firebase/app');
   const { fa } = await firebase();
   const nombre = 'creacion-de-usuarios';
-  const app = getApps().some((a) => a.name === nombre) ? getApp(nombre) : initializeApp(environment.firebase.config, nombre);
-  const auth = fa.getAuth(app);
+  // En memoria: la cuenta recién creada no queda guardada en el navegador.
+  const auth = getApps().some((a) => a.name === nombre)
+    ? fa.getAuth(getApp(nombre))
+    : fa.initializeAuth(initializeApp(environment.firebase.config, nombre), { persistence: fa.inMemoryPersistence });
   if (environment.firebase.emuladores && !auth.emulatorConfig) {
     fa.connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   }

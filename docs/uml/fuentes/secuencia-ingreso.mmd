@@ -1,21 +1,25 @@
 sequenceDiagram
     actor U as Usuario
     participant W as Angular
-    participant A as API
-    participant D as MariaDB
+    participant A as Firebase Authentication
+    participant F as Firestore
     U->>W: correo + contraseña
-    W->>A: POST /api/auth/login
-    A->>D: buscar usuario por correo
-    alt no existe
-        A->>A: compara contra un hash ficticio (mismo tiempo de respuesta)
-        A-->>W: 401 "Correo o contraseña incorrectos."
-    else contraseña incorrecta
-        A->>D: intentos += 1 (al 5.º bloquea 15 min)
-        A-->>W: 401 mismo mensaje
-    else correcta pero usuario o rol inactivo
-        A-->>W: 401 "Su usuario está inactivo…"
-    else correcta
-        A->>D: reinicia intentos, guarda último ingreso, auditoría
-        A-->>W: 200 { accessToken, user, permissions }
-        W->>W: guarda token en sessionStorage y abre la ruta pedida
+    W->>A: signInWithEmailAndPassword
+    alt datos incorrectos
+        A-->>W: auth/invalid-credential
+        W-->>U: "Correo o contraseña incorrectos."
+    else muchos intentos seguidos
+        A-->>W: auth/too-many-requests
+        W-->>U: espere o restablezca la contraseña
+    else correctos
+        A-->>W: usuario autenticado (token)
+        W->>F: lee usuarios/{uid} y roles/{rol}
+        alt usuario o rol inactivo
+            W->>A: signOut
+            W-->>U: "Su usuario está inactivo…"
+        else activo
+            W->>F: actualiza ultimoIngreso
+            W->>F: escucha cambios del usuario y de su rol
+            W-->>U: abre la ruta pedida con el menú según sus permisos
+        end
     end

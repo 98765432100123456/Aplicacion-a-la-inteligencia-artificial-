@@ -2,7 +2,7 @@ import { RoleItem } from '../../models/models';
 import { estado, fallo, guardar, limpiar, ok, Peticion, prohibido, puede, Respuesta, vistaRol } from '../almacen-demo';
 import { CATALOGO, DemoUser, TODOS_LOS_PERMISOS } from '../datos-demo';
 
-/** Simula /roles con las mismas reglas de backend/src/roles/roles.service.ts. */
+/** Simula los roles con las mismas reglas de core/firebase/usuarios-roles.ts. */
 export function rutasDeRoles({ metodo, ruta, cuerpo }: Peticion, yo: DemoUser): Respuesta {
   const datos = estado.datos;
 

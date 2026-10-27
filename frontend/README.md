@@ -7,7 +7,7 @@ Aplicación Angular 20 de ICA Bienestar Animal. Usa componentes independientes (
 Requisitos
 ----------
 
-Node.js 22. Para iniciar sesión y consultar información se requiere además el servicio de aplicación en ejecución (ver [backend/README.md](../backend/README.md)).
+Node.js 22. La aplicación se conecta directamente al proyecto de Firebase `bienestar-animal-ica`: no hay un servicio de aplicación propio. Para probar sin tocar los datos reales se usan los emuladores de Firebase (ver [firebase/README.md](../firebase/README.md)).
 
 
 Comandos
@@ -16,28 +16,30 @@ Comandos
 | Comando | Función |
 |---|---|
 | `npm install` | Instala las dependencias |
-| `npm start` | Inicia el servidor de desarrollo en `http://localhost:4200` y redirige las peticiones `/api` al servicio de aplicación en el puerto 3000 |
-| `npm run demo` | Inicia la interfaz en modo demostración, sin servicio de aplicación ni base de datos: la API se simula en el navegador con datos de prueba |
+| `npm start` | Inicia el servidor de desarrollo en `http://localhost:4200`, conectado al proyecto real de Firebase |
+| `npm run start:emuladores` | Igual, pero conectado a los emuladores locales de Auth y Firestore |
+| `npm run demo` | Inicia la interfaz en modo demostración, sin conexión a Firebase: los datos se simulan en el navegador |
 | `npm start -- --host 0.0.0.0` | Igual que `npm start`, pero permite abrir la aplicación desde otro dispositivo de la misma red, como un teléfono móvil |
 | `npm run build` | Compila la versión de producción en `dist/frontend/browser` |
 | `npm run test:ci` | Ejecuta las pruebas unitarias en Chrome sin ventana |
-| `npm run e2e` | Ejecuta las pruebas de extremo a extremo con Playwright |
+| `npm run e2e` | Ejecuta las pruebas de extremo a extremo con Playwright contra los emuladores |
 
 En un entorno sin Chrome instalado, las pruebas pueden usar otro ejecutable de Chromium indicado en la variable `CHROME_BIN`.
 
 
-Conexión con el servicio de aplicación
---------------------------------------
+Conexión con Firebase
+---------------------
 
-La interfaz invoca siempre la ruta relativa `/api`, de modo que la interfaz y el servicio comparten dominio en todos los ambientes:
+La configuración del proyecto está en `src/environments/firebase.config.ts`. El SDK de Firebase se descarga solo cuando se usa (`core/firebase/conexion.ts`), por lo que el modo demostración no lo carga.
 
-- **Desarrollo:** el archivo `proxy.conf.json` redirige `/api` hacia `http://localhost:3000`.
-- **Contenedores:** el servidor nginx, configurado en `nginx.conf`, redirige `/api/` hacia el contenedor del servicio.
-- **Producción:** nginx, configurado en `nginx.conf`, sirve la interfaz y reenvía `/api` al servicio de aplicación (ver `docs/DESPLIEGUE.md`).
+| Ambiente | Archivo | Conexión |
+|---|---|---|
+| Producción (`npm run build`) | `environment.ts` | Proyecto `bienestar-animal-ica` |
+| Desarrollo (`npm start`) | `environment.development.ts` | Proyecto `bienestar-animal-ica` |
+| Emuladores (`npm run start:emuladores`) | `environment.emuladores.ts` | Auth en el puerto 9099 y Firestore en el 8080 de este equipo |
+| Demostración (`npm run demo`) | `environment.demo.ts` | Ninguna: el interceptor `core/demo/demo-api.interceptor.ts` simula los datos en el navegador |
 
-En el modo demostración, el interceptor `core/demo/demo-api.interceptor.ts` responde las peticiones a `/api` dentro del navegador con las mismas reglas y mensajes del servicio real, y guarda los datos en el almacenamiento local del navegador. Los usuarios y roles de prueba están en `core/demo/datos-demo.ts`; las rutas simuladas, en `core/demo/rutas/`.
-
-El token de acceso se conserva en el almacenamiento de la sesión del navegador y se elimina al cerrarlo.
+Los servicios que usan las pantallas (`AuthService`, `ApiService` y `FarmsApiService`) tienen la misma interfaz en todos los ambientes: con Firebase llaman a `core/firebase/`, y en la demostración a la API simulada. Los informes PDF se generan en el navegador con pdfmake (`core/informes/`).
 
 
 Organización del código
@@ -45,17 +47,22 @@ Organización del código
 
 | Ruta | Responsabilidad |
 |---|---|
-| `src/app/core/services/` | Sesión (`auth.service.ts`) y acceso a la API (`api.service.ts`) |
-| `src/app/core/interceptors/` | Interceptor que agrega el token y cierra la sesión vencida |
+| `src/app/core/services/` | Sesión (`auth.service.ts` y `sesion/`), usuarios y roles (`api.service.ts`), predios y evaluaciones (`farms-api.service.ts`) |
+| `src/app/core/firebase/` | Conexión con Firebase, usuarios y roles, predios y evaluaciones, recomendaciones con IA y bitácora sobre Firestore |
+| `src/app/core/informes/` | Generación y descarga de los informes PDF |
+| `src/app/core/interceptors/` | Interceptor del modo demostración que agrega el token y cierra la sesión vencida |
 | `src/app/core/guards/` | Guardas de rutas: sesión, permisos y cambios sin guardar |
-| `src/app/core/models/` | Tipos de datos que intercambian la interfaz y la API |
-| `src/app/core/utils/` | Mensajes de error de la API y ruta de regreso después de ingresar |
+| `src/app/core/models/` | Tipos de datos que usan las pantallas |
+| `src/app/core/utils/` | Mensajes de error de Firebase y de la demostración, y ruta de regreso después de ingresar |
 | `src/app/core/demo/` | Modo demostración: datos de prueba, almacenamiento en el navegador y rutas simuladas |
 | `src/app/shared/components/` | Componentes reutilizables: logotipo, diálogo, campo de contraseña, mensajes emergentes y encabezado de página |
 | `src/app/shared/services/` | Servicio de mensajes emergentes |
 | `src/app/shared/utils/` | Política de contraseñas y utilidades de formularios |
 | `src/app/layout/shell/` | Estructura con barra superior translúcida, que en pantallas pequeñas se convierte en un menú desplegable |
-| `src/app/features/auth/` | Ingreso, recuperación y creación de contraseña, con el marco común de esas pantallas |
+| `src/app/features/auth/` | Ingreso, ingreso con Google, Facebook o Microsoft, registro de propietarios, recuperación y creación de contraseña |
+| `src/app/features/farms/` | Lista de predios, registro y ficha del predio con su historial |
+| `src/app/features/evaluations/` | Formulario de evaluación con guardado automático y pantalla de resultado |
+| `src/app/compartido/` | Copia generada de `compartido/`: norma, lista de chequeo, cálculo, recomendaciones e informes. No se edita aquí |
 | `src/app/features/home/` | Pantalla de inicio y guía de bienestar animal; los datos de la norma están en `data/` |
 | `src/app/features/users/` | Lista de usuarios y formulario de usuario |
 | `src/app/features/roles/` | Lista de roles y editor de permisos |

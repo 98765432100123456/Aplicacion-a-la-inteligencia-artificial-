@@ -12,7 +12,7 @@ export { resetDemoData } from './almacen-demo';
 /**
  * Modo demostración (`npm run demo`): responde las llamadas a /api dentro del
  * navegador, sin servicio de aplicación ni base de datos, con las mismas reglas
- * y mensajes de backend/src. Los datos de prueba están en datos-demo.ts.
+ * y mensajes que la versión con Firebase (core/firebase). Los datos de prueba están en datos-demo.ts.
  */
 export const demoApiInterceptor: HttpInterceptorFn = (req, next) => {
   if (!environment.demo || !req.url.startsWith(environment.apiUrl)) return next(req);

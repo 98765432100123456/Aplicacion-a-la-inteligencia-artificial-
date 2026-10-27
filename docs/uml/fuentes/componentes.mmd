@@ -4,42 +4,26 @@ flowchart LR
         RT[Rutas y guardas<br/>authGuard · permissionGuard · unsavedChangesGuard]
         FT[Pantallas<br/>auth · home · farms · evaluations · users · roles · account]
         SH[Componentes compartidos<br/>dialog · toasts · page-header · password-input · nivel]
-        CO[Núcleo<br/>AuthService · FarmsApiService · firebase-login · authInterceptor · demoApiInterceptor]
-        CP[compartido<br/>norma · lista de chequeo · calificación · informes]
+        SV[Servicios<br/>AuthService · ApiService · FarmsApiService]
+        DF[Capa Firebase<br/>sesión · usuarios y roles · predios y evaluaciones · IA · auditoría]
+        CP[compartido<br/>norma · 23 criterios · calificación · permisos · informes]
+        PDF[Informes PDF<br/>pdfmake]
+        DEMO[Modo demostración<br/>API simulada en el navegador]
         RT --> FT --> SH
-        FT --> CO
-        FT --> CP
+        FT --> SV
+        SV --> DF
+        SV -.-> DEMO
+        DF --> CP
+        DF --> PDF
     end
 
-    subgraph BE["Servicio de aplicación · NestJS 11"]
+    subgraph FB["Firebase · bienestar-animal-ica"]
         direction TB
-        GU[Guardas globales<br/>Throttler · JwtAuthGuard · PermissionsGuard]
-        AU[AuthModule<br/>ingreso · registro · Firebase]
-        US[UsersModule]
-        RO[RolesModule]
-        FA[FarmsModule<br/>predios · acceso por predio]
-        EV[EvaluationsModule<br/>puntaje · informes PDF · historial]
-        AI[AiModule]
-        AD[AuditModule<br/>bitácora de todos los módulos]
-        MA[MailModule]
-        HE[HealthController]
-        GU --> AU & US & RO & FA & EV
-        EV --> FA & AI
-        AU & US --> MA
+        AU[[Authentication]]
+        FS[(Cloud Firestore<br/>reglas de seguridad)]
+        IA[[AI Logic · Gemini]]
+        HO[[Hosting<br/>sirve la interfaz]]
+        AU ~~~ FS ~~~ IA ~~~ HO
     end
 
-    DB[(MariaDB 11.4<br/>TypeORM · migraciones)]
-    subgraph EXT["Servicios externos"]
-        direction TB
-        SMTP[[Servidor SMTP]]
-        CLA[[API de Claude]]
-        FB[[Firebase Authentication]]
-        SMTP ~~~ CLA ~~~ FB
-    end
-
-    CO -- "HTTPS /api · JSON · Bearer JWT" --> GU
-    AU -. "llaves públicas" .-> FB
-    CO -. "ventana del proveedor" .-> FB
-    BE --> DB
-    MA --> SMTP
-    AI --> CLA
+    DF -- "SDK web de Firebase · HTTPS" --> FB

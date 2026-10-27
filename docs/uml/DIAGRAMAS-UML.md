@@ -7,7 +7,7 @@ Este documento reúne los diagramas UML de ICA Bienestar Animal. Los diagramas d
 |---|---|---|
 | Casos de uso | Funcional | Seguridad implementada; demás módulos diseñados |
 | Clases del dominio | Estructural | Diseño completo |
-| Clases del servicio de aplicación | Estructural | Implementado |
+| Clases de la aplicación | Estructural | Implementado |
 | Secuencia de ingreso | Comportamiento | Implementado |
 | Secuencia de recuperación de contraseña | Comportamiento | Implementado |
 | Secuencia de creación de usuario | Comportamiento | Implementado |
@@ -64,7 +64,7 @@ Los tres actores heredan del actor Usuario los casos comunes de acceso. Las lín
 | Precondición | El administrador tiene el permiso `usuarios.gestionar` |
 | Flujo principal | El administrador registra nombres, apellidos, correo, rol y, de forma opcional, documento y teléfono; el sistema crea la cuenta y envía una invitación para que la persona defina su contraseña |
 | Flujo alterno: correo repetido | El sistema rechaza el registro e indica que el correo ya existe |
-| Flujo alterno: edición | Se modifican los datos o el rol; si cambia el rol, las sesiones abiertas de esa persona se cierran |
+| Flujo alterno: edición | Se modifican los datos o el rol; el correo no cambia. Si cambia el rol, los permisos de esa persona se actualizan de inmediato |
 | Flujo alterno: inactivación | Se pide confirmación; la persona pierde el acceso de inmediato. El administrador no puede inactivarse a sí mismo |
 | Postcondición | Cada operación queda registrada en la bitácora de auditoría |
 
@@ -77,12 +77,12 @@ Modelo de clases del sistema completo. Las composiciones (rombo relleno) indican
 ![Diagrama de clases del dominio](clases-dominio.png)
 
 
-Clases del servicio de aplicación
----------------------------------
+Clases de la aplicación
+-----------------------
 
-Clases del servicio NestJS que implementan el módulo de seguridad. Los controladores reciben las peticiones, los servicios contienen las reglas de negocio y las entidades de TypeORM representan las tablas. Las guardas globales verifican el token y los permisos antes de que la petición llegue al controlador.
+Clases de la interfaz que trabajan con Firebase. Las pantallas usan tres servicios (`AuthService`, `ApiService` y `FarmsApiService`) que tienen la misma interfaz en el uso real y en el modo demostración; con Firebase delegan en la capa de `core/firebase/`, que lee y escribe en Firestore. Las reglas de la norma, el cálculo y los informes están en el módulo compartido. Las reglas de seguridad de Firestore verifican los permisos en cada operación.
 
-![Diagrama de clases del servicio de aplicación](clases-backend.png)
+![Diagrama de clases de la aplicación](clases-aplicacion.png)
 
 
 Secuencia de ingreso
@@ -122,7 +122,7 @@ Los cinco estados exigidos por el RF36 y las transiciones permitidas entre ellos
 Componentes
 -----------
 
-La interfaz se comunica con el servicio de aplicación solo por `/api`. Las reglas de la norma, el cálculo del puntaje y los informes viven en `compartido/` y se usan en ambos lados. Firebase solo confirma la identidad; la autorización la decide el servicio con los roles guardados en MariaDB.
+La interfaz trabaja directamente con Firebase mediante su SDK web. Las reglas de la norma, el cálculo del puntaje y los informes viven en `compartido/`. Firebase Authentication confirma la identidad; la autorización la deciden los roles guardados en Firestore y las reglas de seguridad.
 
 ![Diagrama de componentes](componentes.png)
 
@@ -130,7 +130,7 @@ La interfaz se comunica con el servicio de aplicación solo por `/api`. Las regl
 Despliegue
 ----------
 
-El sistema se ejecuta en un servidor Linux con Docker Compose. Solo Caddy recibe tráfico de internet; la base de datos está en una red interna sin puerto publicado. El procedimiento completo está en [DESPLIEGUE.md](../DESPLIEGUE.md).
+Toda la plataforma vive en el proyecto de Firebase `bienestar-animal-ica`: Hosting sirve la interfaz y el navegador se comunica por HTTPS con Authentication, Firestore y AI Logic. No hay servidores propios. El procedimiento completo está en [DESPLIEGUE.md](../DESPLIEGUE.md).
 
 ![Diagrama de despliegue](despliegue.png)
 

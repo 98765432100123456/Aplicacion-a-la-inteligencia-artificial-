@@ -1,35 +1,27 @@
 flowchart TB
     subgraph CL["«dispositivo» Computador, tableta o teléfono"]
-        NAV[Navegador moderno]
+        NAV[Navegador moderno<br/>Angular · SDK de Firebase · pdfmake]
     end
 
-    subgraph SRV["«nodo» Servidor Linux · Ubuntu 24.04 · Docker Compose"]
+    subgraph FB["«nube» Firebase · proyecto bienestar-animal-ica"]
         direction TB
-        CA["«contenedor» Caddy 2.8<br/>HTTPS · certificado Let's Encrypt"]
-        WEB["«contenedor» nginx<br/>artefacto: dist/frontend/browser"]
-        API["«contenedor» API NestJS · Node 22<br/>usuario sin privilegios"]
-        DB[("«contenedor» MariaDB 11.4<br/>red interna · volumen persistente")]
-        RES[["«artefacto» respaldo.sh<br/>volcado diario · 14 días"]]
-        ENV[["«artefacto» .env.servidor<br/>credenciales · permisos 600"]]
+        HO["«nodo» Hosting<br/>artefacto: dist/frontend/browser"]
+        AU["«nodo» Authentication<br/>correo · Google · Facebook · Microsoft"]
+        FS[("«nodo» Cloud Firestore<br/>firestore.rules · firestore.indexes.json")]
+        IA["«nodo» AI Logic<br/>Gemini"]
+        HO ~~~ AU ~~~ FS ~~~ IA
     end
 
-    subgraph EXT["Servicios externos"]
+    subgraph EXT["Proveedores de identidad"]
         direction TB
-        FB["«nodo» Firebase Authentication<br/>Google · Facebook · Microsoft<br/>llaves públicas por HTTPS"]
-        CLA["«nodo» API de Claude<br/>recomendaciones por HTTPS"]
-        SMTP["«nodo» Servidor de correo<br/>SMTP con TLS"]
-        FB ~~~ CLA ~~~ SMTP
+        G["Google"]
+        FBK["Facebook"]
+        MS["Microsoft"]
+        G ~~~ FBK ~~~ MS
     end
+
     GH["«nodo» GitHub<br/>repositorio y GitHub Actions"]
 
-    NAV -- "HTTPS 443" --> CA
-    CA -- "HTTP interno" --> WEB
-    WEB -- "/api" --> API
-    API -- "red datos · 3306" --> DB
-    RES -.-> DB
-    ENV -.-> API
-    API --> FB
-    API --> CLA
-    NAV -. "ventana emergente" .-> FB
-    API --> SMTP
-    GH -.->|"CI · git pull"| SRV
+    NAV -- "HTTPS · SDK web de Firebase" --> FB
+    AU -.->|inicio de sesión externo| EXT
+    GH -.->|"pruebas en CI · firebase deploy"| HO

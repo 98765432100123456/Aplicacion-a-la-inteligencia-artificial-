@@ -26,7 +26,8 @@ const como = (uid: string, correo: string, verificado = true) =>
 
 before(async () => {
   env = await initializeTestEnvironment({
-    projectId: 'demo-ica',
+    // Proyecto propio: las pruebas borran Firestore y no deben tocar los datos de desarrollo.
+    projectId: 'demo-ica-reglas',
     firestore: { rules: readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8'), host: '127.0.0.1', port: 8080 },
   });
 });

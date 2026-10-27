@@ -6,36 +6,29 @@ on:
   pull_request:
 
 jobs:
-  backend:
+  # Reglas de seguridad de Firestore probadas en el emulador.
+  reglas:
     runs-on: ubuntu-latest
-    services:
-      mariadb:
-        image: mariadb:11.4
-        env:
-          MARIADB_DATABASE: ica_bienestar_test
-          MARIADB_USER: ica
-          MARIADB_PASSWORD: ica_dev
-          MARIADB_ROOT_PASSWORD: root_ci
-        ports: ['3306:3306']
-        options: >-
-          --health-cmd "healthcheck.sh --connect --innodb_initialized" --health-interval 5s --health-timeout 5s --health-retries 10
     defaults:
       run:
-        working-directory: backend
+        working-directory: firebase
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: firebase/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: node ../scripts/compartido.mjs --verificar
       - run: npm ci
       - run: npm run typecheck
-      - run: npm test
-      - run: npm run test:e2e
-      - run: npm run build
+      - run: npm run test:reglas
 
-  frontend:
+  interfaz:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,3 +43,27 @@ jobs:
       - run: npm ci
       - run: npm run test:ci
       - run: npx ng build --configuration production
+      - run: npx ng build --configuration demo
+
+  # Flujos completos en el navegador contra los emuladores de Auth y Firestore.
+  extremo-a-extremo:
+    runs-on: ubuntu-latest
+    needs: [reglas, interfaz]
+    env:
+      SEMILLA_ADMIN_CORREO: admin@ica-bienestar.local
+      SEMILLA_ADMIN_CLAVE: CambiarEsta.2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+        working-directory: firebase
+      - run: npm ci && npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore "npm run semilla:emulador && cd ../frontend && npx playwright test"
+        working-directory: firebase

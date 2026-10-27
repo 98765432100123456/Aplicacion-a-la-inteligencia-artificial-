@@ -12,7 +12,7 @@ function rolAsignable(id: unknown) {
   return r;
 }
 
-/** Simula /users con las mismas reglas de backend/src/users/users.service.ts. */
+/** Simula los usuarios con las mismas reglas de core/firebase/usuarios-roles.ts. */
 export function rutasDeUsuarios(p: Peticion, yo: DemoUser): Respuesta {
   const { req, metodo, ruta, cuerpo } = p;
   const datos = estado.datos;

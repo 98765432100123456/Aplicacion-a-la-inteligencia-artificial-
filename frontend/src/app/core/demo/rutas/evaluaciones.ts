@@ -11,7 +11,7 @@ import { estado, fallo, guardar, ok, Peticion, prohibido, puede, Respuesta } fro
 import { DemoEvaluation, DemoFarm } from '../predios-demo';
 import { prediosVisibles, veTodos } from './predios';
 
-/** Simula las evaluaciones y los informes PDF de backend/src/evaluations; los PDF se arman en el navegador. */
+/** Simula las evaluaciones y los informes PDF con las reglas de core/firebase/predios-evaluaciones.ts. */
 
 const CONSULTAR = ['evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver', 'predios.propios'];
 const hoy = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
