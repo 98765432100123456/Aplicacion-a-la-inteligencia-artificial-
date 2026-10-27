@@ -19,13 +19,13 @@ export class AuditLog {
   @Column({ name: 'entity_id', type: 'varchar', length: 60, nullable: true })
   entityId: string | null;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'json', nullable: true })
   detail: Record<string, unknown> | null;
 
   @Column({ type: 'varchar', length: 64, nullable: true })
   ip: string | null;
 
   @Index()
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
   createdAt: Date;
 }

@@ -43,11 +43,12 @@ export class UsersService {
       qb.andWhere(
         new Brackets((w) =>
           w
-            .where('u.first_name ILIKE :term', { term })
-            .orWhere('u.last_name ILIKE :term', { term })
-            .orWhere("(u.first_name || ' ' || u.last_name) ILIKE :term", { term })
-            .orWhere('u.email ILIKE :term', { term })
-            .orWhere('u.document_number ILIKE :term', { term }),
+            // La intercalación utf8mb4_unicode_ci ya ignora mayúsculas y tildes.
+            .where('u.first_name LIKE :term', { term })
+            .orWhere('u.last_name LIKE :term', { term })
+            .orWhere("CONCAT(u.first_name, ' ', u.last_name) LIKE :term", { term })
+            .orWhere('u.email LIKE :term', { term })
+            .orWhere('u.document_number LIKE :term', { term }),
         ),
       );
     }

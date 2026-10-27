@@ -1,20 +1,22 @@
-# Entorno local completo: PostgreSQL + API + web.
+# Entorno completo: MariaDB + API + web. Sirve para desarrollo y como base del servidor.
 #   docker compose up --build
 #   docker compose exec api node dist/database/seed.js
 # Web: http://localhost:8080   API: http://localhost:3000/api/health
 services:
   db:
-    image: postgres:16-alpine
+    image: mariadb:11.4
     environment:
-      POSTGRES_USER: ica
-      POSTGRES_PASSWORD: ica_dev
-      POSTGRES_DB: ica_bienestar
+      MARIADB_DATABASE: ica_bienestar
+      MARIADB_USER: ica
+      MARIADB_PASSWORD: ica_dev
+      MARIADB_ROOT_PASSWORD: root_dev
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     ports:
-      - '5432:5432'
+      - '3306:3306'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mariadb:/var/lib/mysql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ica -d ica_bienestar']
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 5s
       retries: 10
 
@@ -24,7 +26,7 @@ services:
       NODE_ENV: development
       PORT: 3000
       DB_HOST: db
-      DB_PORT: 5432
+      DB_PORT: 3306
       DB_USER: ica
       DB_PASSWORD: ica_dev
       DB_NAME: ica_bienestar
@@ -48,4 +50,4 @@ services:
       - api
 
 volumes:
-  pgdata:
+  mariadb:

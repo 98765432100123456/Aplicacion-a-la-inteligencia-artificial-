@@ -16,7 +16,8 @@ export class Role {
   @Column({ type: 'varchar', length: 255, nullable: true })
   description: string | null;
 
-  @Column({ type: 'text', array: true, default: '{}' })
+  /** Lista de códigos de permiso guardada como JSON. */
+  @Column({ type: 'simple-json' })
   permissions: string[];
 
   /** Los roles del sistema no se pueden inactivar ni perder permisos de seguridad. */
@@ -29,9 +30,9 @@ export class Role {
   @OneToMany(() => User, (user) => user.role)
   users: User[];
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3 })
   updatedAt: Date;
 }

@@ -11,19 +11,19 @@ export class PasswordResetToken {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
   @Index({ unique: true })
   @Column({ name: 'token_hash', length: 64 })
   tokenHash: string;
 
-  @Column({ name: 'expires_at', type: 'timestamptz' })
+  @Column({ name: 'expires_at', type: 'datetime', precision: 3 })
   expiresAt: Date;
 
-  @Column({ name: 'used_at', type: 'timestamptz', nullable: true })
+  @Column({ name: 'used_at', type: 'datetime', precision: 3, nullable: true })
   usedAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
   createdAt: Date;
 }

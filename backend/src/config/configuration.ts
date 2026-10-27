@@ -57,19 +57,23 @@ export function loadConfig(): AppConfig {
 }
 
 /**
- * Conexión a PostgreSQL. En Cloud Run se usa el socket Unix del conector de
- * Cloud SQL (DB_SOCKET_PATH); en local, host y puerto.
+ * Conexión a MariaDB. En un servidor con la base en la misma máquina puede
+ * usarse el socket Unix (DB_SOCKET_PATH); en los demás casos, host y puerto.
+ * Las fechas se guardan en UTC.
  */
 export function databaseOptions(): DataSourceOptions {
-  const socket = process.env.DB_SOCKET_PATH;
+  const socket = process.env.DB_SOCKET_PATH || undefined;
   return {
-    type: 'postgres',
-    host: socket || process.env.DB_HOST || 'localhost',
-    port: socket ? undefined : Number(process.env.DB_PORT ?? 5432),
+    type: 'mariadb',
+    host: socket ? undefined : process.env.DB_HOST || 'localhost',
+    port: socket ? undefined : Number(process.env.DB_PORT ?? 3306),
+    socketPath: socket,
     username: process.env.DB_USER ?? 'ica',
     password: process.env.DB_PASSWORD ?? '',
     database: process.env.DB_NAME ?? 'ica_bienestar',
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+    charset: 'utf8mb4_unicode_ci',
+    timezone: 'Z',
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
     entities: [__dirname + '/../**/*.entity.{ts,js}'],
     migrations: [__dirname + '/../database/migrations/*.{ts,js}'],
     synchronize: false,

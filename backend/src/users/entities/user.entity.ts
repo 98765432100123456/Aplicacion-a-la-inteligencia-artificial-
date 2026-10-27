@@ -39,7 +39,7 @@ export class User {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @Column({ name: 'role_id' })
+  @Column({ name: 'role_id', type: 'uuid' })
   roleId: string;
 
   @Column({ default: true })
@@ -49,19 +49,19 @@ export class User {
   @Column({ name: 'failed_login_attempts', default: 0 })
   failedLoginAttempts: number;
 
-  @Column({ name: 'locked_until', type: 'timestamptz', nullable: true })
+  @Column({ name: 'locked_until', type: 'datetime', precision: 3, nullable: true })
   lockedUntil: Date | null;
 
-  @Column({ name: 'last_login_at', type: 'timestamptz', nullable: true })
+  @Column({ name: 'last_login_at', type: 'datetime', precision: 3, nullable: true })
   lastLoginAt: Date | null;
 
   /** Tokens emitidos antes de esta fecha se rechazan (cambio de clave, inactivación). */
-  @Column({ name: 'password_changed_at', type: 'timestamptz', default: () => 'now()' })
+  @Column({ name: 'password_changed_at', type: 'datetime', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)' })
   passwordChangedAt: Date;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3 })
   updatedAt: Date;
 }
