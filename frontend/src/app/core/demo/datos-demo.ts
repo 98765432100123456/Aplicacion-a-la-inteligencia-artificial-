@@ -1,4 +1,5 @@
 import { PermissionDef, RoleItem, UserItem } from '../models/models';
+import { DemoEvaluation, DemoFarm, prediosIniciales, Species } from './predios-demo';
 
 /**
  * Datos de prueba del modo demostración (`npm run demo`). Son los usuarios y
@@ -17,8 +18,9 @@ export const CATALOGO: PermissionDef[] = [
   { key: 'usuarios.gestionar', module: 'Seguridad', label: 'Crear, editar, activar e inactivar usuarios' },
   { key: 'roles.ver', module: 'Seguridad', label: 'Consultar roles' },
   { key: 'roles.gestionar', module: 'Seguridad', label: 'Crear y editar roles y sus permisos' },
-  { key: 'fincas.ver', module: 'Fincas', label: 'Consultar fincas' },
-  { key: 'fincas.gestionar', module: 'Fincas', label: 'Registrar y editar fincas e inventario' },
+  { key: 'fincas.ver', module: 'Fincas', label: 'Consultar todos los predios' },
+  { key: 'fincas.gestionar', module: 'Fincas', label: 'Registrar y editar predios e inventario' },
+  { key: 'predios.propios', module: 'Fincas', label: 'Consultar sus propios predios, evaluaciones e informes' },
   { key: 'parametrizacion.gestionar', module: 'Parametrización', label: 'Configurar especies, criterios y ponderaciones' },
   { key: 'evaluaciones.ver', module: 'Evaluación', label: 'Consultar evaluaciones y resultados' },
   { key: 'evaluaciones.diligenciar', module: 'Evaluación', label: 'Crear y diligenciar evaluaciones' },
@@ -35,12 +37,16 @@ export interface DemoUser extends UserItem {
 export interface DemoData {
   roles: RoleItem[];
   users: DemoUser[];
+  species: Species[];
+  farms: DemoFarm[];
+  evaluations: DemoEvaluation[];
 }
 
 const ROLES: Omit<RoleItem, 'isSystem' | 'active' | 'userCount' | 'updatedAt'>[] = [
   { id: 'r-admin', code: 'ADMIN', name: 'Administrador', description: 'Gestiona usuarios, roles, catálogos y parametrización de especies.', permissions: TODOS_LOS_PERMISOS },
   { id: 'r-eval', code: 'EVALUADOR', name: 'Evaluador', description: 'Registra fincas y diligencia evaluaciones de bienestar animal.', permissions: ['fincas.ver', 'fincas.gestionar', 'evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver'] },
   { id: 'r-cons', code: 'CONSULTOR', name: 'Consultor externo', description: 'Consulta fincas, evaluaciones y reportes sin modificarlos.', permissions: ['fincas.ver', 'evaluaciones.ver', 'reportes.ver'] },
+  { id: 'r-prop', code: 'PROPIETARIO', name: 'Propietario del predio', description: 'Consulta la información de sus predios, los resultados de las evaluaciones y las recomendaciones.', permissions: ['predios.propios'] },
 ];
 
 /** Personas de ejemplo: [id, nombres, apellidos, correo, rol, documento, teléfono, activo]. */
@@ -52,6 +58,7 @@ const PERSONAS: [string, string, string, string, string, string | null, string |
   ['u-4', 'Jorge Iván', 'Castaño Mejía', 'consultor@ica-bienestar.local', 'r-cons', '71234567', '3112345678', true],
   ['u-5', 'Daniela', 'Ramírez Torres', 'dramirez@ica-bienestar.local', 'r-cons', '1001234567', '3209876543', true],
   ['u-6', 'Natalia', 'Herrera Quintero', 'nherrera@ica-bienestar.local', 'r-cons', '52345678', '3128765432', false],
+  ['u-7', 'Pedro Antonio', 'Rojas Salamanca', 'propietario@ica-bienestar.local', 'r-prop', '79456123', '3104567890', true],
 ];
 
 /** Estado inicial del modo demostración; el enlace "Restablecer datos" vuelve a él. */
@@ -65,5 +72,5 @@ export function datosIniciales(): DemoData {
       role: { id: r.id, code: r.code, name: r.name }, createdAt: ahora, password: DEMO_PASSWORD,
     };
   });
-  return { roles, users };
+  return { roles, users, ...prediosIniciales() };
 }

@@ -5,7 +5,7 @@ import { datosIniciales, DemoData, DemoUser } from './datos-demo';
 
 /** Estado del modo demostración guardado en el navegador y utilidades comunes de las rutas simuladas. */
 
-const CLAVE = 'ica.demo.datos.v2';
+const CLAVE = 'ica.demo.datos.v3';
 const LATENCIA_MS = 250;
 
 export const PATRON_CONTRASENA = /^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])(?=.*\d).{10,72}$/;

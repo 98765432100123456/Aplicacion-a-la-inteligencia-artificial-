@@ -11,6 +11,11 @@ export function rutasPublicas({ req, metodo, ruta, cuerpo }: Peticion): Respuest
     guardar();
     return ok({ accessToken: `demo-${u.id}`, user: sesion(u) });
   }
+  // En la demostración no hay proyecto de Firebase: solo se ofrece el registro con correo.
+  if (metodo === 'GET' && ruta === '/auth/config') return ok({ registration: true, firebase: null });
+  if (metodo === 'POST' && ruta === '/auth/register') {
+    return ok({ message: 'Si el correo no tenía cuenta, enviamos un enlace para crear su contraseña. Revise también la carpeta de spam.' });
+  }
   if (metodo === 'POST' && ruta === '/auth/forgot-password') {
     return ok({ message: 'Si el correo está registrado y activo, enviamos un enlace para restablecer la contraseña.' });
   }

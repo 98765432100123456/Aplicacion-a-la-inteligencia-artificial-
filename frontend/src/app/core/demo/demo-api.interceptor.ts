@@ -2,6 +2,8 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { fallo, Peticion, usuarioActual } from './almacen-demo';
 import { rutasDeCuenta, rutasPublicas } from './rutas/autenticacion';
+import { rutasDeEvaluaciones } from './rutas/evaluaciones';
+import { rutasDePredios } from './rutas/predios';
 import { rutasDeRoles } from './rutas/roles';
 import { rutasDeUsuarios } from './rutas/usuarios';
 
@@ -30,6 +32,8 @@ export const demoApiInterceptor: HttpInterceptorFn = (req, next) => {
     rutasDeCuenta(peticion, yo) ??
     rutasDeUsuarios(peticion, yo) ??
     rutasDeRoles(peticion, yo) ??
+    rutasDePredios(peticion, yo) ??
+    rutasDeEvaluaciones(peticion, yo) ??
     fallo(404, 'Recurso no disponible en el modo demostración.')
   );
 };
