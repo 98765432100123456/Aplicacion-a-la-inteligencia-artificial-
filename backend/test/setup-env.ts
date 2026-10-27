@@ -10,3 +10,4 @@ process.env.SMTP_HOST = '';
 process.env.FRONTEND_URL = 'http://localhost:4200';
 // Sin clave de IA: las pruebas usan las recomendaciones por reglas.
 delete process.env.ANTHROPIC_API_KEY;
+delete process.env.FIREBASE_PROJECT_ID;

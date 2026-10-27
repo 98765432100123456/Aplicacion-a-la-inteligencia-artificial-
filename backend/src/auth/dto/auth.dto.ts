@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length, Matches, MaxLength } from 'class-validator';
 import { PASSWORD_MESSAGE, PASSWORD_PATTERN } from '../../common/utils/password-policy';
 
 const toEmail = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim().toLowerCase() : value);
@@ -51,4 +51,31 @@ export class ChangePasswordDto {
   @IsString()
   @Matches(PASSWORD_PATTERN, { message: PASSWORD_MESSAGE })
   newPassword: string;
+}
+
+export class RegisterDto {
+  @ApiProperty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsString()
+  @Length(2, 80, { message: 'Los nombres deben tener entre 2 y 80 caracteres.' })
+  firstName: string;
+
+  @ApiProperty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsString()
+  @Length(2, 80, { message: 'Los apellidos deben tener entre 2 y 80 caracteres.' })
+  lastName: string;
+
+  @ApiProperty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: 'Escriba un correo válido.' })
+  @MaxLength(160)
+  email: string;
+}
+
+export class FirebaseLoginDto {
+  @ApiProperty({ description: 'Token de identidad emitido por Firebase Authentication' })
+  @IsString()
+  @Length(20, 4096, { message: 'Token no válido.' })
+  idToken: string;
 }

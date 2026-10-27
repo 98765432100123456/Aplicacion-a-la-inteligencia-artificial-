@@ -4,7 +4,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from '../config/configuration';
+import { Role } from '../roles/entities/role.entity';
 import { User } from '../users/entities/user.entity';
+import { ExternalAuthService } from './external-auth.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -14,7 +16,7 @@ import { PasswordResetService } from './password-reset.service';
 @Module({
   imports: [
     PassportModule,
-    TypeOrmModule.forFeature([User, PasswordResetToken]),
+    TypeOrmModule.forFeature([User, Role, PasswordResetToken]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<AppConfig, true>) => {
@@ -24,7 +26,7 @@ import { PasswordResetService } from './password-reset.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PasswordResetService],
+  providers: [AuthService, ExternalAuthService, JwtStrategy, PasswordResetService],
   exports: [PasswordResetService],
 })
 export class AuthModule {}

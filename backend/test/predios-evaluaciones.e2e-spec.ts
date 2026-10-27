@@ -5,6 +5,7 @@ import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { LISTA_BOVINOS } from '../src/compartido/lista-chequeo';
+import { MailService } from '../src/mail/mail.service';
 import { Species } from '../src/farms/entities/species.entity';
 import { PERMISSIONS } from '../src/roles/constants/permissions';
 import { Role } from '../src/roles/entities/role.entity';
@@ -48,7 +49,7 @@ describe('Predios, evaluaciones e informes (e2e)', () => {
       isSystem: true,
       permissions: [PERMISSIONS.FINCAS_VER, PERMISSIONS.FINCAS_GESTIONAR, PERMISSIONS.EVALUACIONES_VER, PERMISSIONS.EVALUACIONES_DILIGENCIAR],
     });
-    const propietario = await roles.save({ code: 'PROPIETARIO', name: 'Propietario', isSystem: true, permissions: [PERMISSIONS.PREDIOS_PROPIOS] });
+    const propietario = await roles.save({ code: 'PROPIETARIO', name: 'Propietario del predio', isSystem: true, permissions: [PERMISSIONS.PREDIOS_PROPIOS] });
 
     const users = ds.getRepository(User);
     const hash = await bcrypt.hash(CLAVE, 4);
@@ -154,5 +155,29 @@ describe('Predios, evaluaciones e informes (e2e)', () => {
 
     await http().get(`/api/evaluations/${evaluacionId}/reports/tecnico`).set(como('otro')).expect(404);
     await http().get(`/api/evaluations/${evaluacionId}/reports/otro`).set(como('dueno')).expect(400);
+  });
+
+  it('un propietario se registra, confirma su correo y ve el predio registrado con ese correo', async () => {
+    await http().post('/api/farms').set(como('evaluador')).send(predio('Villa Nueva', 'nuevo@prueba.co')).expect(201);
+    const mensaje = 'Si el correo no tenía cuenta, enviamos un enlace para crear su contraseña. Revise también la carpeta de spam.';
+    const res = await http().post('/api/auth/register').send({ firstName: 'Nora', lastName: 'Nueva', email: 'Nuevo@Prueba.co' }).expect(200);
+    expect(res.body.message).toBe(mensaje);
+
+    const enlace = app.get(MailService).lastMessage!.text.match(/token=([^\s]+)/)![1];
+    await http().post('/api/auth/reset-password').send({ token: decodeURIComponent(enlace), password: CLAVE }).expect(200);
+    const login = await http().post('/api/auth/login').send({ email: 'nuevo@prueba.co', password: CLAVE }).expect(200);
+    expect(login.body.user.role.code).toBe('PROPIETARIO');
+    const lista = await http().get('/api/farms').set({ Authorization: `Bearer ${login.body.accessToken}` }).expect(200);
+    expect(lista.body.map((f: { name: string }) => f.name)).toEqual(['Villa Nueva']);
+
+    // Repetir el registro no revela que la cuenta existe ni envía otro correo.
+    const antes = app.get(MailService).lastMessage;
+    expect((await http().post('/api/auth/register').send({ firstName: 'Otra', lastName: 'Vez', email: 'nuevo@prueba.co' }).expect(200)).body.message).toBe(mensaje);
+    expect(app.get(MailService).lastMessage).toBe(antes);
+  });
+
+  it('el ingreso con proveedores externos queda deshabilitado sin proyecto de Firebase', async () => {
+    expect((await http().get('/api/auth/config').expect(200)).body).toEqual({ registration: true, firebase: null });
+    await http().post('/api/auth/firebase').send({ idToken: 'x'.repeat(40) }).expect(404);
   });
 });

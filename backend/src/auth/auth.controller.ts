@@ -5,7 +5,8 @@ import { AuthUser } from '../common/interfaces/auth-user';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthService } from './auth.service';
-import { ChangePasswordDto, ForgotPasswordDto, LoginDto, ResetPasswordDto } from './dto/auth.dto';
+import { ChangePasswordDto, FirebaseLoginDto, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto/auth.dto';
+import { ExternalAuthService } from './external-auth.service';
 
 const FORGOT_MESSAGE =
   'Si el correo está registrado y activo, enviamos un enlace para restablecer la contraseña. Revise también la carpeta de spam.';
@@ -13,7 +14,34 @@ const FORGOT_MESSAGE =
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly external: ExternalAuthService,
+  ) {}
+
+  /** Opciones de ingreso disponibles: registro y proveedores de Firebase. */
+  @Public()
+  @Get('config')
+  config() {
+    return this.external.publicConfig();
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @Post('register')
+  @HttpCode(200)
+  async register(@Body() dto: RegisterDto, @Ip() ip: string) {
+    await this.external.register(dto, ip);
+    return { message: 'Si el correo no tenía cuenta, enviamos un enlace para crear su contraseña. Revise también la carpeta de spam.' };
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post('firebase')
+  @HttpCode(200)
+  firebase(@Body() dto: FirebaseLoginDto, @Ip() ip: string) {
+    return this.external.loginWithFirebase(dto.idToken, ip);
+  }
 
   @Public()
   @Throttle({ default: { limit: 10, ttl: 60_000 } })

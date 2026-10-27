@@ -26,8 +26,8 @@ export interface AppConfig {
   };
   /** Recomendaciones con IA; sin clave se usan las recomendaciones por reglas. */
   ai: { apiKey?: string; model: string; timeoutMs: number };
-  /** Proyecto de Firebase Authentication; sin él solo se ingresa con correo y contraseña. */
-  firebaseProjectId?: string;
+  /** Firebase Authentication; sin proyecto solo se ingresa con correo y contraseña. */
+  firebase: { projectId?: string; apiKey?: string; authDomain?: string; providers: string[] };
 }
 
 export function loadConfig(): AppConfig {
@@ -62,7 +62,12 @@ export function loadConfig(): AppConfig {
       model: process.env.AI_MODEL || 'claude-opus-5-5',
       timeoutMs: Number(process.env.AI_TIMEOUT_MS ?? 90_000),
     },
-    firebaseProjectId: process.env.FIREBASE_PROJECT_ID || undefined,
+    firebase: {
+      projectId: process.env.FIREBASE_PROJECT_ID || undefined,
+      apiKey: process.env.FIREBASE_API_KEY || undefined,
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN || undefined,
+      providers: (process.env.FIREBASE_PROVIDERS ?? 'google,facebook,microsoft').split(',').map((p) => p.trim()).filter(Boolean),
+    },
   };
 }
 
