@@ -50,7 +50,7 @@ Documentación del proyecto
 | [Sistema de diseño](docs/SISTEMA-DE-DISENO.md) | Paleta en modo claro y oscuro, tipografía, componentes y decisiones de diseño |
 | [Diagramas UML](docs/uml/DIAGRAMAS-UML.md) | Casos de uso, clases, secuencia, actividad, estados, componentes y despliegue |
 | [Diseño de la base de datos](docs/base-de-datos/DISENO-BASE-DE-DATOS.md) | Modelo conceptual, lógico y físico, diagramas entidad relación, script SQL y diccionario de datos |
-| [Diseños de interfaz](docs/disenos/) | Capturas de cada pantalla en escritorio y teléfono, en modo claro y oscuro |
+| [Diseños de interfaz](docs/disenos/) | Capturas de cada pantalla en escritorio y teléfono, en modo claro y oscuro; en `predios-y-evaluaciones/`, los predios, la evaluación, el resultado, la vista del propietario y ejemplos de los dos informes PDF |
 | [Revisión con las guías de Apple](docs/REVISION-APPLE-HIG.md) | Auditoría de diseño con las guías de Apple y de Vercel, y correcciones aplicadas |
 | [Plan de trabajo](docs/PLAN-DE-TRABAJO.md) | Estado de cada requerimiento y planeación de los sprints siguientes |
 | [Estrategia de ramas](docs/RAMAS.md) | Flujo de trabajo con Git y reglas de contribución |
