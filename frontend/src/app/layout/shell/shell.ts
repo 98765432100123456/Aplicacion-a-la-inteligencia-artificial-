@@ -13,6 +13,7 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { path: '/inicio', label: 'Inicio' },
+  { path: '/predios', label: 'Predios', permissions: [P.FINCAS_VER, P.FINCAS_GESTIONAR, P.PREDIOS_PROPIOS] },
   { path: '/usuarios', label: 'Usuarios', permissions: [P.USUARIOS_VER, P.USUARIOS_GESTIONAR] },
   { path: '/roles', label: 'Roles', permissions: [P.ROLES_VER] },
   { path: '/mi-cuenta', label: 'Cuenta' },
@@ -34,7 +35,10 @@ export class Shell {
 
   protected readonly items = computed(() => {
     this.auth.user();
-    return NAV.filter((i) => !i.permissions || this.auth.can(...i.permissions));
+    const soloPropios = !this.auth.can(P.FINCAS_VER, P.FINCAS_GESTIONAR);
+    return NAV.filter((i) => !i.permissions || this.auth.can(...i.permissions)).map((i) =>
+      i.path === '/predios' && soloPropios ? { ...i, label: 'Mis predios' } : i,
+    );
   });
 
   protected readonly initials = computed(() => {

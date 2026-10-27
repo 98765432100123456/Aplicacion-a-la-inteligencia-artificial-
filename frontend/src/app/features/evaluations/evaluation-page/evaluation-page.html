@@ -1,0 +1,14 @@
+@if (evaluation(); as e) {
+  <a class="volver" [routerLink]="['/predios', e.farm.id]">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>{{ e.farm.name }}
+  </a>
+  @if (e.status === 'BORRADOR' && canEvaluate) {
+    <app-evaluation-form [evaluation]="e" (finalized)="finalizada($event)" />
+  } @else {
+    <app-evaluation-result [evaluation]="e" (updated)="evaluation.set($event)" />
+  }
+} @else if (error()) {
+  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+} @else {
+  <p class="cargando" role="status">Cargando evaluación…</p>
+}

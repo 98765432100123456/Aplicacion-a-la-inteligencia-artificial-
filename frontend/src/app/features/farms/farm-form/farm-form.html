@@ -1,0 +1,154 @@
+@if (serverError()) {
+  <p class="aviso aviso-error" role="alert">{{ serverError() }}</p>
+}
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <fieldset class="bloque">
+    <legend>Predio</legend>
+    <div class="rejilla">
+      <div class="campo completo">
+        <label for="name">Nombre de la finca o predio</label>
+        <input id="name" class="control" formControlName="name" autocomplete="off" placeholder="Finca La Esperanza" [attr.aria-invalid]="bad('name') || null" />
+        @if (bad('name')) { <span class="error">Escriba el nombre del predio (mínimo 2 caracteres).</span> }
+      </div>
+      <div class="campo">
+        <label for="department">Departamento</label>
+        <input id="department" class="control" formControlName="department" list="lista-departamentos" autocomplete="off" [attr.aria-invalid]="bad('department') || null" />
+        <datalist id="lista-departamentos">
+          @for (d of departamentos; track d) { <option [value]="d"></option> }
+        </datalist>
+        @if (bad('department')) { <span class="error">Escriba el departamento.</span> }
+      </div>
+      <div class="campo">
+        <label for="municipality">Municipio</label>
+        <input id="municipality" class="control" formControlName="municipality" autocomplete="off" [attr.aria-invalid]="bad('municipality') || null" />
+        @if (bad('municipality')) { <span class="error">Escriba el municipio.</span> }
+      </div>
+      <div class="campo">
+        <label for="vereda">Vereda <span class="opcional">(opcional)</span></label>
+        <input id="vereda" class="control" formControlName="vereda" autocomplete="off" />
+      </div>
+      <div class="campo">
+        <label for="address">Dirección o indicaciones <span class="opcional">(opcional)</span></label>
+        <input id="address" class="control" formControlName="address" autocomplete="off" placeholder="Km 3 vía a Carmen de Carupa" />
+      </div>
+      <div class="campo">
+        <label for="latitude">Latitud <span class="opcional">(opcional)</span></label>
+        <input id="latitude" class="control cifras" formControlName="latitude" type="number" step="any" inputmode="decimal" placeholder="5.3091" [attr.aria-invalid]="bad('latitude') || null" />
+        @if (bad('latitude')) { <span class="error">Entre −90 y 90.</span> }
+      </div>
+      <div class="campo">
+        <label for="longitude">Longitud <span class="opcional">(opcional)</span></label>
+        <input id="longitude" class="control cifras" formControlName="longitude" type="number" step="any" inputmode="decimal" placeholder="-73.8162" [attr.aria-invalid]="bad('longitude') || null" />
+        @if (bad('longitude')) { <span class="error">Entre −180 y 180.</span> }
+      </div>
+      <div class="campo">
+        <label for="areaHectares">Área en hectáreas <span class="opcional">(opcional)</span></label>
+        <input id="areaHectares" class="control cifras" formControlName="areaHectares" type="number" step="any" min="0" inputmode="decimal" [attr.aria-invalid]="bad('areaHectares') || null" />
+        @if (bad('areaHectares')) { <span class="error">El área debe ser mayor que cero.</span> }
+      </div>
+      <div class="campo">
+        <label for="productionSystem">Sistema productivo <span class="opcional">(opcional)</span></label>
+        <input id="productionSystem" class="control" formControlName="productionSystem" list="lista-sistemas" autocomplete="off" />
+        <datalist id="lista-sistemas">
+          <option value="Leche"></option>
+          <option value="Carne"></option>
+          <option value="Doble propósito"></option>
+          <option value="Cría"></option>
+        </datalist>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="bloque">
+    <legend>Propietario</legend>
+    <div class="rejilla">
+      <div class="campo completo">
+        <label for="ownerName">Nombre del propietario</label>
+        <input id="ownerName" class="control" formControlName="ownerName" autocomplete="off" [attr.aria-invalid]="bad('ownerName') || null" />
+        @if (bad('ownerName')) { <span class="error">Escriba el nombre del propietario.</span> }
+      </div>
+      <div class="campo">
+        <label for="ownerPhone">Teléfono de contacto</label>
+        <input id="ownerPhone" class="control" type="tel" inputmode="tel" formControlName="ownerPhone" placeholder="310 456 7890" autocomplete="off" [attr.aria-invalid]="bad('ownerPhone') || null" />
+        @if (bad('ownerPhone')) { <span class="error">Use de 7 a 20 dígitos.</span> }
+      </div>
+      <div class="campo">
+        <label for="ownerDocument">Documento <span class="opcional">(opcional)</span></label>
+        <input id="ownerDocument" class="control" formControlName="ownerDocument" autocomplete="off" [attr.aria-invalid]="bad('ownerDocument') || null" />
+        @if (bad('ownerDocument')) { <span class="error">Use de 4 a 20 letras, números o guiones.</span> }
+      </div>
+      <div class="campo completo">
+        <label for="ownerEmail">Correo del propietario <span class="opcional">(opcional)</span></label>
+        <input id="ownerEmail" class="control" type="email" inputmode="email" autocapitalize="off" spellcheck="false" formControlName="ownerEmail" placeholder="nombre@dominio.co" aria-describedby="ayuda-correo" [attr.aria-invalid]="bad('ownerEmail') || null" />
+        <span class="ayuda" id="ayuda-correo">Con este correo el propietario consulta su predio, sus evaluaciones y las recomendaciones.</span>
+        @if (bad('ownerEmail')) { <span class="error">Escriba un correo válido.</span> }
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="bloque" id="species" tabindex="-1" formArrayName="species">
+    <legend>Especies e inventario</legend>
+    <p class="nota">El número de animales define el tipo de productor y la muestra mínima que exige la norma del ICA.</p>
+    @for (fila of filas.controls; track fila; let i = $index) {
+      <div class="especie" [formGroupName]="i">
+        <div class="especie-campos">
+          <div class="campo">
+            <label [for]="'esp-' + i">Especie</label>
+            <select class="control" [id]="'esp-' + i" formControlName="speciesId" [attr.aria-invalid]="badFila(i, 'speciesId') || null">
+              <option value="" disabled>Seleccione…</option>
+              @for (s of opciones(i); track s.id) { <option [value]="s.id">{{ s.name }}</option> }
+            </select>
+          </div>
+          <div class="campo">
+            <label [for]="'crias-' + i">Crías</label>
+            <input class="control cifras" type="number" min="0" inputmode="numeric" [id]="'crias-' + i" formControlName="calves" [attr.aria-invalid]="badFila(i, 'calves') || null" />
+          </div>
+          <div class="campo">
+            <label [for]="'jovenes-' + i">Jóvenes</label>
+            <input class="control cifras" type="number" min="0" inputmode="numeric" [id]="'jovenes-' + i" formControlName="young" [attr.aria-invalid]="badFila(i, 'young') || null" />
+          </div>
+          <div class="campo">
+            <label [for]="'adultos-' + i">Adultos</label>
+            <input class="control cifras" type="number" min="0" inputmode="numeric" [id]="'adultos-' + i" formControlName="adults" [attr.aria-invalid]="badFila(i, 'adults') || null" />
+          </div>
+        </div>
+        @let r = resumen(i);
+        <div class="especie-pie">
+          <p class="norma" aria-live="polite">
+            @if (r.total) {
+              <b class="cifras">{{ r.total }}</b> animales · {{ r.productor }} ·
+              @if (r.muestra) { muestra mínima <b class="cifras">{{ r.muestra }}</b> ({{ r.reparto![0] }} crías, {{ r.reparto![1] }} jóvenes, {{ r.reparto![2] }} adultos) }
+              @else { capítulo de pequeño productor }
+            } @else {
+              Escriba cuántos animales hay en cada grupo de edad.
+            }
+          </p>
+          @if (filas.length > 1) {
+            <button type="button" class="btn btn-texto btn-sm" (click)="quitarEspecie(i)">Quitar especie</button>
+          }
+        </div>
+        @if (badFila(i, 'speciesId') || badFila(i, 'calves') || badFila(i, 'young') || badFila(i, 'adults')) {
+          <span class="error">Seleccione la especie y escriba números enteros de 0 en adelante.</span>
+        }
+      </div>
+    }
+    @if (filas.length < species().length) {
+      <button type="button" class="btn btn-secundario btn-sm" (click)="agregarEspecie()">Agregar otra especie</button>
+    }
+  </fieldset>
+
+  <fieldset class="bloque">
+    <legend>Información adicional</legend>
+    <div class="campo">
+      <label for="notes">Datos útiles para la evaluación <span class="opcional">(opcional)</span></label>
+      <textarea id="notes" class="control" rows="4" formControlName="notes" placeholder="Accesos, instalaciones, manejo, horarios de ordeño…"></textarea>
+    </div>
+  </fieldset>
+
+  <div class="botones">
+    <button type="button" class="btn btn-secundario" (click)="cancel.emit()">Cancelar</button>
+    <button type="submit" class="btn btn-principal" [disabled]="saving()">
+      @if (saving()) { <span class="spinner" aria-hidden="true"></span> Guardando… } @else { {{ submitLabel() }} }
+    </button>
+  </div>
+</form>

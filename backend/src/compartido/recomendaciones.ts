@@ -43,7 +43,7 @@ export function recomendacionesPorReglas(resultado: Resultado, lista: Indicador[
       titulo: LIBERTADES.find((l) => l.codigo === h.libertad)!.corto,
       problema: i.propietario.problema,
       porque: i.propietario.porque,
-      acciones: i.propietario.acciones,
+      acciones: [...i.propietario.acciones],
     };
   });
   const orden: Prioridad[] = ['ALTA', 'MEDIA', 'BAJA'];

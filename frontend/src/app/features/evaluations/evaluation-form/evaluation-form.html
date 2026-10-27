@@ -1,0 +1,101 @@
+@let e = evaluation();
+<header class="cabecera entrada">
+  <h1 class="titular">Evaluación de {{ e.species.name.toLowerCase() }}</h1>
+  <p class="bajada">{{ e.farm.name }} · {{ e.farm.location }}</p>
+</header>
+
+<section class="contexto" aria-label="Datos de la visita">
+  <div class="campo">
+    <label for="fecha-visita">Fecha de la visita</label>
+    <input id="fecha-visita" class="control cifras" type="date" [value]="visitDate()" (change)="cambiarCampo('visitDate', $any($event.target).value)" />
+  </div>
+  <dl class="ficha">
+    <div><dt>Inventario</dt><dd class="cifras">{{ e.inventory.total }} animales: {{ e.inventory.calves }} crías, {{ e.inventory.young }} jóvenes, {{ e.inventory.adults }} adultos</dd></div>
+    <div><dt>Tipo de productor</dt><dd>{{ productor[e.producerType] }}</dd></div>
+    <div>
+      <dt>Muestra mínima</dt>
+      <dd>
+        @if (e.sampleSize && e.sampleByGroup) {
+          <b class="cifras">{{ e.sampleSize }}</b> animales: {{ e.sampleByGroup[0] }} crías, {{ e.sampleByGroup[1] }} jóvenes y {{ e.sampleByGroup[2] }} adultos
+        } @else { No aplica tabla de muestreo (capítulo de pequeño productor) }
+      </dd>
+    </div>
+  </dl>
+</section>
+
+@for (s of secciones(); track s.codigo) {
+  <section class="seccion" [attr.aria-labelledby]="'sec-' + s.codigo">
+    <div class="seccion-cabeza">
+      <h2 [id]="'sec-' + s.codigo">{{ s.nombre }}</h2>
+      <span class="peso cifras">{{ s.peso }} % de la nota</span>
+    </div>
+    @for (i of s.indicadores; track i.codigo) {
+      @let r = answers()[i.codigo];
+      <article class="indicador" [class.respondido]="r" [id]="'ind-' + i.codigo" tabindex="-1">
+        <div class="pregunta">
+          <p class="texto"><span class="codigo cifras">{{ i.codigo }}</span> {{ i.texto }}</p>
+          <p class="ayuda">{{ i.ayuda }}</p>
+          <p class="meta">
+            {{ tipo[i.tipo] }} · {{ metodo[i.metodo] }}
+            @if (i.critico) { <span class="critico">Crítico</span> }
+          </p>
+        </div>
+        <fieldset class="respuestas">
+          <legend class="visually-hidden">Respuesta para {{ i.codigo }}</legend>
+          @for (o of opciones(i.respuesta); track o.valor) {
+            <label class="opcion" [class]="'opcion ' + o.valor.toLowerCase()">
+              <input type="radio" [name]="'r-' + i.codigo" [value]="o.valor" [checked]="r?.answer === o.valor" (change)="responder(i.codigo, o.valor)" />
+              {{ o.texto }}
+            </label>
+          }
+        </fieldset>
+        @if (r && observando().has(i.codigo)) {
+          <div class="campo observacion">
+            <label [for]="'obs-' + i.codigo">Observación</label>
+            <textarea class="control" rows="2" maxlength="1000" [id]="'obs-' + i.codigo" [value]="r.observation ?? ''" (input)="observar(i.codigo, $any($event.target).value)"></textarea>
+          </div>
+        } @else if (r) {
+          <button type="button" class="btn btn-texto btn-sm agregar" (click)="mostrarObservacion(i.codigo)">Agregar observación</button>
+        }
+      </article>
+    }
+  </section>
+}
+
+<section class="seccion">
+  <div class="campo">
+    <label for="obs-general">Observación general de la evaluación <span class="opcional">(opcional)</span></label>
+    <textarea id="obs-general" class="control" rows="4" maxlength="4000" [value]="general()" (input)="cambiarCampo('general', $any($event.target).value)"></textarea>
+  </div>
+</section>
+
+<div class="barra" role="region" aria-label="Progreso de la evaluación">
+  <div class="progreso">
+    <span class="cifras"><b>{{ respondidas() }}</b> de {{ total() }} respondidos</span>
+    <span class="pista" aria-hidden="true"><span [style.width.%]="(respondidas() / total()) * 100"></span></span>
+    <small role="status">
+      @if (saving()) { Guardando… } @else if (lastSaved()) { Guardado a las {{ lastSaved() | date: 'h:mm a' }} }
+    </small>
+  </div>
+  <div class="botones-barra">
+    <button type="button" class="btn btn-secundario" (click)="guardar(false)" [disabled]="saving()">Guardar</button>
+    <button type="button" class="btn btn-principal" (click)="pedirFinalizar()" [disabled]="finalizing()">
+      @if (finalizing()) { <span class="spinner" aria-hidden="true"></span> Calculando… } @else { Finalizar evaluación }
+    </button>
+  </div>
+</div>
+
+<app-dialog [open]="confirming()" heading="¿Finalizar la evaluación?" (closed)="confirming.set(false)">
+  <p class="dialogo-texto">Se calcula el puntaje, se generan las recomendaciones y los dos informes en PDF. Después de finalizar ya no se pueden cambiar las respuestas.</p>
+  <div class="botones">
+    <button type="button" class="btn btn-secundario" (click)="confirming.set(false)">Seguir revisando</button>
+    <button type="button" class="btn btn-principal" (click)="finalizar()">Finalizar</button>
+  </div>
+</app-dialog>
+
+@if (finalizing()) {
+  <div class="procesando" role="alert" aria-live="assertive">
+    <span class="spinner" aria-hidden="true"></span>
+    <p><b>Calculando el resultado</b><br />Preparando las recomendaciones y los informes. Puede tardar hasta un minuto.</p>
+  </div>
+}

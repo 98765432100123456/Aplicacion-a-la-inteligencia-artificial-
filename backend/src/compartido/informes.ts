@@ -19,6 +19,7 @@ import {
 /**
  * Plantillas de los dos informes en formato pdfmake. El servidor las convierte
  * en PDF y las guarda; el modo demostración hace lo mismo en el navegador.
+ * pdfmake modifica los arreglos que recibe: toda lista se pasa como copia.
  */
 
 export interface DatosInforme {
@@ -412,7 +413,7 @@ export function informePropietario(d: DatosInforme): DocumentoPdf {
           margin: [0, 4, 0, 2],
         },
         { text: "Qué puede hacer:", bold: true },
-        { ul: x.acciones, margin: [0, 2, 0, 0] },
+        { ul: [...x.acciones], margin: [0, 2, 0, 0] },
       ],
       margin: [0, 0, 0, 12],
       unbreakable: true,

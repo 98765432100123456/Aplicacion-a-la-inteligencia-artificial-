@@ -1,6 +1,11 @@
 <section class="saludo entrada">
   <h1 class="titular">Hola, {{ auth.user()?.firstName }}.</h1>
-  <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
+  @if (ownerOnly) {
+    <p class="bajada">Aquí encuentra los resultados de las evaluaciones de su finca y lo que puede hacer para mejorar el bienestar de sus animales.</p>
+    <a class="btn btn-principal ir" routerLink="/predios">Ver mis predios</a>
+  } @else {
+    <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
+  }
 </section>
 
 @if (noPermission) {
@@ -33,10 +38,11 @@
 
 <app-guia-bienestar />
 
+@if (!ownerOnly) {
 <section class="ruta" aria-labelledby="ruta-titulo">
   <div class="ruta-texto">
-    <h2 id="ruta-titulo">Lo que viene.</h2>
-    <p>La plataforma crece por módulos. Este sprint entrega la seguridad; los siguientes llevan la evaluación al campo.</p>
+    <h2 id="ruta-titulo">Módulos.</h2>
+    <p>La plataforma crece por módulos. Ya están disponibles los predios, la evaluación en campo, las recomendaciones con IA y los informes en PDF.</p>
   </div>
   <ol class="ruta-lista">
     @for (m of ruta; track m.modulo; let i = $index) {
@@ -50,3 +56,4 @@
     }
   </ol>
 </section>
+}

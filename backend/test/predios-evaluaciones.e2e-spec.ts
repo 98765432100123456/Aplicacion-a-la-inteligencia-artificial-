@@ -139,6 +139,9 @@ describe('Predios, evaluaciones e informes (e2e)', () => {
     expect(res.body.results.hallazgos).toEqual([expect.objectContaining({ codigo: 'N1', critico: true, observacion: '6 de 30 animales flacos' })]);
     expect(res.body.recommendation).toMatchObject({ origen: 'REGLAS', recomendaciones: [expect.objectContaining({ prioridad: 'ALTA' })] });
     expect(res.body.reports.map((r: { kind: string }) => r.kind).sort()).toEqual(['PROPIETARIO', 'TECNICO']);
+    // pdfmake modifica las listas que recibe; lo guardado debe seguir siendo texto.
+    const guardada = await http().get(`/api/evaluations/${evaluacionId}`).set(como('evaluador')).expect(200);
+    expect(guardada.body.recommendation.recomendaciones[0].acciones.every((a: unknown) => typeof a === 'string')).toBe(true);
 
     await http().put(`/api/evaluations/${evaluacionId}`).set(como('evaluador')).send({ generalObservation: 'tarde' }).expect(409);
   });

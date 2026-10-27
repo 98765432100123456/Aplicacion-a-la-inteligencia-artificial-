@@ -1,0 +1,56 @@
+<app-page-header
+  [heading]="ownerOnly ? 'Mis predios' : 'Predios'"
+  [description]="ownerOnly ? 'Consulte los resultados de las evaluaciones de su finca y las recomendaciones para mejorar.' : 'Fincas registradas, su inventario y el resultado de su última evaluación.'"
+>
+  @if (canManage) {
+    <a class="btn btn-principal" routerLink="/predios/nuevo">Nuevo predio</a>
+  }
+</app-page-header>
+
+@if (!ownerOnly) {
+  <div class="buscador">
+    <label class="visually-hidden" for="buscar-predio">Buscar</label>
+    <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4 4" /></svg>
+    <input id="buscar-predio" class="control" type="search" [formControl]="search" placeholder="Nombre del predio, propietario o municipio…" autocomplete="off" />
+  </div>
+}
+
+@if (error()) {
+  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+} @else if (empty()) {
+  <div class="vacio">
+    @if (ownerOnly) {
+      <h2>Aún no hay predios asociados a su cuenta.</h2>
+      <p>Pida al evaluador que registre su correo <b>{{ auth.user()?.email }}</b> en los datos del predio. Cuando lo haga, su finca aparecerá aquí.</p>
+    } @else if (search.value) {
+      <h2>No hay predios que coincidan con la búsqueda.</h2>
+      <button type="button" class="btn btn-secundario" (click)="search.setValue('')">Limpiar búsqueda</button>
+    } @else {
+      <h2>Todavía no hay predios registrados.</h2>
+      @if (canManage) { <a class="btn btn-principal" routerLink="/predios/nuevo">Registrar el primer predio</a> }
+    }
+  </div>
+} @else {
+  <ul class="predios" [class.atenuado]="loading()" aria-label="Predios">
+    @for (f of farms(); track f.id) {
+      <li>
+        <a [routerLink]="['/predios', f.id]">
+          <span class="principal">
+            <b>{{ f.name }}</b>
+            <span>{{ f.owner.name }} · {{ f.municipality }}, {{ f.department }}</span>
+          </span>
+          <span class="animales">{{ especies(f) }}</span>
+          <span class="ultima">
+            @if (f.lastEvaluation) {
+              <app-nivel [nivel]="f.lastEvaluation.level" [puntaje]="f.lastEvaluation.score" />
+              <small>{{ f.lastEvaluation.finishedAt | date: 'd MMM y' }}</small>
+            } @else {
+              <span class="sin">Sin evaluaciones</span>
+            }
+          </span>
+          <svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+        </a>
+      </li>
+    }
+  </ul>
+}

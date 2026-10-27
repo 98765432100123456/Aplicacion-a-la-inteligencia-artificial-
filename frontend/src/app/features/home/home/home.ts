@@ -14,12 +14,13 @@ interface Resumen {
 
 /** Hoja de ruta real del proyecto (docs/PLAN-DE-TRABAJO.md). */
 const RUTA = [
-  { modulo: 'Seguridad y acceso', detalle: 'Ingreso, recuperación de contraseña, usuarios y roles', cuando: 'Disponible', listo: true },
-  { modulo: 'Fincas y catálogos', detalle: 'Ubicación, especies e inventario por grupo etario', cuando: 'Segundo sprint', listo: false },
-  { modulo: 'Parametrización por especie', detalle: 'Criterios, indicadores, preguntas y ponderaciones', cuando: 'Tercer sprint', listo: false },
-  { modulo: 'Evaluación en campo', detalle: 'Diligenciamiento por secciones, evidencias y guardado parcial', cuando: 'Cuarto sprint', listo: false },
-  { modulo: 'Diagnóstico con IA', detalle: 'Puntaje, nivel de bienestar y recomendaciones editables', cuando: 'Quinto sprint', listo: false },
-  { modulo: 'Reportes y certificación', detalle: 'Historial, comparación, PDF, Excel y certificado', cuando: 'Sexto sprint', listo: false },
+  { modulo: 'Seguridad y acceso', detalle: 'Ingreso, registro de propietarios, recuperación de contraseña, usuarios y roles', cuando: 'Disponible', listo: true },
+  { modulo: 'Predios', detalle: 'Propietario, ubicación, especies e inventario por grupo etario', cuando: 'Disponible', listo: true },
+  { modulo: 'Evaluación en campo', detalle: 'Lista de chequeo por libertad, guardado parcial y puntaje según la norma', cuando: 'Disponible', listo: true },
+  { modulo: 'Recomendaciones con IA', detalle: 'Lenguaje sencillo para el propietario, con respaldo por reglas', cuando: 'Disponible', listo: true },
+  { modulo: 'Informes e historial', detalle: 'Informe técnico e informe para el propietario en PDF', cuando: 'Disponible', listo: true },
+  { modulo: 'Parametrización por especie', detalle: 'Editar criterios, indicadores y ponderaciones desde la plataforma', cuando: 'Próximo sprint', listo: false },
+  { modulo: 'Tableros y certificación', detalle: 'Indicadores por zona, comparación, Excel y certificado', cuando: 'Próximo sprint', listo: false },
 ];
 
 @Component({
@@ -34,6 +35,7 @@ export class Home implements OnInit {
   protected readonly ruta = RUTA;
   protected readonly canManageUsers = this.auth.can(P.USUARIOS_VER, P.USUARIOS_GESTIONAR);
   protected readonly canSeeRoles = this.auth.can(P.ROLES_VER);
+  protected readonly ownerOnly = !this.auth.can(P.FINCAS_VER, P.FINCAS_GESTIONAR) && this.auth.can(P.PREDIOS_PROPIOS);
   private readonly canListRoles = this.auth.can(P.ROLES_VER, P.USUARIOS_GESTIONAR);
   protected readonly noPermission = !!inject(ActivatedRoute).snapshot.queryParamMap.get('sinPermiso');
   protected readonly resumen = signal<Resumen | null>(null);

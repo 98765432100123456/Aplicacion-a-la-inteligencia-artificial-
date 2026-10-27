@@ -67,10 +67,16 @@ export interface PermissionDef {
   label: string;
 }
 
-/** Claves de permiso; deben coincidir con backend/src/roles/permissions.ts */
+/** Claves de permiso; deben coincidir con backend/src/roles/constants/permissions.ts */
 export const P = {
   USUARIOS_VER: 'usuarios.ver',
   USUARIOS_GESTIONAR: 'usuarios.gestionar',
   ROLES_VER: 'roles.ver',
   ROLES_GESTIONAR: 'roles.gestionar',
+  FINCAS_VER: 'fincas.ver',
+  FINCAS_GESTIONAR: 'fincas.gestionar',
+  PREDIOS_PROPIOS: 'predios.propios',
+  EVALUACIONES_VER: 'evaluaciones.ver',
+  EVALUACIONES_DILIGENCIAR: 'evaluaciones.diligenciar',
+  REPORTES_VER: 'reportes.ver',
 } as const;

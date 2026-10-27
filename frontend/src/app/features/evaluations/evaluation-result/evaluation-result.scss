@@ -1,0 +1,61 @@
+.cabecera { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-8); margin-bottom: var(--e-6); }
+.sobre { color: var(--tinta-suave); font-weight: 700; font-size: var(--texto-sm); margin-bottom: var(--e-2); }
+.bajada { margin-top: var(--e-3); }
+.calificacion { display: grid; justify-items: end; gap: var(--e-1); text-align: right; }
+.rotulo { font-size: var(--texto-xs); color: var(--tinta-suave); font-weight: 700; }
+.puntaje { font-size: var(--texto-3xl); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+.puntaje small { font-size: var(--texto-lg); color: var(--tinta-suave); letter-spacing: 0; }
+.descargas { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-bottom: var(--e-8); }
+.aviso { margin-bottom: var(--e-8); }
+h2 { font-size: var(--texto-xl); letter-spacing: -0.03em; margin-bottom: var(--e-4); }
+section { margin-bottom: var(--e-12); }
+
+.libertades ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea-fuerte); }
+.libertades li { display: grid; grid-template-columns: minmax(9rem, 2fr) minmax(0, 5fr) minmax(8.5rem, auto); gap: var(--e-5); align-items: center; padding: var(--e-4) 0; border-bottom: 1px solid var(--linea); }
+.nombre { display: grid; }
+.nombre small { color: var(--tinta-suave); font-size: var(--texto-xs); font-weight: 700; }
+.barra { height: 0.625rem; border-radius: 999px; background: var(--linea); overflow: hidden; }
+.barra span { display: block; height: 100%; border-radius: inherit; background: var(--tinta-tenue); }
+.barra .bajo { background: var(--alerta); }
+.barra .medio { background: var(--maiz); }
+.barra .alto, .barra .excelente { background: var(--accion); }
+@media (prefers-reduced-motion: no-preference) {
+  .barra span { animation: llenar 700ms var(--curva) both; transform-origin: left; }
+  @keyframes llenar { from { transform: scaleX(0); } }
+}
+
+.rec-cabeza { display: flex; justify-content: space-between; align-items: center; gap: var(--e-3); }
+.resumen { font-size: var(--texto-lg); max-width: 46rem; margin-bottom: var(--e-6); }
+.tarjetas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--e-4); }
+.tarjetas > li { padding: var(--e-5); border: 1px solid var(--linea); border-top: 4px solid var(--accion); border-radius: var(--radio-panel); background: var(--superficie); }
+.tarjetas > li.alta { border-top-color: var(--alerta); }
+.tarjetas > li.media { border-top-color: var(--maiz); }
+.prioridad { font-size: var(--texto-xs); font-weight: 800; color: var(--tinta-suave); }
+.alta .prioridad { color: var(--alerta); }
+.media .prioridad { color: var(--maiz); }
+.tarjetas h3 { margin: var(--e-2) 0; font-size: var(--texto-lg); letter-spacing: -0.02em; }
+.tarjetas p { font-size: var(--texto-sm); }
+.que { margin-top: var(--e-3); }
+.tarjetas ul { margin: var(--e-1) 0 0; padding-left: 1.1rem; font-size: var(--texto-sm); display: grid; gap: var(--e-1); }
+.ninguna { color: var(--tinta-suave); }
+.origen { margin-top: var(--e-5); max-width: 46rem; font-size: var(--texto-xs); color: var(--tinta-suave); }
+
+.hallazgos { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea-fuerte); }
+.hallazgos li { display: grid; grid-template-columns: 2.5rem 1fr; gap: var(--e-3); padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); }
+.hallazgos small, .tenue { color: var(--tinta-suave); }
+.codigo { font-weight: 800; color: var(--tinta-suave); }
+.critico { margin-left: var(--e-2); padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--alerta-fondo); color: var(--alerta-texto); font-size: var(--texto-xs); font-weight: 800; }
+
+.detalle { margin-bottom: var(--e-12); border-top: 1px solid var(--linea-fuerte); }
+.detalle summary { min-height: 2.75rem; display: flex; align-items: center; font-weight: 700; cursor: pointer; color: var(--acento); }
+.detalle h3 { margin: var(--e-6) 0 var(--e-2); font-size: var(--texto-md); }
+.notas { white-space: pre-line; }
+
+@media (max-width: 47.49em) {
+  .cabecera { flex-direction: column; align-items: stretch; }
+  .calificacion { justify-items: start; text-align: left; }
+  .descargas .btn { width: 100%; }
+  .libertades li { grid-template-columns: 1fr auto; gap: var(--e-2) var(--e-3); }
+  .barra { grid-column: 1 / -1; grid-row: 2; }
+  .tarjetas { grid-template-columns: 1fr; }
+}

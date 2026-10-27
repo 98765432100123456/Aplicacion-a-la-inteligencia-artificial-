@@ -1,0 +1,158 @@
+<a class="volver" routerLink="/predios">
+  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>{{ ownerOnly ? 'Mis predios' : 'Predios' }}
+</a>
+
+@if (error()) {
+  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+}
+
+@if (farm(); as f) {
+  <header class="cabecera entrada">
+    <div>
+      <h1 class="titular">{{ f.name }}</h1>
+      <p class="meta">{{ f.owner.name }} · {{ f.municipality }}, {{ f.department }} · {{ especies(f) }}</p>
+    </div>
+    @if (!editing()) {
+      <div class="acciones">
+        @if (canEdit) {
+          <button type="button" class="btn btn-secundario" (click)="editing.set(true)">Editar finca</button>
+        }
+        @if (canEvaluate) {
+          <button type="button" class="btn btn-principal" (click)="realizarEvaluacion()" [disabled]="starting() !== null">
+            @if (starting()) { <span class="spinner" aria-hidden="true"></span> Abriendo… }
+            @else { {{ drafts().length && f.species.length === 1 ? 'Continuar evaluación' : 'Realizar evaluación' }} }
+          </button>
+        }
+      </div>
+    }
+  </header>
+
+  @if (editing()) {
+    <section class="edicion" aria-label="Editar datos del predio">
+      <app-farm-form [farm]="f" [species]="species()" [saving]="saving()" [serverError]="formError()" submitLabel="Guardar cambios" (save)="guardar($event)" (cancel)="cancelarEdicion()" />
+    </section>
+  } @else {
+    <div class="columnas">
+      <section aria-labelledby="t-datos">
+        <h2 id="t-datos">Datos del predio</h2>
+        <dl class="ficha">
+          <div><dt>Propietario</dt><dd>{{ f.owner.name }}@if (f.owner.document) { · {{ f.owner.document }} }</dd></div>
+          <div><dt>Teléfono</dt><dd><a [href]="'tel:' + f.owner.phone">{{ f.owner.phone }}</a></dd></div>
+          <div>
+            <dt>Correo</dt>
+            <dd>
+              @if (f.owner.email) {
+                {{ f.owner.email }}
+                @if (!ownerOnly) { <span class="estado" [class.estado-activo]="f.owner.hasAccount" [class.estado-inactivo]="!f.owner.hasAccount">{{ f.owner.hasAccount ? 'Con cuenta' : 'Sin cuenta' }}</span> }
+              } @else { <span class="tenue">Sin correo: el propietario no puede consultar en línea</span> }
+            </dd>
+          </div>
+          <div><dt>Ubicación</dt><dd>{{ ubicacion(f) }}</dd></div>
+          @if (f.latitude !== null && f.longitude !== null) {
+            <div><dt>Coordenadas</dt><dd class="cifras">{{ f.latitude }}, {{ f.longitude }}</dd></div>
+          }
+          @if (f.areaHectares) { <div><dt>Área</dt><dd class="cifras">{{ f.areaHectares | number: '1.0-2' }} ha</dd></div> }
+          @if (f.productionSystem) { <div><dt>Sistema productivo</dt><dd>{{ f.productionSystem }}</dd></div> }
+          @if (f.notes) { <div><dt>Información adicional</dt><dd class="notas">{{ f.notes }}</dd></div> }
+        </dl>
+      </section>
+
+      <section aria-labelledby="t-inventario">
+        <h2 id="t-inventario">Inventario y norma</h2>
+        @for (s of f.species; track s.speciesId) {
+          <div class="especie">
+            <div class="especie-cabeza">
+              <b>{{ s.name }}</b>
+              <span class="cifras total">{{ s.total }}</span>
+            </div>
+            <div class="grupos cifras">
+              <span><small>Crías</small>{{ s.calves }}</span>
+              <span><small>Jóvenes</small>{{ s.young }}</span>
+              <span><small>Adultos</small>{{ s.adults }}</span>
+            </div>
+            <p class="norma">
+              {{ productor[s.producerType] }} ·
+              @if (s.sampleSize) { muestra mínima de {{ s.sampleSize }} animales } @else { capítulo de pequeño productor }
+            </p>
+            @if (canEvaluate && f.species.length > 1) {
+              <button type="button" class="btn btn-secundario btn-sm" (click)="iniciar(s)" [disabled]="starting() !== null">
+                {{ draftFor(s) ? 'Continuar evaluación' : 'Evaluar ' + s.name.toLowerCase() }}
+              </button>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+
+  @if (!ownerOnly && drafts().length) {
+    <section class="borradores" aria-labelledby="t-curso">
+      <h2 id="t-curso">En curso</h2>
+      <ul>
+        @for (d of drafts(); track d.id) {
+          <li>
+            <span>{{ d.species.name }} · iniciada por {{ d.evaluator.name }} · guardada {{ d.lastSavedAt | date: "d MMM y, h:mm a" }}</span>
+            <a class="btn btn-texto btn-sm" [routerLink]="['/evaluaciones', d.id]">{{ canEvaluate ? 'Continuar' : 'Ver' }}</a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="historial" aria-labelledby="t-historial">
+    <div class="historial-cabeza">
+      <h2 id="t-historial">Historial</h2>
+      <fieldset class="segmentado">
+        <legend class="visually-hidden">Ver</legend>
+        <label><input type="radio" name="pestana" value="tecnicas" [checked]="tab() === 'tecnicas'" (change)="tab.set('tecnicas')" />Evaluaciones técnicas</label>
+        <label><input type="radio" name="pestana" value="recomendaciones" [checked]="tab() === 'recomendaciones'" (change)="tab.set('recomendaciones')" />Recomendaciones IA</label>
+      </fieldset>
+    </div>
+
+    @if (!finished().length) {
+      <p class="vacio">Aún no hay evaluaciones finalizadas para este predio.</p>
+    } @else if (tab() === 'tecnicas') {
+      <ul class="lista">
+        @for (e of finished(); track e.id) {
+          <li>
+            <div class="fecha cifras">{{ e.visitDate | date: 'd MMM y' : 'UTC' }}</div>
+            <div class="cuerpo">
+              <a [routerLink]="['/evaluaciones', e.id]"><b>{{ e.species.name }}</b> · {{ e.code }}</a>
+              <span>Evaluador: {{ e.evaluator.name }} · {{ e.results?.hallazgos?.length ?? 0 }} hallazgos</span>
+            </div>
+            <app-nivel [nivel]="e.level" [puntaje]="e.score" />
+            <button type="button" class="btn btn-texto btn-sm" (click)="descargar(e, 'tecnico')">Informe técnico (PDF)</button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <ul class="lista">
+        @for (e of finished(); track e.id) {
+          <li>
+            <div class="fecha cifras">{{ e.visitDate | date: 'd MMM y' : 'UTC' }}</div>
+            <div class="cuerpo">
+              <a [routerLink]="['/evaluaciones', e.id]"><b>{{ e.species.name }}</b> · {{ e.recommendation?.recomendaciones?.length ?? 0 }} recomendaciones</a>
+              <span>{{ e.recommendation?.resumen }}</span>
+              <span class="origen">{{ e.recommendation?.origen === 'IA' ? 'Generadas con inteligencia artificial' : 'Generadas por el sistema sin IA' }}</span>
+            </div>
+            <span></span>
+            <button type="button" class="btn btn-texto btn-sm" (click)="descargar(e, 'propietario')">Informe para el propietario (PDF)</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <app-dialog [open]="choosing()" heading="¿Qué especie va a evaluar?" (closed)="choosing.set(false)">
+    <p class="dialogo-texto">La norma del ICA exige una evaluación independiente por cada especie del predio.</p>
+    <div class="opciones">
+      @for (s of f.species; track s.speciesId) {
+        <button type="button" class="btn btn-secundario" (click)="choosing.set(false); iniciar(s)">
+          {{ draftFor(s) ? 'Continuar' : 'Evaluar' }} {{ s.name.toLowerCase() }} ({{ s.total }})
+        </button>
+      }
+    </div>
+  </app-dialog>
+} @else if (!error()) {
+  <p class="cargando" role="status">Cargando predio…</p>
+}

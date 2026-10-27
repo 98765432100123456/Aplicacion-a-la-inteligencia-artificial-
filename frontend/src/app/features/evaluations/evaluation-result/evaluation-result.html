@@ -1,0 +1,112 @@
+@let e = evaluation();
+@let r = e.results!;
+<header class="cabecera entrada">
+  <div>
+    <p class="sobre">Evaluación de {{ e.species.name.toLowerCase() }} · {{ e.visitDate | date: "d 'de' MMMM 'de' y" : 'UTC' }}</p>
+    <h1 class="titular">{{ e.farm.name }}</h1>
+    <p class="bajada">Evaluador: {{ e.evaluator.name }} · {{ productor[e.producerType] }} · {{ e.code }}</p>
+  </div>
+  <div class="calificacion">
+    <span class="rotulo">Nivel de bienestar</span>
+    <app-nivel [nivel]="e.level" />
+    <span class="puntaje cifras">{{ (e.score ?? 0).toFixed(1).replace('.', ',') }}<small> de 5</small></span>
+  </div>
+</header>
+
+<div class="descargas">
+  <button type="button" class="btn btn-principal" (click)="descargar('propietario')" [disabled]="downloading() !== null">
+    @if (downloading() === 'propietario') { <span class="spinner" aria-hidden="true"></span> } Recomendaciones para el propietario (PDF)
+  </button>
+  <button type="button" class="btn btn-secundario" (click)="descargar('tecnico')" [disabled]="downloading() !== null">
+    @if (downloading() === 'tecnico') { <span class="spinner" aria-hidden="true"></span> } Informe técnico (PDF)
+  </button>
+</div>
+
+@if (bajas().length) {
+  <p class="aviso aviso-error" role="note">
+    Nivel bajo en {{ bajas().join(', ').toLowerCase() }}. La norma exige tomar acciones correctivas con urgencia.
+  </p>
+}
+
+<section class="libertades" aria-labelledby="t-libertades">
+  <h2 id="t-libertades">Resultado por libertad</h2>
+  <ul>
+    @for (l of r.libertades; track l.codigo) {
+      <li>
+        <div class="nombre"><b>{{ corto(l.codigo) }}</b><small>{{ l.peso }} % de la nota</small></div>
+        <span class="barra" aria-hidden="true"><span [class]="(l.nivel ?? '').toLowerCase()" [style.width.%]="((l.puntaje ?? 0) / 5) * 100"></span></span>
+        <app-nivel [nivel]="l.nivel" [puntaje]="l.puntaje" />
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="recomendaciones" aria-labelledby="t-rec">
+  <div class="rec-cabeza">
+    <h2 id="t-rec">{{ ownerOnly ? 'Qué puede mejorar' : 'Recomendaciones para el propietario' }}</h2>
+    @if (canEvaluate) {
+      <button type="button" class="btn btn-texto btn-sm" (click)="regenerar()" [disabled]="regenerating()">
+        @if (regenerating()) { <span class="spinner" aria-hidden="true"></span> Generando… } @else { Volver a generar }
+      </button>
+    }
+  </div>
+  @if (e.recommendation; as rec) {
+    <p class="resumen">{{ rec.resumen }}</p>
+    <ol class="tarjetas">
+      @for (x of rec.recomendaciones; track $index) {
+        <li [class]="x.prioridad.toLowerCase()">
+          <span class="prioridad">{{ prioridad[x.prioridad] }}</span>
+          <h3>{{ x.problema }}</h3>
+          <p><b>Por qué importa:</b> {{ x.porque }}</p>
+          <p class="que"><b>Qué puede hacer:</b></p>
+          <ul>
+            @for (a of x.acciones; track $index) { <li>{{ a }}</li> }
+          </ul>
+        </li>
+      } @empty {
+        <li class="ninguna">No se encontraron aspectos por mejorar.</li>
+      }
+    </ol>
+    <p class="origen">
+      {{ rec.origen === 'IA' ? 'Recomendaciones generadas con inteligencia artificial a partir de los resultados y los lineamientos del ICA.' : 'Recomendaciones generadas por el sistema a partir de los resultados y los lineamientos del ICA.' }}
+      {{ aviso }}
+    </p>
+  }
+</section>
+
+@if (!ownerOnly) {
+  <section aria-labelledby="t-hallazgos">
+    <h2 id="t-hallazgos">Hallazgos</h2>
+    @if (r.hallazgos.length) {
+      <ul class="hallazgos">
+        @for (h of r.hallazgos; track h.codigo) {
+          <li>
+            <span class="codigo cifras">{{ h.codigo }}</span>
+            <div>
+              <p>{{ h.texto }} @if (h.critico) { <span class="critico">Crítico</span> }</p>
+              <small>{{ respuesta[h.respuesta] }}@if (h.observacion) { · {{ h.observacion }} }</small>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="tenue">No se registraron incumplimientos.</p>
+    }
+  </section>
+
+  <details class="detalle">
+    <summary>Ver todas las respuestas</summary>
+    @for (g of respuestasPorLibertad(); track g.nombre) {
+      <h3>{{ g.nombre }}</h3>
+      <dl class="ficha">
+        @for (f of g.filas; track f.codigo) {
+          <div><dt>{{ f.codigo }} · {{ f.texto }}</dt><dd>{{ f.r ? respuesta[f.r.answer] : 'Sin respuesta' }}@if (f.r?.observation) { <br /><small>{{ f.r!.observation }}</small> }</dd></div>
+        }
+      </dl>
+    }
+    @if (e.generalObservation) {
+      <h3>Observación general</h3>
+      <p class="notas">{{ e.generalObservation }}</p>
+    }
+  </details>
+}

@@ -1,5 +1,5 @@
 .pila {
-  position: fixed; z-index: 80; left: 50%; bottom: calc(var(--e-6) + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  position: fixed; z-index: 80; left: 50%; bottom: calc(var(--e-6) + var(--barra-inferior, 0px) + env(safe-area-inset-bottom)); transform: translateX(-50%);
   display: grid; gap: var(--e-2); width: min(30rem, calc(100vw - 2rem));
   pointer-events: none;
 }
