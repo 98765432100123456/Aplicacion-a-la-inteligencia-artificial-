@@ -1,0 +1,43 @@
+/* Control segmentado (HIG segmented-controls.md) */
+.segmentado {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tinta) 8%, transparent);
+
+  label {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 2.75rem;
+    padding: 0 var(--e-4);
+    border-radius: 999px;
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--tinta-suave);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-media) var(--curva),
+      color var(--dur-media) var(--curva);
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  label:has(input:checked) {
+    background: var(--superficie);
+    color: var(--tinta);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+  }
+
+  label:has(input:focus-visible) {
+    outline: 3px solid var(--foco);
+    outline-offset: 1px;
+  }
+}

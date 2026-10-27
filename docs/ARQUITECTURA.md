@@ -265,7 +265,7 @@ La aplicación Angular se organiza en las carpetas descritas a continuación. Ca
 | `features/roles/` | Gestión de roles y permisos |
 | `features/account/` | Datos de la cuenta y cambio de contraseña |
 
-Las rutas internas están protegidas por `authGuard` y `permissionGuard`. El menú presenta únicamente las secciones que el rol permite; no obstante, el control de acceso efectivo lo ejerce el servicio de aplicación. Los estilos se basan en variables CSS definidas en `src/styles.scss`, descritas en el [sistema de diseño](SISTEMA-DE-DISENO.md).
+Las rutas internas están protegidas por `authGuard` y `permissionGuard`. El menú presenta únicamente las secciones que el rol permite; no obstante, el control de acceso efectivo lo ejerce el servicio de aplicación. Los estilos se basan en variables CSS definidas en `src/styles/_tokens.scss`, descritas en el [sistema de diseño](SISTEMA-DE-DISENO.md).
 
 
 Despliegue en Google Cloud

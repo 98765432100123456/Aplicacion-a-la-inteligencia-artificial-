@@ -1,0 +1,115 @@
+/* Botones: principal, secundario, fantasma, peligro y texto, con estado de carga. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-2);
+  min-height: var(--alto-control);
+  padding: 0 var(--e-6);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-rapida) ease,
+    border-color var(--dur-rapida) ease,
+    color var(--dur-rapida) ease,
+    transform var(--dur-presion) var(--curva);
+
+  /* Estado de presión (HIG buttons.md, Emil): responde al instante */
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.btn-principal {
+  background: var(--accion);
+  color: var(--sobre-accion);
+
+  &:hover:not(:disabled) {
+    background: var(--accion-hover);
+    color: var(--sobre-accion);
+  }
+}
+
+.btn-secundario {
+  background: var(--superficie);
+  border-color: var(--linea-control);
+  color: var(--tinta);
+
+  &:hover:not(:disabled) {
+    border-color: var(--tinta);
+    color: var(--tinta);
+  }
+}
+
+.btn-fantasma {
+  background: transparent;
+  border-color: rgb(255 255 255 / 0.45);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    border-color: #fff;
+    background: rgb(255 255 255 / 0.06);
+  }
+}
+
+.btn-peligro {
+  background: var(--peligro);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: var(--peligro-hover);
+  }
+}
+
+.btn-texto {
+  padding: 0 var(--e-3);
+  background: transparent;
+  color: var(--tinta);
+  text-decoration: underline;
+  text-decoration-color: var(--linea-control);
+  text-underline-offset: 5px;
+
+  &:hover:not(:disabled) {
+    text-decoration-color: var(--tinta);
+  }
+}
+
+.btn-sm {
+  min-height: 2.75rem;
+  padding: 0 var(--e-4);
+  font-size: var(--texto-sm);
+}
+
+.btn-bloque {
+  width: 100%;
+}
+
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 600ms linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}

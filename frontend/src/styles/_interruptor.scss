@@ -1,0 +1,61 @@
+/* Interruptor (HIG toggles.md): un checkbox nativo con apariencia de switch */
+.interruptor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-4);
+  min-height: 3.25rem;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    appearance: none;
+    position: relative;
+    width: 3.25rem;
+    height: 2rem;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--linea-control);
+    cursor: pointer;
+    transition: background-color var(--dur-media) var(--curva);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.1875rem;
+      left: 0.1875rem;
+      width: 1.625rem;
+      height: 1.625rem;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+      transition: transform var(--dur-media) var(--curva);
+    }
+
+    &:checked {
+      background: var(--accion);
+    }
+
+    &:checked::after {
+      transform: translateX(1.25rem);
+    }
+
+    &:indeterminate {
+      background: color-mix(in srgb, var(--accion) 55%, var(--linea-control));
+    }
+
+    &:indeterminate::after {
+      transform: translateX(0.625rem);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--foco);
+      outline-offset: 2px;
+    }
+  }
+}

@@ -1,0 +1,77 @@
+/* Avisos, puntos de estado y fichas de datos. */
+
+.aviso {
+  display: flex;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--radio-control);
+  background: var(--acento-tenue);
+  color: var(--tinta);
+  font-size: var(--texto-sm);
+  line-height: 1.45;
+}
+
+.aviso-error {
+  background: var(--alerta-fondo);
+  color: var(--alerta-texto);
+}
+
+.aviso-advertencia {
+  background: var(--maiz-fondo);
+  color: var(--maiz-texto);
+}
+
+/* ---------- Estado con punto (como en el libro de cuentas de Forja) ---------- */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  font-size: var(--texto-sm);
+  font-weight: 700;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.estado-activo {
+  color: var(--exito);
+}
+
+.estado-inactivo {
+  color: var(--tinta-suave);
+}
+
+.estado-alerta {
+  color: var(--maiz);
+}
+
+/* ---------- Ficha técnica: filas con línea, etiqueta y dato ---------- */
+.ficha {
+  margin: 0;
+  border-top: 1px solid var(--linea-fuerte);
+
+  div {
+    display: grid;
+    grid-template-columns: minmax(7rem, 2fr) 3fr;
+    gap: var(--e-4);
+    padding: var(--e-3) 0;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  dt {
+    color: var(--tinta-suave);
+    font-size: var(--texto-sm);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+}

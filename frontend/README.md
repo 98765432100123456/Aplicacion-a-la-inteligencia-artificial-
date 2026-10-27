@@ -62,11 +62,12 @@ Organización del código
 | `src/app/features/account/` | Datos de la cuenta y cambio de contraseña |
 
 Cada componente tiene su propia carpeta con tres archivos: la lógica en `.ts`, la plantilla en `.html` y los estilos en `.scss`. Por ejemplo, la pantalla de ingreso está en `features/auth/login/` con `login.ts`, `login.html` y `avisos.ts`; sus estilos son los comunes de `features/auth/auth.scss`.
-| `src/styles.scss` | Sistema de diseño: colores, tipografía, espaciado y componentes base |
+| `src/styles.scss` | Punto de entrada de los estilos globales: carga las fuentes y los archivos de `src/styles/` |
+| `src/styles/` | Sistema de diseño dividido por tema: `_tokens` (variables y modo oscuro), `_base`, `_botones`, `_formularios`, `_interruptor`, `_segmentado`, `_avisos`, `_superficies` y `_movimiento` |
 | `e2e/` | Pruebas de extremo a extremo |
 
 
 Diseño y accesibilidad
 ----------------------
 
-Todos los valores visuales se definen como variables CSS en `src/styles.scss`, con variantes para el modo oscuro y para contraste aumentado. Los puntos de quiebre se expresan en unidades `em`, de manera que la interfaz se adapta tanto al ancho de la pantalla como al tamaño de letra configurado en el navegador. Las decisiones de diseño se documentan en [docs/SISTEMA-DE-DISENO.md](../docs/SISTEMA-DE-DISENO.md) y la auditoría con las guías de Apple en [docs/REVISION-APPLE-HIG.md](../docs/REVISION-APPLE-HIG.md).
+Todos los valores visuales se definen como variables CSS en `src/styles/_tokens.scss`, con variantes para el modo oscuro y para contraste aumentado. Los puntos de quiebre se expresan en unidades `em`, de manera que la interfaz se adapta tanto al ancho de la pantalla como al tamaño de letra configurado en el navegador. Las decisiones de diseño se documentan en [docs/SISTEMA-DE-DISENO.md](../docs/SISTEMA-DE-DISENO.md) y la auditoría con las guías de Apple en [docs/REVISION-APPLE-HIG.md](../docs/REVISION-APPLE-HIG.md).

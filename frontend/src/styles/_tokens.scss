@@ -1,0 +1,150 @@
+/* Variables de diseño: color, tipografía, espacio, forma y movimiento, con sus variantes de modo oscuro y contraste aumentado. */
+
+:root {
+  /* Superficies */
+  --noche: #0e1210; /* héroe y paneles oscuros */
+  --noche-2: #161b18;
+  --sobre-noche: #a9b3ac; /* texto secundario sobre noche: 8.8:1 */
+  --fondo: #f2f3f0;
+  --superficie: #ffffff;
+  --superficie-elevada: #ffffff;
+
+  /* Texto y líneas */
+  --tinta: #1a1f1c; /* 16:1 */
+  --tinta-suave: #59625c; /* 6.3:1 sobre blanco, 5.7:1 sobre fondo */
+  --tinta-tenue: #59625c;
+  --linea: #dde1dc;
+  --linea-fuerte: #1a1f1c; /* regla superior de fichas y tablas */
+  --linea-control: #7b877e; /* borde de campos: 3.7:1 */
+
+  /* Color de acción: el pasto. Un solo verde para la acción principal de cada pantalla. */
+  --accion: #4cc77f;
+  --accion-hover: #3fb871;
+  --sobre-accion: #0e1210; /* 8.8:1 */
+  --acento: #1d6b40; /* enlaces y estado activo sobre claro: 6.5:1 */
+  --acento-fuerte: #14502f;
+  --acento-suave: #e3f3e9;
+  --acento-tenue: #f0f8f3;
+
+  /* Estados */
+  --exito: #1e7a52;
+  --maiz: #8a5a00;
+  --maiz-fondo: #fbf0d9;
+  --maiz-texto: #4d3206;
+  --alerta: #b42318;
+  --alerta-fondo: #fbe9e7;
+  --alerta-texto: #5f150f;
+  --peligro: #b42318;
+  --peligro-hover: #8f1b12;
+
+  --toast-fondo: #0e1210;
+  --toast-texto: #f2f3f0;
+  --foco: #1d6b40;
+  --velo: rgb(14 18 16 / 0.55);
+
+  /* Tipografía: Manrope para todo, Unbounded solo para el logotipo */
+  --fuente: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-logo: 'Unbounded', var(--fuente);
+  --texto-xs: 0.8125rem; /* 13 */
+  --texto-sm: 0.9375rem; /* 15 */
+  --texto-md: 1.0625rem; /* 17 */
+  --texto-lg: 1.3125rem; /* 21 */
+  --texto-xl: 1.6875rem; /* 27 */
+  --texto-2xl: clamp(2rem, 1.5rem + 1.6vw, 2.75rem); /* 32–44 */
+  --texto-3xl: clamp(2.4rem, 1.6rem + 2.8vw, 3.75rem); /* 38–60 */
+  --texto-heroe: clamp(2.5rem, 1.3rem + 4.2vw, 4.75rem); /* 40–76 */
+
+  /* Espacio, base 4 */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.25rem;
+  --e-6: 1.5rem;
+  --e-8: 2rem;
+  --e-10: 2.5rem;
+  --e-12: 3rem;
+  --e-16: 4rem;
+  --e-24: 6rem;
+  --margen: 1.25rem;
+
+  /* Forma */
+  --radio-sello: 999px;
+  --radio-control: 10px;
+  --radio-panel: 18px;
+
+  /* Elevación: solo lo que flota lleva sombra */
+  --sombra-flotante: 0 1px 2px rgb(14 18 16 / 0.08), 0 16px 40px -12px rgb(14 18 16 / 0.35);
+
+  /* Movimiento (Emil Kowalski): ease-out fuerte, curva de iOS para hojas */
+  --curva: cubic-bezier(0.23, 1, 0.32, 1);
+  --curva-cajon: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-presion: 140ms;
+  --dur-rapida: 160ms;
+  --dur-media: 240ms;
+
+  --alto-control: 3rem; /* 48 px */
+
+  color-scheme: light dark;
+}
+
+@media (min-width: 47.5em) {
+  :root {
+    --margen: 2rem;
+  }
+}
+
+@media (min-width: 80em) {
+  :root {
+    --margen: 3rem;
+  }
+}
+
+/* Modo oscuro: sigue la preferencia del sistema (HIG dark-mode.md). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0e1210;
+    --superficie: #151a17;
+    --superficie-elevada: #1c221e;
+    --tinta: #e8ece9;
+    --tinta-suave: #a9b3ac;
+    --tinta-tenue: #a9b3ac;
+    --linea: #2a312c;
+    --linea-fuerte: #e8ece9;
+    --linea-control: #6f7c73;
+    --acento: #8fe0b0;
+    --acento-fuerte: #b6ecca;
+    --acento-suave: #1b3326;
+    --acento-tenue: #152219;
+    --exito: #8fe0b0;
+    --maiz: #e5ad4f;
+    --maiz-fondo: #33280f;
+    --maiz-texto: #f6dfb0;
+    --alerta: #ff8f80;
+    --alerta-fondo: #3a1a17;
+    --alerta-texto: #ffd9d3;
+    --peligro: #c2342a;
+    --peligro-hover: #a32a21;
+    --toast-fondo: #e8ece9;
+    --toast-texto: #0e1210;
+    --foco: #8fe0b0;
+    --velo: rgb(0 0 0 / 0.65);
+    --sombra-flotante: 0 16px 40px -8px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --tinta-suave: var(--tinta);
+    --tinta-tenue: var(--tinta);
+    --linea: #7b877e;
+    --linea-control: #3d453f;
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --linea: #6f7c73;
+    --linea-control: #b3bdb5;
+  }
+}
