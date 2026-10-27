@@ -52,7 +52,7 @@
             <div><dt>Coordenadas</dt><dd class="cifras">{{ f.latitude }}, {{ f.longitude }}</dd></div>
           }
           @if (f.areaHectares) { <div><dt>Área</dt><dd class="cifras">{{ f.areaHectares | number: '1.0-2' }} ha</dd></div> }
-          @if (f.productionSystem) { <div><dt>Sistema productivo</dt><dd>{{ f.productionSystem }}</dd></div> }
+          @if (f.productionSystem) { <div><dt>Sistema productivo</dt><dd>{{ sistemas[f.productionSystem] }}</dd></div> }
           @if (f.notes) { <div><dt>Información adicional</dt><dd class="notas">{{ f.notes }}</dd></div> }
         </dl>
       </section>

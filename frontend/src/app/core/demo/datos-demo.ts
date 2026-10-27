@@ -1,11 +1,12 @@
+import { CATALOGO_PERMISOS } from '../../compartido/permisos';
 import { PermissionDef, RoleItem, UserItem } from '../models/models';
 import { DemoEvaluation, DemoFarm, prediosIniciales, Species } from './predios-demo';
 
 /**
  * Datos de prueba del modo demostración (`npm run demo`). Son los usuarios y
- * roles que se ven en la aplicación cuando no hay servicio ni base de datos.
- * Los usuarios reales viven en la tabla `users` de MariaDB; el administrador
- * inicial lo crea backend/src/database/seed.ts.
+ * roles que se ven en la aplicación cuando no hay conexión con Firebase.
+ * Los usuarios reales viven en Firebase Authentication y en la colección
+ * `usuarios` de Firestore; el administrador inicial lo crea firebase/semilla.ts.
  */
 
 /** Contraseña de todas las cuentas de prueba. */
@@ -13,21 +14,9 @@ export const DEMO_PASSWORD = 'CambiarEsta.2026';
 /** Token que acepta la pantalla de restablecer contraseña: /restablecer-contrasena?token=demo */
 export const RESET_TOKEN = 'demo';
 
-export const CATALOGO: PermissionDef[] = [
-  { key: 'usuarios.ver', module: 'Seguridad', label: 'Consultar usuarios' },
-  { key: 'usuarios.gestionar', module: 'Seguridad', label: 'Crear, editar, activar e inactivar usuarios' },
-  { key: 'roles.ver', module: 'Seguridad', label: 'Consultar roles' },
-  { key: 'roles.gestionar', module: 'Seguridad', label: 'Crear y editar roles y sus permisos' },
-  { key: 'fincas.ver', module: 'Fincas', label: 'Consultar todos los predios' },
-  { key: 'fincas.gestionar', module: 'Fincas', label: 'Registrar y editar predios e inventario' },
-  { key: 'predios.propios', module: 'Fincas', label: 'Consultar sus propios predios, evaluaciones e informes' },
-  { key: 'parametrizacion.gestionar', module: 'Parametrización', label: 'Configurar especies, criterios y ponderaciones' },
-  { key: 'evaluaciones.ver', module: 'Evaluación', label: 'Consultar evaluaciones y resultados' },
-  { key: 'evaluaciones.diligenciar', module: 'Evaluación', label: 'Crear y diligenciar evaluaciones' },
-  { key: 'evaluaciones.validar', module: 'Evaluación', label: 'Validar y cerrar evaluaciones' },
-  { key: 'reportes.ver', module: 'Reportes', label: 'Ver tableros y descargar reportes' },
-  { key: 'auditoria.ver', module: 'Administración', label: 'Consultar la bitácora de auditoría' },
-];
+/** Catálogo de permisos del sistema (compartido/permisos.ts). */
+export const CATALOGO: PermissionDef[] = CATALOGO_PERMISOS;
+
 export const TODOS_LOS_PERMISOS = CATALOGO.map((p) => p.key);
 
 export interface DemoUser extends UserItem {
@@ -43,7 +32,7 @@ export interface DemoData {
 }
 
 const ROLES: Omit<RoleItem, 'isSystem' | 'active' | 'userCount' | 'updatedAt'>[] = [
-  { id: 'r-admin', code: 'ADMIN', name: 'Administrador', description: 'Gestiona usuarios, roles, catálogos y parametrización de especies.', permissions: TODOS_LOS_PERMISOS },
+  { id: 'r-admin', code: 'ADMINISTRADOR', name: 'Administrador', description: 'Gestiona usuarios, roles, catálogos y parametrización de especies.', permissions: TODOS_LOS_PERMISOS },
   { id: 'r-eval', code: 'EVALUADOR', name: 'Evaluador', description: 'Registra fincas y diligencia evaluaciones de bienestar animal.', permissions: ['fincas.ver', 'fincas.gestionar', 'evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver'] },
   { id: 'r-cons', code: 'CONSULTOR', name: 'Consultor externo', description: 'Consulta fincas, evaluaciones y reportes sin modificarlos.', permissions: ['fincas.ver', 'evaluaciones.ver', 'reportes.ver'] },
   { id: 'r-prop', code: 'PROPIETARIO', name: 'Propietario del predio', description: 'Consulta la información de sus predios, los resultados de las evaluaciones y las recomendaciones.', permissions: ['predios.propios'] },

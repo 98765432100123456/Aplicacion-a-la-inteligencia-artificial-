@@ -1,4 +1,4 @@
-// Copia las reglas compartidas (carpeta compartido/) al servicio y a la interfaz.
+// Copia las reglas compartidas (carpeta compartido/) a la interfaz y a las herramientas de Firebase.
 // Uso: node scripts/compartido.mjs            copia los archivos
 //      node scripts/compartido.mjs --verificar  falla si alguna copia está desactualizada
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const origen = join(raiz, 'compartido');
-const destinos = [join(raiz, 'backend/src/compartido'), join(raiz, 'frontend/src/app/compartido')];
+const destinos = [join(raiz, 'frontend/src/app/compartido'), join(raiz, 'firebase/compartido')];
 const verificar = process.argv.includes('--verificar');
 const encabezado = (archivo) =>
   `// ARCHIVO GENERADO desde compartido/${archivo}. No lo edite aquí: edite el original y ejecute node scripts/compartido.mjs\n\n`;

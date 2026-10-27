@@ -1,59 +1,69 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { AuthService } from './auth.service';
-import { LoginResponse } from '../models/models';
+import { SessionUser } from '../models/models';
+import { AuthService, PROVEEDOR_SESION } from './auth.service';
+import { ProveedorSesion } from './sesion/sesion';
 
-const session: LoginResponse = {
-  accessToken: 'token-123',
-  user: {
-    id: 'u1',
-    email: 'eva@prueba.co',
-    firstName: 'Eva',
-    lastName: 'Luna',
-    role: { id: 'r1', code: 'EVALUADOR', name: 'Evaluador' },
-    permissions: ['evaluaciones.diligenciar'],
-  },
+const eva: SessionUser = {
+  id: 'u1',
+  email: 'eva@prueba.co',
+  firstName: 'Eva',
+  lastName: 'Luna',
+  role: { id: 'evaluador', code: 'EVALUADOR', name: 'Evaluador' },
+  permissions: ['evaluaciones.diligenciar'],
 };
 
+/** Sesión falsa: permite simular lo que Firebase avisa (p. ej. que inactivaron al usuario). */
+function sesionFalsa(restaurar: SessionUser | null = null) {
+  let avisar: (u: SessionUser | null) => void = () => undefined;
+  const sesion = {
+    token: null,
+    restaurar: jasmine.createSpy().and.resolveTo(restaurar),
+    ingresar: jasmine.createSpy().and.resolveTo(eva),
+    salir: jasmine.createSpy().and.resolveTo(undefined),
+    observar: (f: (u: SessionUser | null) => void) => (avisar = f),
+  } as unknown as ProveedorSesion;
+  return { sesion, avisar: (u: SessionUser | null) => avisar(u) };
+}
+
 describe('AuthService', () => {
-  let service: AuthService;
-  let http: HttpTestingController;
-
-  beforeEach(() => {
-    sessionStorage.clear();
+  function crear(restaurar: SessionUser | null = null) {
+    const falsa = sesionFalsa(restaurar);
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection(), provideRouter([{ path: 'ingresar', children: [] }]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideZonelessChangeDetection(), provideRouter([{ path: 'ingresar', children: [] }]), { provide: PROVEEDOR_SESION, useValue: falsa.sesion }],
     });
-    service = TestBed.inject(AuthService);
-    http = TestBed.inject(HttpTestingController);
-  });
+    return { service: TestBed.inject(AuthService), ...falsa };
+  }
 
-  afterEach(() => http.verify());
-
-  it('guarda la sesión al ingresar y evalúa permisos', async () => {
-    const done = service.login('eva@prueba.co', 'Clave2026xx');
-    http.expectOne('/api/auth/login').flush(session);
-    await done;
+  it('abre la sesión al ingresar y evalúa permisos', async () => {
+    const { service } = crear();
+    await service.login('eva@prueba.co', 'Clave2026xx');
     expect(service.isAuthenticated()).toBeTrue();
     expect(service.fullName()).toBe('Eva Luna');
-    expect(service.accessToken).toBe('token-123');
     expect(service.can('evaluaciones.diligenciar')).toBeTrue();
     expect(service.can('usuarios.gestionar')).toBeFalse();
   });
 
-  it('cierra la sesión y borra el token', async () => {
-    const done = service.login('eva@prueba.co', 'Clave2026xx');
-    http.expectOne('/api/auth/login').flush(session);
-    await done;
-    service.logout();
+  it('aplica de inmediato un cambio de permisos y cierra la sesión si el usuario pierde el acceso', async () => {
+    const { service, sesion, avisar } = crear();
+    await service.login('eva@prueba.co', 'Clave2026xx');
+    avisar({ ...eva, permissions: ['usuarios.gestionar'] });
+    expect(service.can('usuarios.gestionar')).toBeTrue();
+    avisar(null);
     expect(service.isAuthenticated()).toBeFalse();
-    expect(sessionStorage.getItem('ica.token')).toBeNull();
+    expect(sesion.salir).toHaveBeenCalled();
   });
 
-  it('no restaura la sesión sin token', async () => {
+  it('restaura la sesión una sola vez aunque varias guardas pregunten a la vez', async () => {
+    const { service, sesion } = crear(eva);
+    const [a, b] = await Promise.all([service.restore(), service.restore()]);
+    expect(a && b).toBeTrue();
+    expect(sesion.restaurar).toHaveBeenCalledTimes(1);
+  });
+
+  it('no restaura la sesión si no hay usuario', async () => {
+    const { service } = crear(null);
     expect(await service.restore()).toBeFalse();
   });
 });

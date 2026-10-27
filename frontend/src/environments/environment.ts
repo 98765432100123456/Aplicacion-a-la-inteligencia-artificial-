@@ -1,10 +1,10 @@
-/**
- * Producción: la API se sirve en el mismo dominio bajo /api
- * (en el servidor, nginx reenvía /api al servicio de aplicación).
- */
+import { FIREBASE_PRODUCCION } from './firebase.config';
+
+/** Producción: la aplicación usa el proyecto de Firebase bienestar-animal-ica. */
 export const environment = {
   production: true,
+  /** Solo lo usa el modo demostración, que simula la API en el navegador. */
   apiUrl: '/api',
-  /** Modo demostración: simula la API en el navegador (ver core/demo-api.interceptor.ts). */
   demo: false,
+  firebase: FIREBASE_PRODUCCION,
 };

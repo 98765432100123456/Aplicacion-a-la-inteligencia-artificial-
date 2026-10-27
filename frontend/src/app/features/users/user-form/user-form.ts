@@ -63,6 +63,8 @@ export class UserForm implements OnInit {
         phone: u.phone ?? '',
         roleId: u.role.id,
       });
+      // El correo identifica la cuenta en Firebase Authentication: no se cambia al editar.
+      this.form.controls.email.disable();
     }
     if (this.isSelf()) this.form.controls.roleId.disable();
   }

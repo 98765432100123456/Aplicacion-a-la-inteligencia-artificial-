@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 import { expectAccessible, expectNoHorizontalOverflow, login } from './helpers';
 
 test.describe('Predios y evaluaciones', () => {
+  // Varias escrituras en Firestore y la generación de los PDF en el navegador.
+  test.setTimeout(60_000);
+
   test('registra un predio, lo evalúa, finaliza y descarga los informes', async ({ page }) => {
     const nombre = `Predio prueba ${Date.now()}`;
     await login(page);
@@ -11,6 +14,7 @@ test.describe('Predios y evaluaciones', () => {
     await page.getByLabel('Municipio').fill('Ubaté');
     await page.getByLabel('Nombre del propietario').fill('Pedro Pérez');
     await page.getByLabel('Teléfono de contacto').fill('3104567890');
+    await page.getByLabel('Sistema productivo').selectOption({ label: 'Lechería' });
     await page.getByLabel('Especie').selectOption({ label: 'Bovinos' });
     await page.getByLabel('Crías').fill('18');
     await page.getByLabel('Jóvenes').fill('34');
@@ -26,6 +30,9 @@ test.describe('Predios y evaluaciones', () => {
 
     await page.getByRole('button', { name: /Realizar evaluación/ }).click();
     await expect(page).toHaveURL(/\/evaluaciones\//);
+    // Lechería: la castración no aplica y la mastitis sí.
+    await expect(page.getByRole('heading', { name: 'Presencia de mastitis clínica' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Castración' })).toHaveCount(0);
     const grupos = await page.locator('input[type=radio]').evaluateAll((xs) => [...new Set(xs.map((x) => (x as HTMLInputElement).name))]);
     for (const g of grupos) await page.locator(`input[name="${g}"][value="CUMPLE"]`).check();
     await expect(page.getByText(/Guardado a las/)).toBeVisible({ timeout: 10_000 });

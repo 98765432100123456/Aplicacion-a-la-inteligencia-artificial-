@@ -6,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
 import { NOMBRE_RESPUESTA } from '../../../compartido/lista-chequeo';
-import { LIBERTADES, NOMBRE_PRODUCTOR } from '../../../compartido/norma';
+import { LIBERTADES, NOMBRE_PRODUCTOR, puntajeTexto } from '../../../compartido/norma';
 import { AVISO_RECOMENDACIONES, NOMBRE_PRIORIDAD } from '../../../compartido/recomendaciones';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -28,6 +28,7 @@ export class EvaluationResult {
   protected readonly ownerOnly = !this.auth.can(P.FINCAS_VER, P.FINCAS_GESTIONAR);
   protected readonly canEvaluate = this.auth.can(P.EVALUACIONES_DILIGENCIAR);
   protected readonly prioridad = NOMBRE_PRIORIDAD;
+  protected readonly puntaje = puntajeTexto;
   protected readonly respuesta = NOMBRE_RESPUESTA;
   protected readonly productor = NOMBRE_PRODUCTOR;
   protected readonly aviso = AVISO_RECOMENDACIONES;

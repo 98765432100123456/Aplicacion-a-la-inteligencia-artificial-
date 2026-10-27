@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { errorMessage } from './http-error';
+import { ErrorVisible, errorMessage } from './http-error';
 
 describe('errorMessage', () => {
   it('usa el mensaje de la API en errores 4xx', () => {
@@ -19,5 +19,12 @@ describe('errorMessage', () => {
 
   it('explica la falta de conexión', () => {
     expect(errorMessage(new HttpErrorResponse({ status: 0 }))).toContain('conexión');
+  });
+
+  it('traduce los errores de Firebase y muestra los mensajes de la aplicación', () => {
+    expect(errorMessage({ code: 'auth/invalid-credential' })).toBe('Correo o contraseña incorrectos.');
+    expect(errorMessage({ code: 'permission-denied' })).toBe('Su rol no tiene permiso para esta acción.');
+    expect(errorMessage(new ErrorVisible('Faltan 2 indicadores.'))).toBe('Faltan 2 indicadores.');
+    expect(errorMessage({ code: 'desconocido' }, 'Falló.')).toBe('Falló.');
   });
 });

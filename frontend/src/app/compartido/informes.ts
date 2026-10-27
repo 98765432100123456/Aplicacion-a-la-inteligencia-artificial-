@@ -9,7 +9,7 @@ import {
   Respuesta,
   TipoIndicador,
 } from "./lista-chequeo";
-import { CodigoLibertad, LIBERTADES, NIVELES } from "./norma";
+import { CodigoLibertad, LIBERTADES, NIVELES, puntajeTexto } from "./norma";
 import {
   AVISO_RECOMENDACIONES,
   NOMBRE_PRIORIDAD,
@@ -71,7 +71,7 @@ const COLOR_NIVEL: Record<string, string> = {
 const nombreNivel = (codigo: string | null) =>
   NIVELES.find((n) => n.codigo === codigo)?.nombre ?? "Sin dato";
 const decimal = (n: number | null) =>
-  n === null ? "—" : n.toFixed(1).replace(".", ",");
+  n === null ? "—" : puntajeTexto(n);
 const lineas = {
   hLineWidth: () => 0.5,
   vLineWidth: () => 0,

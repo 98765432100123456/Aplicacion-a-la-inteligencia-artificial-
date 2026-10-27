@@ -43,7 +43,7 @@ export class RoleEditor implements OnInit, HasUnsavedChanges {
   private saved = false;
 
   /** El Administrador conserva todos los permisos para que nadie quede sin acceso a la seguridad. */
-  protected readonly lockedPermissions = computed(() => this.role()?.code === 'ADMIN');
+  protected readonly lockedPermissions = computed(() => this.role()?.code === 'ADMINISTRADOR');
   protected readonly readOnly = computed(() => !this.canManage);
   protected readonly count = computed(() => this.selected().size);
 

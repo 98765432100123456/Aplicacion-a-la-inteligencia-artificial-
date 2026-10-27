@@ -1,22 +1,27 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, InjectionToken, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoginResponse, SessionUser } from '../models/models';
-import { AuthConfig } from '../models/predios';
+import { SessionUser } from '../models/models';
+import { AuthConfig, Proveedor } from '../models/predios';
+import { ProveedorSesion } from './sesion/sesion';
+import { SesionDemo } from './sesion/sesion-demo';
+import { SesionFirebase } from './sesion/sesion-firebase';
 
-const TOKEN_KEY = 'ica.token';
+/** Firebase Authentication en uso real; la API simulada en el modo demostración. */
+export const PROVEEDOR_SESION = new InjectionToken<ProveedorSesion>('PROVEEDOR_SESION', {
+  providedIn: 'root',
+  factory: () => (environment.demo ? new SesionDemo(inject(HttpClient)) : new SesionFirebase()),
+});
 
-/** Estado de la sesión. El token se guarda en sessionStorage: se borra al cerrar el navegador. */
+/** Estado de la sesión y permisos del usuario. */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly api = environment.apiUrl;
+  private readonly sesion = inject(PROVEEDOR_SESION);
 
   private readonly _user = signal<SessionUser | null>(null);
-  private token: string | null = readToken();
+  private restaurando: Promise<boolean> | null = null;
 
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._user() !== null);
@@ -25,8 +30,9 @@ export class AuthService {
     return u ? `${u.firstName} ${u.lastName}` : '';
   });
 
+  /** Token de la API simulada (solo modo demostración). */
   get accessToken(): string | null {
-    return this.token;
+    return this.sesion.token;
   }
 
   can(...permissions: string[]): boolean {
@@ -35,99 +41,69 @@ export class AuthService {
   }
 
   /** Restaura la sesión al recargar la página. Devuelve false si no hay sesión válida. */
-  async restore(): Promise<boolean> {
-    if (this._user()) return true;
-    if (!this.token) return false;
-    try {
-      this._user.set(await firstValueFrom(this.http.get<SessionUser>(`${this.api}/auth/me`)));
-      return true;
-    } catch {
-      this.clear();
-      return false;
-    }
+  restore(): Promise<boolean> {
+    if (this._user()) return Promise.resolve(true);
+    this.restaurando ??= this.sesion.restaurar().then((u) => {
+      this.restaurando = null;
+      if (u) this.abrir(u);
+      return !!u;
+    });
+    return this.restaurando;
   }
 
-  /** Vuelve a leer el usuario (p. ej. tras cambiar los permisos de su rol). */
+  /** Con Firebase los permisos se actualizan solos; en la demostración se vuelven a pedir. */
   async refresh(): Promise<void> {
-    try {
-      this._user.set(await firstValueFrom(this.http.get<SessionUser>(`${this.api}/auth/me`)));
-    } catch {
-      /* el interceptor maneja la sesión vencida */
-    }
+    const u = await this.sesion.restaurar();
+    if (u) this._user.set(u);
   }
 
   async login(email: string, password: string): Promise<void> {
-    const res = await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password }));
-    this.setSession(res);
+    this.abrir(await this.sesion.ingresar(email, password));
   }
 
-  /** Ingreso con el token que entrega Firebase tras autenticarse con Google, Facebook o Microsoft. */
-  async loginWithFirebase(idToken: string): Promise<void> {
-    this.setSession(await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/firebase`, { idToken })));
+  async loginWithProvider(proveedor: Proveedor): Promise<void> {
+    this.abrir(await this.sesion.ingresarConProveedor(proveedor));
   }
 
-  /** Opciones de ingreso que ofrece el servidor: registro y proveedores externos. */
-  authConfig() {
-    return firstValueFrom(this.http.get<AuthConfig>(`${this.api}/auth/config`));
+  /** Opciones de ingreso: registro de propietarios y los proveedores externos configurados. */
+  async authConfig(): Promise<AuthConfig> {
+    return { registration: true, providers: environment.firebase.proveedores };
   }
 
-  register(firstName: string, lastName: string, email: string) {
-    return firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/register`, { firstName, lastName, email }));
+  register(firstName: string, lastName: string, email: string, password: string): Promise<string> {
+    return this.sesion.registrar(firstName, lastName, email, password);
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    const res = await firstValueFrom(
-      this.http.post<LoginResponse>(`${this.api}/auth/change-password`, { currentPassword, newPassword }),
-    );
-    this.setSession(res);
+    const u = await this.sesion.cambiarClave(currentPassword, newPassword);
+    if (u) this._user.set(u);
   }
 
-  forgotPassword(email: string) {
-    return firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/forgot-password`, { email }));
+  forgotPassword(email: string): Promise<string> {
+    return this.sesion.olvideClave(email);
   }
 
   validateResetToken(token: string) {
-    return firstValueFrom(
-      this.http.get<{ valid: boolean; email?: string }>(`${this.api}/auth/reset-password/validate`, {
-        params: { token },
-      }),
-    );
+    return this.sesion.validarEnlace(token);
   }
 
-  resetPassword(token: string, password: string) {
-    return firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/reset-password`, { token, password }));
+  resetPassword(token: string, password: string): Promise<string> {
+    return this.sesion.restablecerClave(token, password);
   }
 
   logout(reason?: 'expired'): void {
-    this.clear();
+    this._user.set(null);
+    void this.sesion.salir();
     this.router.navigate(['/ingresar'], { queryParams: reason ? { motivo: reason } : {} });
   }
 
-  private setSession(res: LoginResponse): void {
-    this.token = res.accessToken;
-    try {
-      sessionStorage.setItem(TOKEN_KEY, res.accessToken);
-    } catch {
-      // Sin almacenamiento disponible la sesión dura lo que la pestaña.
-    }
-    this._user.set(res.user);
-  }
-
-  private clear(): void {
-    this.token = null;
-    this._user.set(null);
-    try {
-      sessionStorage.removeItem(TOKEN_KEY);
-    } catch {
-      /* nada que limpiar */
-    }
-  }
-}
-
-function readToken(): string | null {
-  try {
-    return sessionStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
+  private abrir(u: SessionUser) {
+    this._user.set(u);
+    // Si el administrador inactiva al usuario o cambia su rol, la sesión lo refleja de inmediato.
+    this.sesion.observar((actual) => {
+      if (!this._user()) return;
+      if (actual) this._user.set(actual);
+      else this.logout('expired');
+    });
   }
 }

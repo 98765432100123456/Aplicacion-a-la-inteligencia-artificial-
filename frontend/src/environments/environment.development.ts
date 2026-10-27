@@ -1,7 +1,9 @@
-/** Desarrollo: `npm start` usa proxy.conf.json para enviar /api a localhost:3000. */
+import { FIREBASE_PRODUCCION } from './firebase.config';
+
+/** Desarrollo (`npm start`): la interfaz local trabaja con el proyecto real de Firebase. */
 export const environment = {
   production: false,
   apiUrl: '/api',
-  /** Modo demostración: simula la API en el navegador (ver core/demo-api.interceptor.ts). */
   demo: false,
+  firebase: FIREBASE_PRODUCCION,
 };

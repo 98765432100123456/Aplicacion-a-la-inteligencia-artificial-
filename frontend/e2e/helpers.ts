@@ -38,3 +38,13 @@ export async function expectTouchTargets(page: Page) {
   );
   expect(small).toEqual([]);
 }
+
+/**
+ * Espera a que la pantalla termine de cargar. No se usa "networkidle": Firestore mantiene
+ * abierta una conexión para avisar cambios del rol, así que la red nunca queda quieta.
+ */
+export async function esperarCarga(page: Page) {
+  await page.locator('[role=status]:has-text("Cargando"), [aria-busy=true]').first().waitFor({ state: 'detached', timeout: 15_000 }).catch(() => undefined);
+  await expect(page.locator('[role=status]:has-text("Cargando")')).toHaveCount(0, { timeout: 15_000 });
+  await expect(page.locator('[aria-busy=true]')).toHaveCount(0, { timeout: 15_000 });
+}

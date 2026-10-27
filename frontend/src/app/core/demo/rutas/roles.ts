@@ -39,7 +39,7 @@ export function rutasDeRoles({ metodo, ruta, cuerpo }: Peticion, yo: DemoUser): 
 
   if (metodo === 'PATCH' && !coincide[2]) {
     const permisos = cuerpo['permissions'] as string[] | undefined;
-    if (permisos && r.code === 'ADMIN' && TODOS_LOS_PERMISOS.some((p) => !permisos.includes(p))) {
+    if (permisos && r.code === 'ADMINISTRADOR' && TODOS_LOS_PERMISOS.some((p) => !permisos.includes(p))) {
       return fallo(400, 'El rol Administrador debe conservar todos los permisos.');
     }
     if (cuerpo['name'] !== undefined) r.name = limpiar(cuerpo['name']);

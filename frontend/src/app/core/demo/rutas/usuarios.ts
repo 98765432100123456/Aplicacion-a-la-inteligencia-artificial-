@@ -59,7 +59,7 @@ export function rutasDeUsuarios(p: Peticion, yo: DemoUser): Respuesta {
   const accion = coincide[2];
   if (metodo === 'GET' && !accion) return puede(yo, 'usuarios.ver', 'usuarios.gestionar') ? ok(vistaUsuario(u)) : prohibido();
   if (!puede(yo, 'usuarios.gestionar')) return prohibido();
-  const otrosAdmins = () => datos.users.filter((x) => x.id !== u.id && x.active && x.role.code === 'ADMIN').length;
+  const otrosAdmins = () => datos.users.filter((x) => x.id !== u.id && x.active && x.role.code === 'ADMINISTRADOR').length;
 
   if (metodo === 'PATCH' && !accion) {
     const email = cuerpo['email'] !== undefined ? limpiar(cuerpo['email']).toLowerCase() : u.email;
@@ -68,7 +68,7 @@ export function rutasDeUsuarios(p: Peticion, yo: DemoUser): Respuesta {
       const r = rolAsignable(cuerpo['roleId']);
       if (typeof r === 'string') return fallo(400, r);
       if (u.id === yo.id) return fallo(400, 'No puede cambiar su propio rol. Pídalo a otro administrador.');
-      if (u.role.code === 'ADMIN' && u.active && otrosAdmins() === 0) return fallo(400, UN_ADMIN);
+      if (u.role.code === 'ADMINISTRADOR' && u.active && otrosAdmins() === 0) return fallo(400, UN_ADMIN);
       u.role = { id: r.id, code: r.code, name: r.name };
     }
     u.email = email;
@@ -82,7 +82,7 @@ export function rutasDeUsuarios(p: Peticion, yo: DemoUser): Respuesta {
   if (metodo === 'PATCH' && accion === '/status') {
     const activo = cuerpo['active'] === true;
     if (!activo && u.id === yo.id) return fallo(400, 'No puede inactivar su propio usuario.');
-    if (!activo && u.role.code === 'ADMIN' && otrosAdmins() === 0) return fallo(400, UN_ADMIN);
+    if (!activo && u.role.code === 'ADMINISTRADOR' && otrosAdmins() === 0) return fallo(400, UN_ADMIN);
     u.active = activo;
     guardar();
     return ok(vistaUsuario(u));

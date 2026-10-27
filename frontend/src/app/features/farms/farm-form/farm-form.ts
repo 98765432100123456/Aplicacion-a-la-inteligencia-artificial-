@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit, output } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FarmInput, FarmItem, Species } from '../../../core/models/predios';
-import { muestraMinima, NOMBRE_PRODUCTOR, repartir, tipoProductor } from '../../../compartido/norma';
+import { muestraMinima, NOMBRE_PRODUCTOR, NOMBRE_SISTEMA, repartir, Sistema, tipoProductor } from '../../../compartido/norma';
 import { enfocarPrimerError, mostrarError } from '../../../shared/utils/formularios';
 import { DEPARTAMENTOS } from '../data/departamentos';
 
@@ -27,6 +27,7 @@ export class FarmForm implements OnInit {
   readonly cancel = output<void>();
 
   protected readonly departamentos = DEPARTAMENTOS;
+  protected readonly sistemas = Object.entries(NOMBRE_SISTEMA).map(([valor, nombre]) => ({ valor, nombre }));
   private readonly fb = inject(FormBuilder).nonNullable;
   private enviado = false;
 
@@ -43,7 +44,7 @@ export class FarmForm implements OnInit {
     latitude: ['', [Validators.min(-90), Validators.max(90)]],
     longitude: ['', [Validators.min(-180), Validators.max(180)]],
     areaHectares: ['', Validators.min(0.01)],
-    productionSystem: ['', Validators.maxLength(80)],
+    productionSystem: ['' as Sistema | ''],
     notes: ['', Validators.maxLength(2000)],
     species: this.fb.array<ReturnType<FarmForm['filaEspecie']>>([]),
   });
@@ -145,7 +146,7 @@ export class FarmForm implements OnInit {
       latitude: numeroONulo(v.latitude),
       longitude: numeroONulo(v.longitude),
       areaHectares: numeroONulo(v.areaHectares),
-      productionSystem: vacioANulo(v.productionSystem),
+      productionSystem: v.productionSystem || null,
       notes: vacioANulo(v.notes),
       species: v.species.map((s) => ({ speciesId: s.speciesId, calves: Number(s.calves), young: Number(s.young), adults: Number(s.adults) })),
     });

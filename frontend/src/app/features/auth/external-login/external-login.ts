@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthConfig } from '../../../core/models/predios';
+import { AuthConfig, Proveedor } from '../../../core/models/predios';
 import { AuthService } from '../../../core/services/auth.service';
-import { mensajeFirebase, NOMBRE_PROVEEDOR, Proveedor, tokenDeProveedor } from '../../../core/services/firebase-login';
 import { errorMessage } from '../../../core/utils/http-error';
 import { rutaDeRegreso } from '../../../core/utils/navegacion';
+import { mensajeProveedor, NOMBRE_PROVEEDOR } from './proveedores';
 
 /** Botones para ingresar con Google, Facebook o Microsoft, y enlace de registro para propietarios. */
 @Component({
@@ -27,18 +27,18 @@ export class ExternalLogin implements OnInit {
   }
 
   protected proveedores(): Proveedor[] {
-    return (this.config()?.firebase?.providers ?? []).filter((p): p is Proveedor => p in NOMBRE_PROVEEDOR);
+    return this.config()?.providers ?? [];
   }
 
   protected async ingresar(p: Proveedor) {
     this.error.set(null);
     this.cargando.set(p);
     try {
-      await this.auth.loginWithFirebase(await tokenDeProveedor(this.config()!.firebase!, p));
+      await this.auth.loginWithProvider(p);
       await this.router.navigateByUrl(rutaDeRegreso(this.volver));
     } catch (e) {
-      const firebase = mensajeFirebase(e);
-      if (firebase !== null || !(e as { code?: string })?.code) this.error.set(firebase ?? errorMessage(e));
+      const mensaje = mensajeProveedor(e);
+      if (mensaje !== null) this.error.set(mensaje ?? errorMessage(e, 'No se pudo ingresar con el proveedor. Intente de nuevo o use su correo y contraseña.'));
     }
     this.cargando.set(null);
   }

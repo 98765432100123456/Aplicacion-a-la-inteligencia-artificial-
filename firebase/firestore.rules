@@ -1,0 +1,158 @@
+rules_version = '2';
+
+// Reglas de seguridad de ICA Bienestar Animal.
+// Firebase Authentication solo dice quién es la persona; lo que puede hacer lo deciden
+// su documento en `usuarios` (rol y estado) y los permisos de ese rol en `roles`.
+// Las claves de permiso son las de compartido/permisos.ts.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Identidad y permisos ----------
+    function ruta(coleccion, id) { return /databases/$(database)/documents/$(coleccion)/$(id); }
+    function sesion() { return request.auth != null; }
+    function yo() { return get(ruta('usuarios', request.auth.uid)).data; }
+    function miRol() { return get(ruta('roles', yo().rol)).data; }
+    // Usuario con documento, activo y con un rol activo.
+    function activo() {
+      return sesion() && exists(ruta('usuarios', request.auth.uid)) && yo().activo == true && miRol().activo == true;
+    }
+    function puede(permisos) { return activo() && miRol().permisos.hasAny(permisos); }
+    function correo() { return request.auth.token.email.lower(); }
+    function verificado() { return request.auth.token.email_verified == true; }
+    // El propietario ve lo registrado con su correo, siempre que lo haya verificado.
+    function esPropietarioDe(datos) {
+      return puede(['predios.propios']) && verificado() && datos.propietarioCorreo == correo();
+    }
+    function cambiaron() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function texto(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+    function textoOpcional(v, max) { return v == null || (v is string && v.size() <= max); }
+
+    function personal() { return puede(['evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver']); }
+
+    // ---------- Roles ----------
+    function todosLosPermisos() {
+      return ['usuarios.ver', 'usuarios.gestionar', 'roles.ver', 'roles.gestionar', 'fincas.ver', 'fincas.gestionar',
+              'predios.propios', 'parametrizacion.gestionar', 'evaluaciones.ver', 'evaluaciones.diligenciar',
+              'evaluaciones.validar', 'reportes.ver', 'auditoria.ver'];
+    }
+    function rolValido(d) {
+      return texto(d.nombre, 2, 80) && textoOpcional(d.descripcion, 255) && d.permisos is list
+        && d.permisos.size() <= 20 && d.activo is bool && d.sistema is bool;
+    }
+
+    match /roles/{rol} {
+      // Todo usuario con sesión lee los roles: la interfaz calcula con ellos sus propios permisos.
+      allow read: if sesion();
+      allow create: if puede(['roles.gestionar']) && rolValido(request.resource.data)
+        && request.resource.data.sistema == false && request.resource.data.activo == true;
+      allow update: if puede(['roles.gestionar']) && rolValido(request.resource.data)
+        && request.resource.data.sistema == resource.data.sistema
+        // Los roles base no se inactivan y el Administrador conserva todos los permisos.
+        && (resource.data.sistema == false || request.resource.data.activo == true)
+        && (rol != 'administrador' || request.resource.data.permisos.hasAll(todosLosPermisos()));
+      allow delete: if false;
+    }
+
+    // ---------- Usuarios ----------
+    function usuarioValido(d) {
+      return texto(d.nombres, 1, 80) && texto(d.apellidos, 1, 80) && texto(d.correo, 3, 160)
+        && d.correo == d.correo.lower() && textoOpcional(d.documento, 20) && textoOpcional(d.telefono, 20)
+        && d.rol is string && exists(ruta('roles', d.rol)) && d.activo is bool;
+    }
+
+    match /usuarios/{uid} {
+      allow read: if sesion() && (request.auth.uid == uid || puede(['usuarios.ver', 'usuarios.gestionar']));
+      // El administrador crea cuentas con cualquier rol; una persona solo puede crearse a sí misma como propietario.
+      allow create: if (puede(['usuarios.gestionar']) && usuarioValido(request.resource.data))
+        || (sesion() && request.auth.uid == uid && usuarioValido(request.resource.data)
+            && request.resource.data.rol == 'propietario' && request.resource.data.activo == true
+            && request.resource.data.correo == correo());
+      allow update: if (puede(['usuarios.gestionar']) && usuarioValido(request.resource.data)
+            && request.resource.data.correo == resource.data.correo
+            // Nadie cambia su propio rol ni se inactiva a sí mismo.
+            && (uid != request.auth.uid || !cambiaron().hasAny(['rol', 'activo'])))
+        || (sesion() && request.auth.uid == uid && cambiaron().hasOnly(['ultimoIngreso']));
+      allow delete: if false;
+    }
+
+    // ---------- Catálogos y parametrización de la norma ----------
+    match /{catalogo}/{id} {
+      allow read: if sesion() && catalogo in ['especies', 'libertades', 'niveles', 'criterios'];
+      allow write: if puede(['parametrizacion.gestionar']) && catalogo in ['especies', 'libertades', 'niveles', 'criterios'];
+    }
+
+    // ---------- Predios ----------
+    function predioValido(d) {
+      return texto(d.nombre, 2, 120) && texto(d.departamento, 2, 80) && texto(d.municipio, 2, 80)
+        && d.propietario is map && texto(d.propietario.nombre, 2, 160) && texto(d.propietario.telefono, 7, 20)
+        && (d.propietarioCorreo == null || (d.propietarioCorreo is string && d.propietarioCorreo == d.propietarioCorreo.lower()))
+        && d.propietarioCorreo == d.propietario.correo
+        && d.especies is list && d.especies.size() > 0 && d.especies.size() <= 10
+        && (d.sistema == null || d.sistema in ['LECHERIA', 'CARNE', 'DOBLE_PROPOSITO']);
+    }
+
+    match /predios/{id} {
+      allow read: if puede(['fincas.ver', 'fincas.gestionar']) || esPropietarioDe(resource.data);
+      allow create: if puede(['fincas.gestionar']) && predioValido(request.resource.data)
+        && request.resource.data.creadoPor == request.auth.uid;
+      allow update: if puede(['fincas.gestionar']) && predioValido(request.resource.data)
+        && !cambiaron().hasAny(['creadoPor', 'creadoEn']);
+      allow delete: if false;
+    }
+
+    // Cuando cambia el correo del propietario de un predio, sus evaluaciones y recomendaciones lo copian.
+    function sincronizaCorreo(predioId) {
+      return puede(['fincas.gestionar']) && cambiaron().hasOnly(['propietarioCorreo'])
+        && request.resource.data.propietarioCorreo == getAfter(ruta('predios', predioId)).data.propietarioCorreo;
+    }
+
+    // ---------- Evaluaciones ----------
+    // Mismos límites de compartido/norma.ts, sobre el puntaje redondeado a un decimal.
+    function nivelCoincide(p, nivel) {
+      let r = math.round(p * 10) / 10.0;
+      return (nivel == 'EXCELENTE' && r >= 4.6) || (nivel == 'ALTO' && r >= 4.0 && r < 4.6)
+        || (nivel == 'MEDIO' && r >= 3.0 && r < 4.0) || (nivel == 'BAJO' && r < 3.0);
+    }
+    // Al finalizar se exigen puntaje, nivel coherente con el puntaje y recomendaciones.
+    function finalizacionValida(d) {
+      return d.estado == 'finalizada' && d.puntaje is number && d.puntaje >= 0 && d.puntaje <= 5
+        && nivelCoincide(d.puntaje, d.nivel) && d.resultado is map && d.recomendacion is map
+        && d.finalizadaEn == request.time;
+    }
+
+    match /evaluaciones/{id} {
+      allow read: if personal() || (resource.data.estado == 'finalizada' && esPropietarioDe(resource.data));
+      allow create: if puede(['evaluaciones.diligenciar'])
+        && request.resource.data.estado == 'borrador'
+        && request.resource.data.evaluadorId == request.auth.uid
+        && exists(ruta('predios', request.resource.data.predioId))
+        && request.resource.data.propietarioCorreo == get(ruta('predios', request.resource.data.predioId)).data.propietarioCorreo;
+      allow update: if (puede(['evaluaciones.diligenciar'])
+          && !cambiaron().hasAny(['predioId', 'especieId', 'evaluadorId', 'versionLista', 'inventario', 'creadoEn', 'propietarioCorreo'])
+          && ((resource.data.estado == 'borrador' && (request.resource.data.estado == 'borrador' || finalizacionValida(request.resource.data)))
+              // Una evaluación finalizada no cambia; solo se pueden volver a generar sus recomendaciones.
+              || (resource.data.estado == 'finalizada' && cambiaron().hasOnly(['recomendacion']))))
+        || sincronizaCorreo(resource.data.predioId);
+      allow delete: if false;
+    }
+
+    // ---------- Historial de recomendaciones ----------
+    match /recomendaciones/{id} {
+      allow read: if personal() || esPropietarioDe(resource.data);
+      allow create: if puede(['evaluaciones.diligenciar'])
+        && request.resource.data.creadoPor == request.auth.uid
+        && getAfter(ruta('evaluaciones', request.resource.data.evaluacionId)).data.estado == 'finalizada'
+        && request.resource.data.propietarioCorreo == getAfter(ruta('evaluaciones', request.resource.data.evaluacionId)).data.propietarioCorreo;
+      allow update: if sincronizaCorreo(resource.data.predioId);
+      allow delete: if false;
+    }
+
+    // ---------- Bitácora de auditoría ----------
+    match /auditoria/{id} {
+      allow read: if puede(['auditoria.ver']);
+      allow create: if activo() && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.creadoEn == request.time;
+      allow update, delete: if false;
+    }
+  }
+}

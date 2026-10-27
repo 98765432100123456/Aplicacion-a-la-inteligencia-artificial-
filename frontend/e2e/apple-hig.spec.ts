@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectAccessible, expectNoHorizontalOverflow, login } from './helpers';
+import { esperarCarga, expectAccessible, expectNoHorizontalOverflow, login } from './helpers';
 
 /**
  * Criterios de la revisión con Apple HIG (skill apple-design):
@@ -16,7 +16,7 @@ test.describe('Apariencia del sistema', () => {
     for (const path of ['/inicio', '/predios', '/predios/nuevo', '/usuarios', '/roles', '/mi-cuenta']) {
       await page.goto(path);
       await page.locator('h1').first().waitFor();
-      await page.waitForLoadState('networkidle');
+      await esperarCarga(page);
       await expectAccessible(page);
     }
     const fondo = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -38,7 +38,7 @@ test.describe('Apariencia del sistema', () => {
     for (const path of ['/inicio', '/usuarios', '/roles', '/mi-cuenta']) {
       await page.goto(path);
       await page.locator('h1').first().waitFor();
-      await page.waitForLoadState('networkidle');
+      await esperarCarga(page);
       await expectNoHorizontalOverflow(page);
     }
   });

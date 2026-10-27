@@ -17,6 +17,7 @@
       <label for="u-correo">Correo electrónico</label>
       <input id="u-correo" class="control" type="email" placeholder="nombre@dominio.co" formControlName="email" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" [attr.aria-invalid]="bad('email') || null" [attr.aria-describedby]="bad('email') ? 'e-email' : null" />
       @if (bad('email')) { <span class="error" id="e-email">{{ messages.email }}</span> }
+      @if (user()) { <span class="ayuda">El correo identifica la cuenta y no se puede cambiar.</span> }
     </div>
     <div class="campo">
       <label for="u-doc">Documento <span class="opcional">(opcional)</span></label>

@@ -9,7 +9,7 @@
   <div class="calificacion">
     <span class="rotulo">Nivel de bienestar</span>
     <app-nivel [nivel]="e.level" />
-    <span class="puntaje cifras">{{ (e.score ?? 0).toFixed(1).replace('.', ',') }}<small> de 5</small></span>
+    <span class="puntaje cifras">{{ puntaje(e.score ?? 0) }}<small> de 5</small></span>
   </div>
 </header>
 
@@ -83,7 +83,7 @@
           <li>
             <span class="codigo cifras">{{ h.codigo }}</span>
             <div>
-              <p>{{ h.texto }} @if (h.critico) { <span class="critico">Crítico</span> }</p>
+              <p>{{ h.nombreCriterio }}: {{ h.texto }} @if (h.critico) { <span class="critico">Crítico</span> }</p>
               <small>{{ respuesta[h.respuesta] }}@if (h.observacion) { · {{ h.observacion }} }</small>
             </div>
           </li>
@@ -100,7 +100,7 @@
       <h3>{{ g.nombre }}</h3>
       <dl class="ficha">
         @for (f of g.filas; track f.codigo) {
-          <div><dt>{{ f.codigo }} · {{ f.texto }}</dt><dd>{{ f.r ? respuesta[f.r.answer] : 'Sin respuesta' }}@if (f.r?.observation) { <br /><small>{{ f.r!.observation }}</small> }</dd></div>
+          <div><dt>{{ f.codigo }} · {{ f.nombreCriterio }}: {{ f.texto }}</dt><dd>{{ f.r ? respuesta[f.r.answer] : 'Sin respuesta' }}@if (f.r?.observation) { <br /><small>{{ f.r!.observation }}</small> }</dd></div>
         }
       </dl>
     }

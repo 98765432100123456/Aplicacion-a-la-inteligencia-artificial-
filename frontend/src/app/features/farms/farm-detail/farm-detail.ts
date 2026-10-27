@@ -8,7 +8,7 @@ import { EvaluationSummary, FarmInput, FarmItem, FarmSpeciesItem, Species } from
 import { AuthService } from '../../../core/services/auth.service';
 import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
-import { NOMBRE_PRODUCTOR } from '../../../compartido/norma';
+import { NOMBRE_PRODUCTOR, NOMBRE_SISTEMA } from '../../../compartido/norma';
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -38,6 +38,7 @@ export class FarmDetail implements OnInit, HasUnsavedChanges {
   protected readonly canEvaluate = this.auth.can(P.EVALUACIONES_DILIGENCIAR);
   protected readonly ownerOnly = !this.auth.can(P.FINCAS_VER, P.FINCAS_GESTIONAR);
   protected readonly productor = NOMBRE_PRODUCTOR;
+  protected readonly sistemas = NOMBRE_SISTEMA;
 
   protected readonly farm = signal<FarmItem | null>(null);
   protected readonly history = signal<EvaluationSummary[]>([]);

@@ -5,12 +5,11 @@ import { datosIniciales, DemoData, DemoUser } from './datos-demo';
 
 /** Estado del modo demostración guardado en el navegador y utilidades comunes de las rutas simuladas. */
 
-const CLAVE = 'ica.demo.datos.v3';
+const CLAVE = 'ica.demo.datos.v4';
 const LATENCIA_MS = 250;
 
 export const PATRON_CONTRASENA = /^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])(?=.*\d).{10,72}$/;
-export const MENSAJE_CONTRASENA =
-  'La contraseña debe tener entre 10 y 72 caracteres e incluir al menos una letra y un número.';
+export { MENSAJE_CONTRASENA } from '../utils/mensajes';
 
 function cargar(): DemoData {
   try {

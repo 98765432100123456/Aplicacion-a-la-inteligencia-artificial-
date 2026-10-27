@@ -20,7 +20,9 @@ type Estado = 'verificando' | 'valido' | 'invalido';
 export class ResetPassword implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly token = inject(ActivatedRoute).snapshot.queryParamMap.get('token') ?? '';
+  private readonly params = inject(ActivatedRoute).snapshot.queryParamMap;
+  // Firebase envía el código como oobCode; el modo demostración usa token.
+  private readonly token = this.params.get('oobCode') ?? this.params.get('token') ?? '';
 
   protected readonly hint = PASSWORD_HINT;
   protected readonly state = signal<Estado>('verificando');

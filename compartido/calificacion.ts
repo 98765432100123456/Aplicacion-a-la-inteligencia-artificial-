@@ -12,6 +12,8 @@ export interface ResultadoLibertad {
 
 export interface Hallazgo {
   codigo: string;
+  criterio: string;
+  nombreCriterio: string;
   libertad: CodigoLibertad;
   texto: string;
   respuesta: Respuesta;
@@ -68,6 +70,8 @@ export function calificar(lista: Indicador[], respuestas: Record<string, Respues
     .filter((i) => ['NO_CUMPLE', 'PARCIAL'].includes(respuestas[i.codigo]?.respuesta ?? ''))
     .map((i) => ({
       codigo: i.codigo,
+      criterio: i.criterio,
+      nombreCriterio: i.nombreCriterio,
       libertad: i.libertad,
       texto: i.texto,
       respuesta: respuestas[i.codigo]!.respuesta,

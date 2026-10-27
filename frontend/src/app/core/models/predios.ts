@@ -1,6 +1,6 @@
 import { Resultado } from '../../compartido/calificacion';
 import { Indicador, Respuesta } from '../../compartido/lista-chequeo';
-import { CodigoNivel, Productor } from '../../compartido/norma';
+import { CodigoNivel, Productor, Sistema } from '../../compartido/norma';
 import { Recomendaciones } from '../../compartido/recomendaciones';
 
 /** Tipos que intercambian la interfaz y la API para predios, evaluaciones e informes. */
@@ -34,7 +34,7 @@ export interface FarmItem {
   latitude: number | null;
   longitude: number | null;
   areaHectares: number | null;
-  productionSystem: string | null;
+  productionSystem: Sistema | null;
   notes: string | null;
   species: FarmSpeciesItem[];
   totalAnimals: number;
@@ -55,7 +55,7 @@ export interface FarmInput {
   latitude: number | null;
   longitude: number | null;
   areaHectares: number | null;
-  productionSystem: string | null;
+  productionSystem: Sistema | null;
   notes: string | null;
   species: { speciesId: string; calves: number; young: number; adults: number }[];
 }
@@ -80,12 +80,13 @@ export interface EvaluationSummary {
   id: string;
   code: string;
   status: 'BORRADOR' | 'FINALIZADA';
-  farm: { id: string; name: string; ownerName: string; location: string };
+  farm: { id: string; name: string; ownerName: string; location: string; ownerEmail?: string | null };
   species: Species;
   evaluator: { id: string; name: string };
   visitDate: string;
   inventory: { calves: number; young: number; adults: number; total: number };
   producerType: Productor;
+  productionSystem: Sistema | null;
   sampleSize: number | null;
   sampleByGroup: number[] | null;
   checklistVersion: string;
@@ -110,7 +111,10 @@ export interface SaveEvaluationInput {
   answers?: Answer[];
 }
 
+export type Proveedor = 'google' | 'facebook' | 'microsoft';
+
+/** Opciones de ingreso disponibles: registro de propietarios y proveedores externos. */
 export interface AuthConfig {
   registration: boolean;
-  firebase: { apiKey: string; authDomain: string; projectId: string; providers: string[] } | null;
+  providers: Proveedor[];
 }

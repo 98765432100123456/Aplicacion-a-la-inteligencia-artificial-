@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ADMIN, expectAccessible, expectNoHorizontalOverflow, expectTouchTargets, login } from './helpers';
+import { ADMIN, esperarCarga, expectAccessible, expectNoHorizontalOverflow, expectTouchTargets, login } from './helpers';
 
 test.describe('Ingreso', () => {
   test('valida los campos y explica el error', async ({ page }) => {
@@ -75,7 +75,7 @@ test('las pantallas internas cumplen accesibilidad y diseño responsivo', async 
   for (const path of ['/inicio', '/usuarios', '/roles', '/mi-cuenta']) {
     await page.goto(path);
     await page.locator('h1').first().waitFor();
-    await page.waitForLoadState('networkidle');
+    await esperarCarga(page);
     await expectAccessible(page);
     await expectNoHorizontalOverflow(page);
     await expectTouchTargets(page);

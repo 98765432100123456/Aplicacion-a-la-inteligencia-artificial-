@@ -58,3 +58,5 @@
 @media (prefers-reduced-transparency: reduce) {
   .barra { background: var(--fondo); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+
+.criterio { margin: var(--e-8) 0 var(--e-2); font-size: var(--texto-md); font-weight: 800; color: var(--tinta-suave); letter-spacing: -0.01em; }

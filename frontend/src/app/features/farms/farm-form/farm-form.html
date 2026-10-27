@@ -48,13 +48,11 @@
       </div>
       <div class="campo">
         <label for="productionSystem">Sistema productivo <span class="opcional">(opcional)</span></label>
-        <input id="productionSystem" class="control" formControlName="productionSystem" list="lista-sistemas" autocomplete="off" />
-        <datalist id="lista-sistemas">
-          <option value="Leche"></option>
-          <option value="Carne"></option>
-          <option value="Doble propósito"></option>
-          <option value="Cría"></option>
-        </datalist>
+        <select id="productionSystem" class="control" formControlName="productionSystem" aria-describedby="ayuda-sistema">
+          <option value="">Sin definir</option>
+          @for (s of sistemas; track s.valor) { <option [value]="s.valor">{{ s.nombre }}</option> }
+        </select>
+        <span class="ayuda" id="ayuda-sistema">Define qué criterios de la norma se evalúan; sin definir, se evalúan todos.</span>
       </div>
     </div>
   </fieldset>

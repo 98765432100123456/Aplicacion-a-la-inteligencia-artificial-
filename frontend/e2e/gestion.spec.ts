@@ -54,7 +54,7 @@ test.describe('Gestión de usuarios', () => {
     await dialog.getByLabel('Correo electrónico').fill('admin@ica-bienestar.local');
     await dialog.getByLabel('Rol').selectOption({ label: 'Evaluador' });
     await dialog.getByRole('button', { name: 'Crear usuario' }).click();
-    await expect(dialog.getByRole('alert')).toHaveText('Ya existe un usuario con ese correo.');
+    await expect(dialog.getByRole('alert')).toHaveText('Ya existe un usuario con el correo admin@ica-bienestar.local.');
   });
 });
 

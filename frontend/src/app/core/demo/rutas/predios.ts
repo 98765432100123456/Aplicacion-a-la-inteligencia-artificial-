@@ -1,4 +1,4 @@
-import { muestraMinima, tipoProductor } from '../../../compartido/norma';
+import { muestraMinima, NOMBRE_SISTEMA, Sistema, tipoProductor } from '../../../compartido/norma';
 import { FarmItem } from '../../models/predios';
 import { DemoUser } from '../datos-demo';
 import { estado, fallo, guardar, limpiar, ok, Peticion, prohibido, puede, Respuesta } from '../almacen-demo';
@@ -46,8 +46,13 @@ function aplicar(f: DemoFarm, c: Record<string, unknown>): string | null {
       f[k] = limpiar(c[k]);
     }
   }
-  for (const k of ['ownerDocument', 'vereda', 'address', 'productionSystem', 'notes'] as const) {
+  for (const k of ['ownerDocument', 'vereda', 'address', 'notes'] as const) {
     if (c[k] !== undefined) f[k] = limpiar(c[k]) || null;
+  }
+  if (c['productionSystem'] !== undefined) {
+    const sistema = limpiar(c['productionSystem']);
+    if (sistema && !(sistema in NOMBRE_SISTEMA)) return 'El sistema productivo no es válido.';
+    f.productionSystem = (sistema || null) as Sistema | null;
   }
   if (c['ownerEmail'] !== undefined) f.ownerEmail = limpiar(c['ownerEmail']).toLowerCase() || null;
   for (const k of ['latitude', 'longitude', 'areaHectares'] as const) {

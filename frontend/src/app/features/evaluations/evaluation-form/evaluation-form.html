@@ -29,7 +29,10 @@
       <h2 [id]="'sec-' + s.codigo">{{ s.nombre }}</h2>
       <span class="peso cifras">{{ s.peso }} % de la nota</span>
     </div>
-    @for (i of s.indicadores; track i.codigo) {
+    @for (i of s.indicadores; track i.codigo; let k = $index) {
+      @if (k === 0 || s.indicadores[k - 1].criterio !== i.criterio) {
+        <h3 class="criterio">{{ i.nombreCriterio }}</h3>
+      }
       @let r = answers()[i.codigo];
       <article class="indicador" [class.respondido]="r" [id]="'ind-' + i.codigo" tabindex="-1">
         <div class="pregunta">

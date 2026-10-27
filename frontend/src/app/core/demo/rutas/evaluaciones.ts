@@ -1,9 +1,9 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { from, map } from 'rxjs';
 import { calificar, pendientes, RespuestaIndicador } from '../../../compartido/calificacion';
-import { DatosInforme, DocumentoPdf, informePropietario, informeTecnico } from '../../../compartido/informes';
-import { LISTAS_POR_ESPECIE } from '../../../compartido/lista-chequeo';
-import { NOMBRE_PRODUCTOR, muestraMinima, repartir, tipoProductor } from '../../../compartido/norma';
+import { listaPara, VERSION_LISTA } from '../../../compartido/lista-chequeo';
+import { muestraMinima, repartir, tipoProductor } from '../../../compartido/norma';
+import { generarInforme, nombreInforme } from '../../informes/informes';
 import { recomendacionesPorReglas } from '../../../compartido/recomendaciones';
 import { Answer, EvaluationDetail, ReportMeta } from '../../models/predios';
 import { DemoUser } from '../datos-demo';
@@ -16,7 +16,7 @@ import { prediosVisibles, veTodos } from './predios';
 const CONSULTAR = ['evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver', 'predios.propios'];
 const hoy = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
 const codigo = (e: DemoEvaluation) => `EV-${e.id.replace(/\D/g, '').padStart(8, '0').slice(-8)}`;
-const lista = (e: DemoEvaluation) => LISTAS_POR_ESPECIE[especie(e).code] ?? [];
+const lista = (e: DemoEvaluation) => listaPara(especie(e).code, e.sistema, e.calves + e.young + e.adults);
 const especie = (e: DemoEvaluation) => estado.datos.species.find((s) => s.id === e.speciesId)!;
 const ubicacion = (f: DemoFarm) => [f.address, f.vereda && `vereda ${f.vereda}`, f.municipality, f.department].filter(Boolean).join(', ');
 const evaluador = (e: DemoEvaluation) => {
@@ -40,43 +40,14 @@ function vista(e: DemoEvaluation, f: DemoFarm): EvaluationDetail {
   const muestra = muestraMinima(total);
   return {
     id: e.id, code: codigo(e), status: e.status,
-    farm: { id: f.id, name: f.name, ownerName: f.ownerName, location: ubicacion(f) },
+    farm: { id: f.id, name: f.name, ownerName: f.ownerName, location: ubicacion(f), ownerEmail: f.ownerEmail },
     species: especie(e), evaluator: { id: e.evaluatorId, name: evaluador(e) }, visitDate: e.visitDate,
-    inventory: { calves: e.calves, young: e.young, adults: e.adults, total }, producerType: tipoProductor(total),
+    inventory: { calves: e.calves, young: e.young, adults: e.adults, total }, producerType: tipoProductor(total), productionSystem: e.sistema,
     sampleSize: muestra, sampleByGroup: muestra === null ? null : repartir(muestra, [e.calves, e.young, e.adults]),
-    checklistVersion: 'REF-2026.1', checklist: lista(e).map(({ propietario: _paraElPropietario, ...i }) => i), answers: e.answers,
+    checklistVersion: VERSION_LISTA, checklist: lista(e).map(({ propietario: _paraElPropietario, ...i }) => i), answers: e.answers,
     generalObservation: e.generalObservation, score: e.results?.puntaje ?? null, level: e.results?.nivel ?? null, results: e.results,
     lastSavedAt: e.lastSavedAt, finishedAt: e.finishedAt, recommendation: e.recommendation, reports: informes(e),
   };
-}
-
-function datosInforme(e: DemoEvaluation, f: DemoFarm): DatosInforme {
-  const porCodigo = new Map(lista(e).map((i) => [i.codigo, i]));
-  const total = e.calves + e.young + e.adults;
-  const larga = (d: string) => new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T00:00:00Z`));
-  return {
-    predio: { nombre: f.name, propietario: f.ownerName, telefono: f.ownerPhone, ubicacion: ubicacion(f) },
-    especie: especie(e).name, inventario: { crias: e.calves, jovenes: e.young, adultos: e.adults },
-    productor: NOMBRE_PRODUCTOR[tipoProductor(total)], muestra: muestraMinima(total),
-    evaluacion: { codigo: codigo(e), fecha: larga(e.visitDate), evaluador: evaluador(e), observacionGeneral: e.generalObservation, version: 'REF-2026.1' },
-    resultado: e.results!,
-    respuestas: e.answers
-      .filter((a) => porCodigo.has(a.indicatorCode))
-      .map((a) => {
-        const i = porCodigo.get(a.indicatorCode)!;
-        return { codigo: i.codigo, libertad: i.libertad, texto: i.texto, tipo: i.tipo, metodo: i.metodo, respuesta: a.answer, observacion: a.observation };
-      })
-      .sort((a, b) => a.codigo.localeCompare(b.codigo, 'es', { numeric: true })),
-    recomendaciones: e.recommendation!,
-    generado: new Intl.DateTimeFormat('es-CO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Bogota' }).format(new Date()),
-  };
-}
-
-/** Genera el PDF con pdfmake en el navegador; la librería se carga solo cuando se pide un informe. */
-async function pdf(doc: DocumentoPdf): Promise<Blob> {
-  const pdfMake = (await import('pdfmake/build/pdfmake')).default;
-  pdfMake.addVirtualFileSystem((await import('pdfmake/build/vfs_fonts')).default);
-  return pdfMake.createPdf(doc).getBlob();
 }
 
 /** Evaluación visible para el usuario; el propietario solo ve las finalizadas. */
@@ -112,7 +83,7 @@ export function rutasDeEvaluaciones({ metodo, ruta, cuerpo }: Peticion, yo: Demo
       if (borrador) return ok(vista(borrador, f), 201);
       const ahora = new Date().toISOString();
       const e: DemoEvaluation = {
-        id: `ev-${Date.now()}`, farmId: f.id, speciesId: s.speciesId, evaluatorId: yo.id, status: 'BORRADOR',
+        id: `ev-${Date.now()}`, farmId: f.id, speciesId: s.speciesId, evaluatorId: yo.id, status: 'BORRADOR', sistema: f.productionSystem,
         visitDate: (cuerpo['visitDate'] as string) ?? hoy(), calves: s.calves, young: s.young, adults: s.adults,
         generalObservation: null, answers: [], results: null, recommendation: null, lastSavedAt: ahora, finishedAt: null, createdAt: ahora,
       };
@@ -137,10 +108,9 @@ export function rutasDeEvaluaciones({ metodo, ruta, cuerpo }: Peticion, yo: Demo
     const tipo = accion.slice('reports/'.length);
     if (tipo !== 'tecnico' && tipo !== 'propietario') return fallo(400, 'El tipo de informe no es válido.');
     if (e.status !== 'FINALIZADA') return fallo(404, 'Este informe aún no se ha generado.');
-    const meta = informes(e).find((r) => r.kind === tipo.toUpperCase())!;
-    const datos = datosInforme(e, f);
-    return from(pdf(tipo === 'tecnico' ? informeTecnico(datos) : informePropietario(datos))).pipe(
-      map((body) => new HttpResponse({ status: 200, body, headers: new HttpHeaders({ 'Content-Disposition': `attachment; filename="${meta.fileName}"` }) })),
+    const detalle = vista(e, f);
+    return from(generarInforme(detalle, f.ownerPhone, tipo)).pipe(
+      map((body) => new HttpResponse({ status: 200, body, headers: new HttpHeaders({ 'Content-Disposition': `attachment; filename="${nombreInforme(detalle, tipo)}"` }) })),
     );
   }
   if (metodo === 'PUT' && !accion) {

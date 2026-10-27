@@ -10,6 +10,8 @@ export type CodigoLibertad = 'NUTRICION' | 'SALUD' | 'CONFORT' | 'COMPORTAMIENTO
 
 export interface Libertad {
   codigo: CodigoLibertad;
+  /** Identificador del documento en la colección `libertades` de Firestore. */
+  id: string;
   nombre: string;
   corto: string;
   /** Porcentaje de la calificación total del predio. */
@@ -18,11 +20,12 @@ export interface Libertad {
 
 /** Las cinco libertades agrupadas en los cuatro bloques que pondera la norma. */
 export const LIBERTADES: Libertad[] = [
-  { codigo: 'NUTRICION', nombre: 'Libre de hambre, sed y desnutrición', corto: 'Alimento y agua', peso: 20 },
-  { codigo: 'SALUD', nombre: 'Libre de dolor, lesión y enfermedad', corto: 'Salud', peso: 50 },
-  { codigo: 'CONFORT', nombre: 'Libre de molestias físicas y térmicas', corto: 'Confort', peso: 15 },
+  { codigo: 'NUTRICION', id: 'hambre_sed', nombre: 'Libre de hambre, sed y desnutrición', corto: 'Alimento y agua', peso: 20 },
+  { codigo: 'SALUD', id: 'dolor_enfermedad', nombre: 'Libre de dolor, lesión y enfermedad', corto: 'Salud', peso: 50 },
+  { codigo: 'CONFORT', id: 'molestias', nombre: 'Libre de molestias físicas y térmicas', corto: 'Confort', peso: 15 },
   {
     codigo: 'COMPORTAMIENTO',
+    id: 'temor_comportamiento',
     nombre: 'Libre de temor y angustia, y de manifestar su comportamiento natural',
     corto: 'Comportamiento',
     peso: 15,
@@ -47,6 +50,11 @@ export const NIVELES: Nivel[] = [
   { codigo: 'EXCELENTE', nombre: 'Excelente', desde: 4.6, rango: '4,6 a 5,0' },
 ];
 
+/** Puntaje con un decimal y coma, con el mismo redondeo que define el nivel (4,55 se muestra 4,6). */
+export function puntajeTexto(puntaje: number): string {
+  return (Math.round(puntaje * 10) / 10).toFixed(1).replace('.', ',');
+}
+
 /** Nivel que corresponde a un puntaje de 0 a 5 redondeado a un decimal, como lo expresa la norma. */
 export function nivelDePuntaje(puntaje: number): Nivel {
   const redondeado = Math.round(puntaje * 10) / 10;
@@ -60,6 +68,22 @@ export const NOMBRE_PRODUCTOR: Record<Productor, string> = {
   MEDIANO: 'Mediano productor',
   GRANDE: 'Gran productor',
 };
+
+/** Sistema productivo del predio; define qué criterios de la lista aplican. */
+export type Sistema = 'LECHERIA' | 'CARNE' | 'DOBLE_PROPOSITO';
+
+export const NOMBRE_SISTEMA: Record<Sistema, string> = {
+  LECHERIA: 'Lechería',
+  CARNE: 'Carne',
+  DOBLE_PROPOSITO: 'Doble propósito',
+};
+
+/** La norma tiene un capítulo para pequeño productor y otro para mediano y grande. */
+export type TamanoPredio = 'PEQUENO' | 'MEDIANO_GRANDE';
+
+export function tamanoPredio(total: number): TamanoPredio {
+  return total <= 50 ? 'PEQUENO' : 'MEDIANO_GRANDE';
+}
 
 /** Tamaño del productor según el número de animales del predio. */
 export function tipoProductor(total: number): Productor {
