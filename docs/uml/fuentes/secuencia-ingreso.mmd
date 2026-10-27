@@ -2,7 +2,7 @@ sequenceDiagram
     actor U as Usuario
     participant W as Angular
     participant A as API
-    participant D as PostgreSQL
+    participant D as MariaDB
     U->>W: correo + contraseña
     W->>A: POST /api/auth/login
     A->>D: buscar usuario por correo

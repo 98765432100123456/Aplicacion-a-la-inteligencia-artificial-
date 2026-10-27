@@ -2,30 +2,44 @@ flowchart LR
     subgraph FE["Interfaz web · Angular 20"]
         direction TB
         RT[Rutas y guardas<br/>authGuard · permissionGuard · unsavedChangesGuard]
-        FT[Pantallas<br/>auth · home · users · roles · account]
-        SH[Componentes compartidos<br/>logo · dialog · toasts · page-header · password-input]
-        CO[Núcleo<br/>AuthService · ApiService · authInterceptor · demoApiInterceptor]
+        FT[Pantallas<br/>auth · home · farms · evaluations · users · roles · account]
+        SH[Componentes compartidos<br/>dialog · toasts · page-header · password-input · nivel]
+        CO[Núcleo<br/>AuthService · FarmsApiService · firebase-login · authInterceptor · demoApiInterceptor]
+        CP[compartido<br/>norma · lista de chequeo · calificación · informes]
         RT --> FT --> SH
         FT --> CO
+        FT --> CP
     end
 
     subgraph BE["Servicio de aplicación · NestJS 11"]
         direction TB
         GU[Guardas globales<br/>Throttler · JwtAuthGuard · PermissionsGuard]
-        AU[AuthModule]
+        AU[AuthModule<br/>ingreso · registro · Firebase]
         US[UsersModule]
         RO[RolesModule]
-        AD[AuditModule]
+        FA[FarmsModule<br/>predios · acceso por predio]
+        EV[EvaluationsModule<br/>puntaje · informes PDF · historial]
+        AI[AiModule]
+        AD[AuditModule<br/>bitácora de todos los módulos]
         MA[MailModule]
         HE[HealthController]
-        GU --> AU & US & RO
+        GU --> AU & US & RO & FA & EV
+        EV --> FA & AI
         AU & US --> MA
-        AU & US & RO --> AD
     end
 
-    DB[(PostgreSQL 16<br/>TypeORM · migraciones)]
-    SMTP[[Servidor SMTP]]
+    DB[(MariaDB 11.4<br/>TypeORM · migraciones)]
+    subgraph EXT["Servicios externos"]
+        direction TB
+        SMTP[[Servidor SMTP]]
+        CLA[[API de Claude]]
+        FB[[Firebase Authentication]]
+        SMTP ~~~ CLA ~~~ FB
+    end
 
     CO -- "HTTPS /api · JSON · Bearer JWT" --> GU
-    AU & US & RO & AD --> DB
+    AU -. "llaves públicas" .-> FB
+    CO -. "ventana del proveedor" .-> FB
+    BE --> DB
     MA --> SMTP
+    AI --> CLA

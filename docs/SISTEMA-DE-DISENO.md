@@ -7,7 +7,7 @@ Este documento expone los fundamentos visuales de la interfaz de ICA Bienestar A
 Concepto
 --------
 
-El concepto rector es **mostrar el producto antes que prometerlo**. La pantalla de ingreso no describe la plataforma con viñetas: enseña, en un teléfono, cómo se verá una evaluación en finca con su puntaje, su nivel de bienestar y la lista de chequeo por secciones. El dibujo se rotula como ejemplo ilustrativo, porque el módulo de evaluación se entrega en un sprint posterior.
+El concepto rector es **mostrar el producto antes que prometerlo**. La pantalla de ingreso no describe la plataforma con viñetas: enseña, en un teléfono, cómo se verá una evaluación en finca con su puntaje, su nivel de bienestar y la lista de chequeo por secciones. El dibujo se rotula como ejemplo ilustrativo y corresponde a la pantalla de evaluación que hoy ofrece la aplicación.
 
 Dentro de la aplicación el concepto es **el libro de registro**: titulares grandes, filas separadas por líneas finas, una regla oscura que abre cada lista y un punto de color que indica el estado. Es la manera en que un técnico de campo lleva sus anotaciones, trasladada a la pantalla sin imitar el papel.
 
@@ -116,6 +116,12 @@ Componentes
 | Ficha | `.ficha` | Lista de pares rótulo y valor separados por líneas |
 | Diálogo y hoja | `shared/components/dialog/` | Diálogo centrado en escritorio; hoja inferior con agarradera en el teléfono |
 | Mensajes emergentes | `shared/components/toasts/` | Píldora oscura que sube desde abajo y no bloquea el contenido que cubre |
+| Nivel de bienestar | `shared/components/nivel/` | Punto con el color del nivel (bajo, medio, alto o excelente), su nombre y el puntaje de 0 a 5 |
+| Respuesta de indicador | `features/evaluations/evaluation-form/` | Opciones en forma de píldora para cumple, cumple en parte, no cumple y no aplica, con un objetivo táctil de 44 px para usarse en el campo |
+| Barra de avance de la evaluación | `features/evaluations/evaluation-form/` | Barra fija al pie con el avance, la hora del último guardado y las acciones **Guardar** y **Finalizar**; los mensajes emergentes se ubican por encima de ella |
+| Barras por libertad | `features/evaluations/evaluation-result/` | Barra horizontal por cada bloque de libertades con su puntaje, coloreada según el nivel |
+| Tarjeta de recomendación | `features/evaluations/evaluation-result/` | Prioridad, problema, *Por qué importa* y *Qué puede hacer*, en lenguaje sencillo |
+| Botones de proveedor | `features/auth/external-login/` | Botones secundarios con el logotipo de Google, Facebook o Microsoft, debajo del formulario de ingreso |
 
 
 Estados interactivos

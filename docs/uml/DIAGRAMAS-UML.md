@@ -11,10 +11,10 @@ Este documento reúne los diagramas UML de ICA Bienestar Animal. Los diagramas d
 | Secuencia de ingreso | Comportamiento | Implementado |
 | Secuencia de recuperación de contraseña | Comportamiento | Implementado |
 | Secuencia de creación de usuario | Comportamiento | Implementado |
-| Actividad de una evaluación | Comportamiento | Diseñado |
-| Estados de una evaluación | Comportamiento | Diseñado |
+| Actividad de una evaluación | Comportamiento | Implementado hasta el diagnóstico y las recomendaciones; validación y cierre diseñados |
+| Estados de una evaluación | Comportamiento | Parcial: borrador y finalizada implementados |
 | Componentes | Arquitectura | Implementado |
-| Despliegue | Arquitectura | Implementado, con servicios futuros señalados |
+| Despliegue | Arquitectura | Implementado |
 
 
 Casos de uso
@@ -114,7 +114,7 @@ Recorrido completo de una evaluación desde la visita hasta el cierre. El diagra
 Estados de una evaluación
 -------------------------
 
-Los cinco estados exigidos por el RF36 y las transiciones permitidas entre ellos. Cada transición queda registrada en `evaluation_status_history`.
+Los cinco estados exigidos por el RF36 y las transiciones permitidas entre ellos. La versión actual implementa los estados borrador y finalizada; la validación y el cierre por un segundo evaluador están planeados para un sprint posterior.
 
 ![Diagrama de estados de una evaluación](estados-evaluacion.png)
 
@@ -122,13 +122,15 @@ Los cinco estados exigidos por el RF36 y las transiciones permitidas entre ellos
 Componentes
 -----------
 
+La interfaz se comunica con el servicio de aplicación solo por `/api`. Las reglas de la norma, el cálculo del puntaje y los informes viven en `compartido/` y se usan en ambos lados. Firebase solo confirma la identidad; la autorización la decide el servicio con los roles guardados en MariaDB.
+
 ![Diagrama de componentes](componentes.png)
 
 
 Despliegue
 ----------
 
-Los nodos con líneas punteadas se incorporan en los sprints de evaluación y diagnóstico.
+El sistema se ejecuta en un servidor Linux con Docker Compose. Solo Caddy recibe tráfico de internet; la base de datos está en una red interna sin puerto publicado. El procedimiento completo está en [DESPLIEGUE.md](../DESPLIEGUE.md).
 
 ![Diagrama de despliegue](despliegue.png)
 

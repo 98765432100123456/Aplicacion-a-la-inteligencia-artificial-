@@ -2,7 +2,7 @@ sequenceDiagram
     actor U as Usuario
     participant W as Angular
     participant A as API
-    participant D as PostgreSQL
+    participant D as MariaDB
     participant M as Correo
     U->>W: escribe su correo
     W->>A: POST /api/auth/forgot-password

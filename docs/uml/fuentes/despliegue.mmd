@@ -3,24 +3,33 @@ flowchart TB
         NAV[Navegador moderno]
     end
 
-    subgraph GCP["«nube» Google Cloud · ambientes dev, pruebas y producción"]
+    subgraph SRV["«nodo» Servidor Linux · Ubuntu 24.04 · Docker Compose"]
         direction TB
-        FH["«nodo» Firebase Hosting<br/>artefacto: dist/frontend/browser"]
-        CR["«nodo» Cloud Run<br/>contenedor: API NestJS · Node 22"]
-        SQL[("«nodo» Cloud SQL<br/>PostgreSQL 16 · respaldo diario")]
-        SM["«nodo» Secret Manager<br/>JWT_SECRET · DB_PASSWORD · SMTP"]
-        GCS[("«nodo» Cloud Storage<br/>evidencias y certificados")]
-        LOG["«nodo» Cloud Logging y Monitoring"]
-        AI["«nodo» Servicio de IA<br/>recomendaciones"]
+        CA["«contenedor» Caddy 2.8<br/>HTTPS · certificado Let's Encrypt"]
+        WEB["«contenedor» nginx<br/>artefacto: dist/frontend/browser"]
+        API["«contenedor» API NestJS · Node 22<br/>usuario sin privilegios"]
+        DB[("«contenedor» MariaDB 11.4<br/>red interna · volumen persistente")]
+        RES[["«artefacto» respaldo.sh<br/>volcado diario · 14 días"]]
+        ENV[["«artefacto» .env.servidor<br/>credenciales · permisos 600"]]
     end
 
+    subgraph EXT["Servicios externos"]
+        direction TB
+        FB["«nodo» Firebase Authentication<br/>Google · Facebook · Microsoft<br/>llaves públicas por HTTPS"]
+        CLA["«nodo» API de Claude<br/>recomendaciones por HTTPS"]
+        SMTP["«nodo» Servidor de correo<br/>SMTP con TLS"]
+        FB ~~~ CLA ~~~ SMTP
+    end
     GH["«nodo» GitHub<br/>repositorio y GitHub Actions"]
 
-    NAV -- HTTPS --> FH
-    FH -- "reescritura /api/**" --> CR
-    CR -- "conector Cloud SQL · socket Unix" --> SQL
-    CR --> SM
-    CR -.->|próximos sprints| GCS
-    CR -.->|próximos sprints| AI
-    CR --> LOG
-    GH -.->|"compilación y pruebas en CI;<br/>despliegue con gcloud y firebase"| FH & CR
+    NAV -- "HTTPS 443" --> CA
+    CA -- "HTTP interno" --> WEB
+    WEB -- "/api" --> API
+    API -- "red datos · 3306" --> DB
+    RES -.-> DB
+    ENV -.-> API
+    API --> FB
+    API --> CLA
+    NAV -. "ventana emergente" .-> FB
+    API --> SMTP
+    GH -.->|"CI · git pull"| SRV
