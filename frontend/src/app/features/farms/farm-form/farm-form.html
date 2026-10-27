@@ -73,8 +73,8 @@
         @if (bad('ownerPhone')) { <span class="error">Use de 7 a 20 dígitos.</span> }
       </div>
       <div class="campo">
-        <label for="ownerDocument">Documento <span class="opcional">(opcional)</span></label>
-        <input id="ownerDocument" class="control" formControlName="ownerDocument" autocomplete="off" [attr.aria-invalid]="bad('ownerDocument') || null" />
+        <label for="documento-propietario">Documento <span class="opcional">(opcional)</span></label>
+        <input id="documento-propietario" class="control" formControlName="ownerDocument" autocomplete="off" [attr.aria-invalid]="bad('ownerDocument') || null" />
         @if (bad('ownerDocument')) { <span class="error">Use de 4 a 20 letras, números o guiones.</span> }
       </div>
       <div class="campo completo">

@@ -1,0 +1,3 @@
+<span class="nivel" [class]="'nivel ' + (nivel() ?? 'NINGUNO').toLowerCase()"
+    ><i aria-hidden="true"></i>{{ nombre() }}@if (puntaje() !== null) {<span class="cifras"> · {{ puntajeTexto() }}</span>}</span
+  >

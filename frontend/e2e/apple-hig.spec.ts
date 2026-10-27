@@ -13,7 +13,7 @@ test.describe('Apariencia del sistema', () => {
     await page.locator('h2').first().waitFor();
     await expectAccessible(page);
     await login(page);
-    for (const path of ['/inicio', '/usuarios', '/roles', '/mi-cuenta']) {
+    for (const path of ['/inicio', '/predios', '/predios/nuevo', '/usuarios', '/roles', '/mi-cuenta']) {
       await page.goto(path);
       await page.locator('h1').first().waitFor();
       await page.waitForLoadState('networkidle');

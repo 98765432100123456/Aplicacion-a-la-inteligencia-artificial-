@@ -12,12 +12,7 @@ import { FarmForm } from '../farm-form/farm-form';
 @Component({
   selector: 'app-farm-create',
   imports: [PageHeader, FarmForm],
-  template: `
-    <app-page-header heading="Nuevo predio" description="Registre la finca, su propietario y los animales por especie y grupo de edad." />
-    @if (species().length) {
-      <app-farm-form [species]="species()" [saving]="saving()" [serverError]="error()" submitLabel="Registrar predio" (save)="guardar($event)" (cancel)="router.navigateByUrl('/predios')" />
-    }
-  `,
+  templateUrl: './farm-create.html',
 })
 export class FarmCreate implements OnInit, HasUnsavedChanges {
   private readonly api = inject(FarmsApiService);

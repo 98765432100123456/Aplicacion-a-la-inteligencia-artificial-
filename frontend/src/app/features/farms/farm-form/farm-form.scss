@@ -1,6 +1,7 @@
 .aviso-error { margin-bottom: var(--e-5); }
 .bloque { margin: 0 0 var(--e-8); padding: var(--e-6) 0 0; border: 0; border-top: 1px solid var(--linea-fuerte); }
 .bloque:focus { outline: none; }
+.bloque > :not(legend) { clear: both; }
 legend { float: left; width: 100%; margin-bottom: var(--e-5); padding: 0; font-size: var(--texto-xl); font-weight: 800; letter-spacing: -0.03em; }
 .nota { clear: both; margin-bottom: var(--e-4); color: var(--tinta-suave); font-size: var(--texto-sm); }
 .ayuda { font-size: var(--texto-sm); color: var(--tinta-suave); }
