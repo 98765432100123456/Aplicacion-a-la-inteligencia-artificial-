@@ -8,8 +8,8 @@
     "test:reglas": "firebase emulators:exec --config ../firebase.json --project demo-ica --only firestore,auth \"tsx --test pruebas/*.test.ts\"",
     "semilla": "tsx semilla.ts",
     "semilla:emulador": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=demo-ica tsx semilla.ts",
-    "desplegar:reglas": "firebase deploy --config ../firebase.json --only firestore",
-    "desplegar:sitio": "firebase deploy --config ../firebase.json --only hosting",
+    "desplegar:reglas": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only firestore",
+    "desplegar:sitio": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only hosting",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
