@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoginResponse, SessionUser } from '../models/models';
+import { AuthConfig } from '../models/predios';
 
 const TOKEN_KEY = 'ica.token';
 
@@ -58,6 +59,20 @@ export class AuthService {
   async login(email: string, password: string): Promise<void> {
     const res = await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password }));
     this.setSession(res);
+  }
+
+  /** Ingreso con el token que entrega Firebase tras autenticarse con Google, Facebook o Microsoft. */
+  async loginWithFirebase(idToken: string): Promise<void> {
+    this.setSession(await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/firebase`, { idToken })));
+  }
+
+  /** Opciones de ingreso que ofrece el servidor: registro y proveedores externos. */
+  authConfig() {
+    return firstValueFrom(this.http.get<AuthConfig>(`${this.api}/auth/config`));
+  }
+
+  register(firstName: string, lastName: string, email: string) {
+    return firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/register`, { firstName, lastName, email }));
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

@@ -1,0 +1,8 @@
+:host { display: block; margin-top: var(--e-6); }
+.separador { display: flex; align-items: center; gap: var(--e-3); margin-bottom: var(--e-4); color: var(--tinta-suave); font-size: var(--texto-sm); }
+.separador::before, .separador::after { content: ''; flex: 1; border-top: 1px solid var(--linea); }
+.aviso { margin-bottom: var(--e-4); }
+.proveedores { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: var(--e-2); }
+.proveedores .btn { gap: var(--e-2); }
+.logo-proveedor { width: 1.1rem; height: 1.1rem; flex: none; }
+.registro { margin-top: var(--e-6); font-size: var(--texto-sm); color: var(--tinta-suave); }

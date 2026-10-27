@@ -7,12 +7,13 @@ import { rutaDeRegreso } from '../../../core/utils/navegacion';
 import { PasswordInput } from '../../../shared/components/password-input/password-input';
 import { enfocarPrimerError, mostrarError } from '../../../shared/utils/formularios';
 import { AuthLayout } from '../auth-layout/auth-layout';
+import { ExternalLogin } from '../external-login/external-login';
 import { avisoDeIngreso } from './avisos';
 
 /** Pantalla de ingreso con correo y contraseña. */
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, AuthLayout, PasswordInput],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout, PasswordInput, ExternalLogin],
   templateUrl: './login.html',
   styleUrl: '../auth.scss',
 })
@@ -20,7 +21,6 @@ export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly params = inject(ActivatedRoute).snapshot.queryParamMap;
-
   protected readonly cargando = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly aviso = avisoDeIngreso(this.params);

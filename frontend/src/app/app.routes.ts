@@ -16,6 +16,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
   },
   {
+    path: 'registrarse',
+    canActivate: [guestGuard],
+    title: 'Crear cuenta | ICA Bienestar Animal',
+    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
+  },
+  {
     // Sin guestGuard: el enlace del correo debe funcionar aunque haya otra sesión abierta.
     path: 'restablecer-contrasena',
     title: 'Crear contraseña | ICA Bienestar Animal',
