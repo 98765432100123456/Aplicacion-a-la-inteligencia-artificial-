@@ -8,7 +8,7 @@ export function setupApp(app: INestApplication): void {
   const config = app.get(ConfigService<AppConfig, true>);
   app.setGlobalPrefix('api');
   app.use(helmet());
-  app.enableCors({ origin: config.get('corsOrigins', { infer: true }), credentials: false });
+  app.enableCors({ origin: config.get('corsOrigins', { infer: true }), credentials: false, exposedHeaders: ['Content-Disposition'] });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

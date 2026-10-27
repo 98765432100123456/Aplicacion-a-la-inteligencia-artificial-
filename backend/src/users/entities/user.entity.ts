@@ -59,9 +59,9 @@ export class User {
   @Column({ name: 'password_changed_at', type: 'datetime', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)' })
   passwordChangedAt: Date;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3 })
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 3, default: () => 'CURRENT_TIMESTAMP(3)', onUpdate: 'CURRENT_TIMESTAMP(3)' })
   updatedAt: Date;
 }

@@ -24,6 +24,10 @@ export interface AppConfig {
     password?: string;
     from: string;
   };
+  /** Recomendaciones con IA; sin clave se usan las recomendaciones por reglas. */
+  ai: { apiKey?: string; model: string; timeoutMs: number };
+  /** Proyecto de Firebase Authentication; sin él solo se ingresa con correo y contraseña. */
+  firebaseProjectId?: string;
 }
 
 export function loadConfig(): AppConfig {
@@ -53,6 +57,12 @@ export function loadConfig(): AppConfig {
       password: process.env.SMTP_PASSWORD || undefined,
       from: process.env.MAIL_FROM ?? 'ICA Bienestar Animal <no-responder@ica-bienestar.local>',
     },
+    ai: {
+      apiKey: process.env.ANTHROPIC_API_KEY || undefined,
+      model: process.env.AI_MODEL || 'claude-opus-5-5',
+      timeoutMs: Number(process.env.AI_TIMEOUT_MS ?? 90_000),
+    },
+    firebaseProjectId: process.env.FIREBASE_PROJECT_ID || undefined,
   };
 }
 

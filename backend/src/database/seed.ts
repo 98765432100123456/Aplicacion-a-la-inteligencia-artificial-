@@ -3,6 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import dataSource from './data-source';
 import { Role } from '../roles/entities/role.entity';
 import { User } from '../users/entities/user.entity';
+import { Species } from '../farms/entities/species.entity';
 import { ALL_PERMISSIONS, BASE_ROLES, PERMISSIONS } from '../roles/constants/permissions';
 
 /**
@@ -34,6 +35,18 @@ const baseRoles = [
     description: 'Consulta fincas, evaluaciones y reportes sin modificarlos.',
     permissions: [PERMISSIONS.FINCAS_VER, PERMISSIONS.EVALUACIONES_VER, PERMISSIONS.REPORTES_VER],
   },
+  {
+    code: BASE_ROLES.PROPIETARIO,
+    name: 'Propietario del predio',
+    description: 'Consulta la información de sus predios, los resultados de las evaluaciones y las recomendaciones.',
+    permissions: [PERMISSIONS.PREDIOS_PROPIOS],
+  },
+];
+
+/** Especies con lista de chequeo disponible (compartido/lista-chequeo.ts). */
+const baseSpecies = [
+  { code: 'BOVINO', name: 'Bovinos' },
+  { code: 'BUFALINO', name: 'Búfalos' },
 ];
 
 async function seed() {
@@ -53,6 +66,13 @@ async function seed() {
     }
     await roles.save(roles.create({ ...base, isSystem: true }));
     console.log(`Rol creado: ${base.name}`);
+  }
+
+  const species = dataSource.getRepository(Species);
+  for (const base of baseSpecies) {
+    if (await species.exist({ where: { code: base.code } })) continue;
+    await species.save(species.create(base));
+    console.log(`Especie creada: ${base.name}`);
   }
 
   const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();

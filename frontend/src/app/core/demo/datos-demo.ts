@@ -3,7 +3,7 @@ import { PermissionDef, RoleItem, UserItem } from '../models/models';
 /**
  * Datos de prueba del modo demostración (`npm run demo`). Son los usuarios y
  * roles que se ven en la aplicación cuando no hay servicio ni base de datos.
- * Los usuarios reales viven en la tabla `users` de PostgreSQL; el administrador
+ * Los usuarios reales viven en la tabla `users` de MariaDB; el administrador
  * inicial lo crea backend/src/database/seed.ts.
  */
 
