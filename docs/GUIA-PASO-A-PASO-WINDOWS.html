@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Guía paso a paso — ICA Bienestar Animal</title>
+<style>
+  @page { size: Letter; margin: 18mm 16mm 18mm 16mm; }
+  :root { --verde:#1f6b3a; --verde-claro:#e8f3ec; --rojo:#9b1c1c; --rojo-claro:#fbeaea; --amarillo:#fff6dd; --gris:#5b6470; --borde:#d5dbe1; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color:#1d232a; margin:0; }
+  h1 { font-size: 22pt; color: var(--verde); margin: 0 0 4px; }
+  h2 { font-size: 14pt; color: var(--verde); border-bottom: 2px solid var(--verde); padding-bottom: 3px; margin: 22px 0 10px; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; break-after: avoid; }
+  p { margin: 5px 0; }
+  ol, ul { margin: 4px 0 6px; padding-left: 22px; }
+  li { margin: 2px 0; }
+  code { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 9.5pt; background:#f1f3f5; padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 9.3pt; background:#14202b; color:#e8eef3; padding: 8px 10px; border-radius: 6px; white-space: pre-wrap; margin: 6px 0 8px; break-inside: avoid; }
+  pre .c { color:#8fb3a0; }
+  table { width:100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.6pt; }
+  th, td { border: 1px solid var(--borde); padding: 5px 7px; vertical-align: top; text-align: left; }
+  th { background: var(--verde-claro); }
+  tr { break-inside: avoid; }
+  .portada { border-left: 6px solid var(--verde); padding: 6px 0 6px 14px; margin-bottom: 14px; }
+  .sub { color: var(--gris); font-size: 11pt; }
+  .caja { border-radius: 6px; padding: 7px 10px; margin: 8px 0; break-inside: avoid; }
+  .error { background: var(--rojo-claro); border-left: 4px solid var(--rojo); }
+  .error b.t { color: var(--rojo); }
+  .nota { background: var(--amarillo); border-left: 4px solid #c9a227; }
+  .ok { background: var(--verde-claro); border-left: 4px solid var(--verde); }
+  .paso { display:inline-block; background: var(--verde); color:#fff; border-radius: 50%; width: 20px; height: 20px; text-align:center; line-height:20px; font-size: 9.5pt; font-weight: 700; margin-right: 6px; }
+  .indice li { margin: 1px 0; }
+  .salto { break-before: page; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <h1>Guía paso a paso para ejecutar el proyecto</h1>
+  <div class="sub">ICA Bienestar Animal · Angular 20 + Firebase (proyecto <b>bienestar-animal-ica</b>) · Windows con PowerShell</div>
+</div>
+
+<p>Esta guía recoge, en orden, todo lo necesario para poner a funcionar la aplicación en un computador con Windows, conectada al proyecto real de Firebase. Incluye <b>los errores que aparecieron durante la instalación</b> y cómo se resolvió cada uno, en el punto exacto donde suelen salir.</p>
+
+<div class="caja nota"><b>Cómo leer la guía.</b> Los comandos se escriben en <b>PowerShell</b>, uno por línea, y se ejecutan con Enter. Las cajas rojas son errores que ya ocurrieron y su solución. Las verdes indican cómo saber que el paso salió bien.</div>
+
+<h3>Contenido</h3>
+<ol class="indice">
+  <li>Requisitos</li>
+  <li>Descargar el proyecto y ubicar la carpeta correcta</li>
+  <li>Acceso al proyecto de Firebase</li>
+  <li>Publicar las reglas de seguridad</li>
+  <li>Descargar la cuenta de servicio</li>
+  <li>Cargar los datos iniciales y crear el administrador</li>
+  <li>Iniciar la aplicación</li>
+  <li>Activar el ingreso con Google</li>
+  <li>Ingresar como administrador y entender los perfiles</li>
+  <li>Crear usuarios para cada perfil</li>
+  <li>Prueba completa del funcionamiento</li>
+  <li>Configuración pendiente en la consola</li>
+  <li>Publicar en internet (opcional)</li>
+  <li>Cómo volver a ejecutarla otro día</li>
+  <li>Tabla resumen de errores</li>
+</ol>
+
+<h2>1. Requisitos</h2>
+<table>
+  <tr><th>Programa</th><th>Versión</th><th>Dónde se obtiene</th></tr>
+  <tr><td>Node.js</td><td>22 o superior (LTS)</td><td>https://nodejs.org — instalar con las opciones por defecto</td></tr>
+  <tr><td>Google Chrome</td><td>Reciente</td><td>https://www.google.com/chrome</td></tr>
+  <tr><td>Cuenta de Gmail</td><td>—</td><td>Debe estar agregada al proyecto de Firebase (paso 3)</td></tr>
+</table>
+<p>Después de instalar Node.js, <b>cierre y vuelva a abrir PowerShell</b>. Para comprobar: <code>node -v</code> debe mostrar <code>v22…</code> o superior.</p>
+
+<div class="caja error"><b class="t">Error: PowerShell no puede cargar «npm.ps1» porque la ejecución de scripts está deshabilitada.</b><br>
+Solución: usar <code>npm.cmd</code> y <code>npx.cmd</code> en lugar de <code>npm</code> y <code>npx</code>. Esta guía ya los escribe así. Otra opción, una sola vez: <code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code>.</div>
+
+<h2>2. Descargar el proyecto y ubicar la carpeta correcta</h2>
+<ol>
+  <li>En GitHub, en el repositorio <code>Aplicacion-a-la-inteligencia-artificial-</code>, pulse <b>Code → Download ZIP</b>.</li>
+  <li>En <b>Descargas</b>, clic derecho sobre el ZIP → <b>Extraer todo…</b> → <b>Extraer</b>.</li>
+  <li>Abra PowerShell y entre a la carpeta extraída:</li>
+</ol>
+<pre>cd C:\Users\<i>SuUsuario</i>\Downloads\Aplicacion-a-la-inteligencia-artificial--main
+dir -Name</pre>
+
+<div class="caja error"><b class="t">Error: «cd firebase» o «cd frontend» dice que la ruta no existe.</b><br>
+Causa: Windows crea una carpeta <b>dentro de otra con el mismo nombre</b> al descomprimir. Si <code>dir -Name</code> muestra solo <code>Aplicacion-a-la-inteligencia-artificial--main</code>, todavía está en la carpeta exterior. Entre una vez más:
+<pre>cd .\Aplicacion-a-la-inteligencia-artificial--main
+dir -Name</pre>
+Repita hasta que la lista muestre <code>docs</code>, <code>firebase</code>, <code>frontend</code> y <code>firebase.json</code>. Esa es la <b>carpeta raíz</b> del proyecto.</div>
+
+<div class="caja ok">Correcto cuando <code>dir -Name</code> muestra las carpetas <code>firebase</code> y <code>frontend</code>.</div>
+
+<h2>3. Acceso al proyecto de Firebase</h2>
+<ol>
+  <li>Envíe su Gmail a quien creó el proyecto <b>bienestar-animal-ica</b> para que lo agregue en <b>Configuración del proyecto → Usuarios y permisos</b> con el rol <b>Editor</b> o <b>Propietario</b>.</li>
+  <li>Abra https://console.firebase.google.com con ese Gmail y confirme que aparece el proyecto.</li>
+</ol>
+<div class="caja nota">La consola nueva agrupa los productos por categorías en el menú izquierdo: <b>Authentication</b> está en <b>Seguridad</b>; <b>Firestore Database</b> en <b>Bases de datos y almacenamiento</b>; <b>AI Logic</b> en <b>Servicios de IA</b>; <b>Hosting</b> en <b>Hosting y sin servidores</b>. Si no encuentra algo, use <b>Buscar productos</b>, arriba del menú.</div>
+
+<h2>4. Publicar las reglas de seguridad</h2>
+<p>Desde la carpeta raíz del proyecto:</p>
+<pre>cd firebase
+npm.cmd install
+npx.cmd firebase login
+npm.cmd run desplegar:reglas</pre>
+<ul>
+  <li><code>npx.cmd firebase login</code> abre el navegador: inicie sesión con el Gmail que tiene acceso al proyecto y acepte. Si pregunta por enviar información de uso a Google, puede responder <b>n</b>.</li>
+  <li><code>npm.cmd run desplegar:reglas</code> publica quién puede leer y escribir cada colección de Firestore.</li>
+</ul>
+<div class="caja ok">Correcto cuando al final aparece <code>Deploy complete!</code> y una línea <code>Project Console: https://console.firebase.google.com/project/bienestar-animal-ica/overview</code>.</div>
+<div class="caja nota">Las advertencias de <code>npm</code> sobre paquetes obsoletos (<i>deprecated</i>) o <i>vulnerabilities</i> son normales y no impiden nada. <b>No ejecute <code>npm audit fix --force</code></b>: cambia versiones y puede dañar el proyecto.</div>
+
+<h2>5. Descargar la cuenta de servicio</h2>
+<p>La carga de datos iniciales necesita un archivo de credenciales con acceso de administrador al proyecto.</p>
+<ol>
+  <li>En la consola de Firebase, ícono de engranaje → <b>Configuración del proyecto</b> → pestaña <b>Cuentas de servicio</b>.</li>
+  <li>Pulse <b>Generar nueva clave privada</b> → <b>Generar clave</b>. Se descarga un archivo <code>.json</code>.</li>
+  <li>Cree la carpeta <code>C:\claves</code>, mueva allí el archivo y renómbrelo como <code>ica.json</code>.</li>
+</ol>
+<p>Compruebe que quedó bien:</p>
+<pre>Test-Path C:\claves\ica.json</pre>
+<div class="caja ok">Debe responder <code>True</code>.</div>
+
+<div class="caja error"><b class="t">Error: ENOENT … no such file or directory, open 'C:\claves\ica.json'</b> (o <code>Test-Path</code> responde <code>False</code>).<br>
+Causas encontradas:
+<ul>
+  <li>El archivo quedó en otra carpeta, por ejemplo <code>C:\Users\<i>SuUsuario</i>\Downloads\claves</code>. Use la ruta real o muévalo a <code>C:\claves</code>.</li>
+  <li>Windows oculta las extensiones y el archivo quedó llamado <b><code>ica.json.json</code></b>. Para verlo: <code>dir C:\claves -Name</code>. Para corregirlo:
+  <pre>Rename-Item C:\claves\ica.json.json ica.json</pre></li>
+</ul></div>
+
+<div class="caja nota"><b>Este archivo es secreto.</b> Da acceso total al proyecto. No lo suba a GitHub, no lo envíe por chat ni por correo y no lo deje dentro de la carpeta del proyecto. Cuando termine la guía, bórrelo de la consola (paso 12).</div>
+
+<h2>6. Cargar los datos iniciales y crear el administrador</h2>
+<p>Sigue en la carpeta <code>firebase</code>. Escriba su correo y una contraseña propia (mínimo 10 caracteres con al menos un número):</p>
+<pre>$env:GOOGLE_APPLICATION_CREDENTIALS = "C:\claves\ica.json"
+$env:SEMILLA_ADMIN_CORREO = "<i>correo-del-administrador@gmail.com</i>"
+$env:SEMILLA_ADMIN_CLAVE  = "<i>UnaClaveSegura2026</i>"
+npm.cmd run semilla</pre>
+<p>La carga crea los roles (Administrador, Evaluador, Consultor, Propietario), las especies, las libertades, los niveles y los 23 criterios de la norma, y el primer administrador. Puede repetirse sin duplicar datos.</p>
+<div class="caja ok">Correcto cuando termina mostrando <code>Administrador inicial: &lt;su correo&gt;</code> (o <code>El administrador … ya existe</code> si se ejecuta otra vez).</div>
+<div class="caja nota"><b>Anote ese correo y esa contraseña.</b> Son el usuario del administrador. Las tres líneas <code>$env:</code> solo duran mientras esa ventana de PowerShell esté abierta; si la cierra, debe escribirlas otra vez antes de repetir la carga.</div>
+<div class="caja error"><b class="t">Error: la carga usa un correo de ejemplo o no crea el administrador.</b><br>
+Causa: se ejecutó <code>npm.cmd run semilla</code> en otra ventana, o se cerró PowerShell, y las variables <code>$env:</code> se perdieron. Escriba de nuevo las tres líneas en la misma ventana y repita.</div>
+
+<h2>7. Iniciar la aplicación</h2>
+<p>Desde la carpeta <code>firebase</code>:</p>
+<pre>cd ..\frontend
+npm.cmd install
+npm.cmd start</pre>
+<ul>
+  <li>La primera vez, Angular pregunta si desea compartir datos de uso (<i>analytics</i>). Responda lo que prefiera; no afecta.</li>
+  <li>La compilación tarda uno o dos minutos.</li>
+</ul>
+<div class="caja ok">Correcto cuando aparece <code>Application bundle generation complete</code> y <code>Local: http://localhost:4200/</code>. Abra esa dirección en Chrome.</div>
+<div class="caja nota"><b>Deje esa ventana de PowerShell abierta</b> mientras usa la aplicación. Si la cierra, la aplicación se detiene. Para detenerla a propósito: <code>Ctrl + C</code>.</div>
+<div class="caja error"><b class="t">Error: el puerto 4200 ya está en uso.</b><br>Hay otra ventana de PowerShell con la aplicación abierta. Ciérrela o deténgala con <code>Ctrl + C</code> y vuelva a ejecutar <code>npm.cmd start</code>.</div>
+
+<h2>8. Activar el ingreso con Google</h2>
+<div class="caja error"><b class="t">Error: «Este método de ingreso no está habilitado en el proyecto de Firebase.»</b> al pulsar <b>Google</b>.<br>
+No es un fallo de la aplicación: el proveedor está apagado en la consola. Se activa así:</div>
+<ol>
+  <li>Consola de Firebase → menú izquierdo <b>Seguridad</b> → <b>Authentication</b>. Si es la primera vez, pulse <b>Comenzar</b>.</li>
+  <li>Pestaña <b>Método de acceso</b>. Deje habilitado <b>Correo electrónico/contraseña</b>.</li>
+  <li><b>Agregar proveedor nuevo</b> → <b>Google</b> → active <b>Habilitar</b>.</li>
+  <li>En <b>Correo electrónico de asistencia del proyecto</b>, elija su correo → <b>Guardar</b>.</li>
+  <li>En la pestaña <b>Configuración → Dominios autorizados</b>, verifique que esté <code>localhost</code>.</li>
+  <li>Vuelva a la aplicación, recargue con <b>F5</b> y pulse <b>Google</b>. Si Chrome bloquea la ventana emergente, permítala desde el ícono de la barra de direcciones.</li>
+</ol>
+
+<h2>9. Ingresar como administrador y entender los perfiles</h2>
+<p><b>El usuario del administrador</b> es el correo y la contraseña del paso 6. Se escriben en los campos <b>Correo</b> y <b>Contraseña</b> de la pantalla de ingreso (no con el botón Google, salvo que sea la misma cuenta de Gmail).</p>
+<div class="caja ok">Como administrador se ve el menú <b>Inicio · Predios · Usuarios · Roles · Cuenta</b>.</div>
+
+<div class="caja error"><b class="t">Situación: «ingresé con Google y quedé como propietario».</b><br>
+Es lo esperado: la primera vez que una cuenta entra con Google, Facebook o Microsoft, la aplicación la registra como <b>Propietario</b>. Si esa cuenta debe ser administrador:
+<ol>
+  <li>Consola → <b>Bases de datos y almacenamiento</b> → <b>Firestore Database</b> → colección <b>usuarios</b>.</li>
+  <li>Abra el documento cuyo campo <code>correo</code> es su Gmail; tiene <code>rol: propietario</code>.</li>
+  <li>Cambie el valor de <code>rol</code> a <code>administrador</code> (minúsculas) y guarde.</li>
+  <li>En la aplicación, cierre sesión y vuelva a entrar con Google.</li>
+</ol>
+Ya como administrador, los demás cambios de rol se hacen desde la pantalla <b>Usuarios</b>.</div>
+
+<div class="caja nota"><b>¿Olvidó el correo del administrador?</b> En Firestore, colección <b>usuarios</b>, busque el documento con <code>rol: administrador</code>; su campo <code>correo</code> es el usuario.<br>
+<b>¿Olvidó la contraseña?</b> En la aplicación pulse <b>¿Olvidó su contraseña?</b> y escriba ese correo; llega un enlace para crear una nueva (revise spam).</div>
+
+<table>
+  <tr><th>Perfil</th><th>Qué puede hacer</th></tr>
+  <tr><td><b>Administrador</b></td><td>Todo: usuarios, roles y permisos, predios, evaluaciones, recomendaciones e informes</td></tr>
+  <tr><td><b>Evaluador</b></td><td>Registrar predios, realizar evaluaciones, generar recomendaciones y descargar los PDF</td></tr>
+  <tr><td><b>Consultor</b></td><td>Consultar predios, historial e informes, sin modificar nada</td></tr>
+  <tr><td><b>Propietario</b></td><td>Solo los predios registrados con su correo, con su historial y sus PDF</td></tr>
+</table>
+
+<h2>10. Crear usuarios para cada perfil</h2>
+<p>Los perfiles Evaluador y Consultor no se registran solos: los crea el administrador.</p>
+<ol>
+  <li>Como administrador: <b>Usuarios → Nuevo usuario</b>.</li>
+  <li>Nombres, apellidos, correo y <b>Rol</b> (Evaluador o Consultor) → <b>Guardar</b>.</li>
+  <li>Firebase envía a ese correo un enlace para <b>crear la contraseña</b> (revise spam).</li>
+  <li>La persona abre el enlace, define su contraseña e ingresa con correo y contraseña. Si el correo es de Gmail, también puede usar el botón Google y conserva el rol asignado.</li>
+</ol>
+<p><b>Propietarios:</b> pueden crear su propia cuenta con <b>Cree su cuenta</b> en la pantalla de ingreso; deben confirmar el correo antes de ver sus predios. También pueden entrar con Google.</p>
+
+<div class="caja nota"><b>Truco para probar todos los perfiles con un solo Gmail.</b> Gmail entrega en su misma bandeja los correos con <code>+algo</code> antes de la arroba:
+<table>
+  <tr><th>Perfil</th><th>Correo para crear en Usuarios</th></tr>
+  <tr><td>Evaluador</td><td><code>sucorreo+evaluador@gmail.com</code></td></tr>
+  <tr><td>Consultor</td><td><code>sucorreo+consultor@gmail.com</code></td></tr>
+  <tr><td>Propietario</td><td><code>sucorreo+propietario@gmail.com</code></td></tr>
+</table>
+Para estas variantes, ingrese con <b>correo y contraseña</b>, no con el botón Google. Para cambiar de perfil: <b>Cerrar sesión</b> e ingresar con otro.</div>
+
+<h2>11. Prueba completa del funcionamiento</h2>
+<ol>
+  <li>Como administrador o evaluador: <b>Predios → Nuevo predio</b>. Llene los datos, elija el <b>sistema productivo</b> (por ejemplo Lechería), la especie <b>Bovinos</b> con su inventario y, en <b>Correo del propietario</b>, el correo con el que ingresará el propietario → <b>Registrar predio</b>.</li>
+  <li><b>Realizar evaluación</b> → responda los indicadores (Cumple, Parcial, No cumple, No aplica) → <b>Finalizar evaluación</b> → confirme.</li>
+  <li>Revise el puntaje, el nivel (Bajo, Medio, Alto o Excelente) y las recomendaciones.</li>
+  <li>Descargue <b>Informe técnico (PDF)</b> y <b>Recomendaciones para el propietario (PDF)</b>.</li>
+  <li>Cierre sesión e ingrese como el propietario de ese correo: debe ver solo ese predio, su historial y los dos PDF.</li>
+</ol>
+<div class="caja error"><b class="t">Mensajes posibles al ingresar o usar la aplicación</b>
+<table>
+  <tr><th>Mensaje</th><th>Qué hacer</th></tr>
+  <tr><td>«Correo o contraseña incorrectos.»</td><td>Revise los datos o use <b>¿Olvidó su contraseña?</b></td></tr>
+  <tr><td>«Su cuenta no tiene un perfil en la plataforma.»</td><td>La cuenta existe en Authentication pero no en la colección <b>usuarios</b>. Pida al administrador que la cree en <b>Usuarios</b>.</td></tr>
+  <tr><td>«Su usuario está inactivo.»</td><td>El administrador lo inactivó, o su rol está inactivo.</td></tr>
+  <tr><td>«Su rol no tiene permiso para esta acción.»</td><td>Revise los permisos del rol en <b>Roles</b>. Si ocurre en todo, falta el paso 4 (reglas).</td></tr>
+  <tr><td>El propietario no ve su predio</td><td>No ha confirmado su correo, o el predio se registró con otro correo. Tras confirmarlo, cierre sesión y vuelva a entrar.</td></tr>
+</table></div>
+
+<h2>12. Configuración pendiente en la consola</h2>
+<table>
+  <tr><th>Tarea</th><th>Dónde y cómo</th></tr>
+  <tr><td>Política de contraseñas</td><td>Seguridad → Authentication → <b>Configuración → Política de contraseñas</b>: longitud mínima <b>10</b>, <b>requerir un carácter numérico</b>, modo <b>Exigir</b> → Guardar.</td></tr>
+  <tr><td>Correos en español</td><td>Authentication → <b>Plantillas</b> → idioma <b>Español</b>.</td></tr>
+  <tr><td>IA de las recomendaciones</td><td><b>Servicios de IA → AI Logic → Comenzar → Gemini Developer API → Habilitar</b>. Mientras no esté activa, la aplicación genera las recomendaciones con reglas de la norma y lo indica en el informe.</td></tr>
+  <tr><td>Ingreso con Microsoft</td><td>Registrar una aplicación en el portal de Azure (<i>App registrations</i>) con la dirección de retorno <code>https://bienestar-animal-ica.firebaseapp.com/__/auth/handler</code>; copiar su identificador y secreto en Authentication → Microsoft.</td></tr>
+  <tr><td>Ingreso con Facebook</td><td>Crear una aplicación en developers.facebook.com con el producto <i>Facebook Login</i> y la misma dirección de retorno; copiar el ID y la clave secreta en Authentication → Facebook.</td></tr>
+  <tr><td>Borrar la clave de servicio</td><td>Cuando ya no se necesite la carga inicial: Google Cloud Console → <b>IAM → Cuentas de servicio</b> → la cuenta <code>firebase-adminsdk</code> → <b>Claves</b> → borrar la clave. Elimine también <code>C:\claves\ica.json</code>.</td></tr>
+</table>
+<div class="caja nota">Hasta que Microsoft y Facebook estén configurados, sus botones muestran «Este método de ingreso no está habilitado en el proyecto de Firebase.», igual que Google en el paso 8.</div>
+
+<h2>13. Publicar en internet (opcional)</h2>
+<p>Para que cualquiera abra la aplicación sin su computador:</p>
+<pre>cd frontend
+npm.cmd run build
+cd ..\firebase
+npm.cmd run desplegar:sitio</pre>
+<div class="caja ok">Queda en <code>https://bienestar-animal-ica.web.app</code>. El ingreso con Google funciona allí sin cambios, porque ese dominio ya está autorizado.</div>
+
+<h2>14. Cómo volver a ejecutarla otro día</h2>
+<p>Los pasos 3 a 6 y 8 se hacen <b>una sola vez</b>. Las siguientes veces basta con:</p>
+<pre>cd C:\Users\<i>SuUsuario</i>\Downloads\Aplicacion-a-la-inteligencia-artificial--main\Aplicacion-a-la-inteligencia-artificial--main\frontend
+npm.cmd start</pre>
+<p>y abrir <code>http://localhost:4200</code> en Chrome. Los datos están en Firebase, no en el computador, así que se conservan.</p>
+<div class="caja nota"><b>Modo demostración</b> (sin Firebase, datos de prueba en el navegador): <code>npm.cmd run demo</code> en la carpeta <code>frontend</code>; ingreso con <code>admin@ica-bienestar.local</code> y contraseña <code>CambiarEsta.2026</code>.</div>
+
+<h2 class="salto">15. Tabla resumen de errores</h2>
+<table>
+  <tr><th style="width:36%">Error o mensaje</th><th style="width:28%">Causa</th><th>Solución</th></tr>
+  <tr><td>No se puede cargar <code>npm.ps1</code>; la ejecución de scripts está deshabilitada</td><td>Política de seguridad de PowerShell</td><td>Usar <code>npm.cmd</code> y <code>npx.cmd</code></td></tr>
+  <tr><td><code>cd firebase</code> / <code>cd frontend</code>: la ruta no existe</td><td>Carpeta dentro de otra al descomprimir el ZIP</td><td><code>dir -Name</code> y <code>cd .\Aplicacion-a-la-inteligencia-artificial--main</code> hasta ver <code>firebase</code> y <code>frontend</code></td></tr>
+  <tr><td><code>npm install</code> no encuentra <code>package.json</code></td><td>PowerShell no está en la carpeta correcta</td><td>Entrar a <code>firebase</code> o <code>frontend</code> según el paso</td></tr>
+  <tr><td>Advertencias <i>deprecated</i>, <i>vulnerabilities</i>, <i>install-scripts</i></td><td>Avisos normales de npm</td><td>Ignorarlas; no ejecutar <code>npm audit fix --force</code></td></tr>
+  <tr><td>ENOENT al abrir <code>C:\claves\ica.json</code></td><td>Archivo en otra carpeta</td><td>Moverlo a <code>C:\claves</code> y comprobar con <code>Test-Path</code></td></tr>
+  <tr><td><code>Test-Path</code> responde <code>False</code> aunque el archivo está</td><td>Se llama <code>ica.json.json</code> (extensiones ocultas)</td><td><code>Rename-Item C:\claves\ica.json.json ica.json</code></td></tr>
+  <tr><td>La carga no crea el administrador o usa un correo de ejemplo</td><td>Variables <code>$env:</code> escritas en otra ventana o perdidas al cerrarla</td><td>Escribir las tres variables y <code>npm.cmd run semilla</code> en la misma ventana</td></tr>
+  <tr><td>La aplicación deja de abrir en <code>localhost:4200</code></td><td>Se cerró la ventana de <code>npm.cmd start</code></td><td>Volver a ejecutar <code>npm.cmd start</code> en <code>frontend</code></td></tr>
+  <tr><td>El puerto 4200 ya está en uso</td><td>Otra ventana con la aplicación abierta</td><td>Cerrarla o <code>Ctrl + C</code></td></tr>
+  <tr><td>«Este método de ingreso no está habilitado en el proyecto de Firebase.»</td><td>Proveedor apagado en la consola</td><td>Seguridad → Authentication → Método de acceso → habilitar el proveedor</td></tr>
+  <tr><td>No se encuentra Authentication en el menú</td><td>La consola nueva agrupa por categorías</td><td>Está en <b>Seguridad</b>, o usar <b>Buscar productos</b></td></tr>
+  <tr><td>Ingresé con Google y quedé como propietario</td><td>Comportamiento esperado para cuentas nuevas</td><td>Cambiar <code>rol</code> a <code>administrador</code> en Firestore, o desde <b>Usuarios</b> como administrador</td></tr>
+  <tr><td>No sé cuál es el usuario del administrador</td><td>Es el correo escrito en <code>SEMILLA_ADMIN_CORREO</code></td><td>Firestore → <b>usuarios</b> → documento con <code>rol: administrador</code></td></tr>
+  <tr><td>«Su cuenta no tiene un perfil en la plataforma.»</td><td>Cuenta sin documento en <b>usuarios</b></td><td>Crearla desde <b>Usuarios</b> como administrador</td></tr>
+  <tr><td>«Su rol no tiene permiso para esta acción.»</td><td>Permisos del rol o reglas sin publicar</td><td>Revisar <b>Roles</b>; publicar reglas (paso 4)</td></tr>
+  <tr><td>No llega el correo para crear la contraseña</td><td>Filtro de spam</td><td>Revisar spam o pulsar <b>Enviar enlace de acceso</b> al editar el usuario en desde <b>Usuarios</b></td></tr>
+</table>
+
+</body>
+</html>
