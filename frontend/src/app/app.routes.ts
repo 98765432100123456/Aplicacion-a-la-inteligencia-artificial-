@@ -100,6 +100,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/roles/role-editor/role-editor').then((m) => m.RoleEditor),
       },
       {
+        path: 'sistema-de-diseno',
+        title: 'Sistema de diseño | ICA Bienestar Animal',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.ROLES_VER] },
+        loadComponent: () => import('./features/design-system/sistema-diseno/sistema-diseno').then((m) => m.SistemaDiseno),
+      },
+      {
         path: 'mi-cuenta',
         title: 'Cuenta | ICA Bienestar Animal',
         canDeactivate: [unsavedChangesGuard],

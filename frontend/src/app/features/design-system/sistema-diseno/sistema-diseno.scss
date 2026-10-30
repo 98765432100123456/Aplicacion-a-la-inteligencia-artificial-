@@ -1,0 +1,39 @@
+.seccion { margin-top: var(--e-12); padding-top: var(--e-6); border-top: 1px solid var(--linea-fuerte); }
+h2 { font-size: var(--texto-2xl); letter-spacing: -0.045em; }
+h3 { margin: var(--e-6) 0 var(--e-3); font-size: var(--texto-md); }
+.nota { margin-top: var(--e-2); max-width: 44rem; color: var(--tinta-suave); font-size: var(--texto-sm); }
+code { font-size: var(--texto-xs); color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+
+/* Color */
+.muestras { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: var(--e-4); }
+.muestras li { display: grid; gap: 0.15rem; }
+.color { height: 4.5rem; margin-bottom: var(--e-2); border-radius: var(--radio-control); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tinta) 14%, transparent); }
+.uso { font-size: var(--texto-sm); color: var(--tinta-suave); }
+
+/* Tipografía */
+.escala { margin: var(--e-4) 0 0; }
+.escala div { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: var(--e-6); align-items: baseline; padding: var(--e-4) 0; border-bottom: 1px solid var(--linea); }
+.escala dt { display: grid; gap: 0.1rem; }
+.escala dd { margin: 0; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; overflow-wrap: anywhere; }
+
+/* Espacio */
+.espacios { list-style: none; margin: var(--e-4) 0 0; padding: 0; display: grid; gap: var(--e-2); }
+.espacios li { display: grid; grid-template-columns: 4rem auto 1fr; gap: var(--e-4); align-items: center; }
+.barra { height: 0.75rem; border-radius: 3px; background: var(--accion); }
+.espacios .cifras { font-size: var(--texto-xs); color: var(--tinta-suave); }
+
+/* Componentes */
+.rejilla-componentes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-4); margin-top: var(--e-4); }
+.pieza { display: grid; align-content: start; gap: var(--e-4); padding: var(--e-6); background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio-panel); }
+.pieza h3 { margin: 0; }
+.pieza .nota { margin: 0; }
+.completa { grid-column: 1 / -1; }
+.fila { display: flex; flex-wrap: wrap; gap: var(--e-3); align-items: center; }
+.niveles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-3); }
+.imagenes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--e-3); }
+
+@media (max-width: 47.49em) {
+  .rejilla-componentes { grid-template-columns: 1fr; }
+  .escala div { grid-template-columns: 1fr; gap: var(--e-2); }
+  .imagenes { grid-template-columns: 1fr 1fr; }
+}

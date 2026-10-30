@@ -3,6 +3,8 @@ Sistema de diseño
 
 Este documento expone los fundamentos visuales de la interfaz de ICA Bienestar Animal y justifica cada decisión. Los valores se implementan como variables CSS en `frontend/src/styles/_tokens.scss`, y los componentes base en los demás archivos de `frontend/src/styles/`. Las capturas de cada pantalla, en escritorio y teléfono y en modo claro y oscuro, se encuentran en la carpeta [docs/disenos](disenos/). El sistema fue revisado con las guías de interfaz de Apple; el informe correspondiente se encuentra en la [revisión con las guías de Apple](REVISION-APPLE-HIG.md).
 
+Dentro de la aplicación, el administrador puede abrir la pantalla **Diseño** (`/sistema-de-diseno`), que muestra en vivo los colores con sus valores en el modo actual, la escala tipográfica, la escala de espacio y los componentes base: botones, campos, interruptor, control segmentado, estados, niveles, avisos e imágenes. Toda pantalla nueva se arma con esas piezas.
+
 
 Concepto
 --------

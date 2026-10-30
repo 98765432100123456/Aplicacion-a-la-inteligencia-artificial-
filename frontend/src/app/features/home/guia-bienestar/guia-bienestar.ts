@@ -1,5 +1,6 @@
 import { Component, computed, ElementRef, signal, viewChildren } from '@angular/core';
-import { LIBERTADES, METODOS, muestraMinima, NIVELES, repartir, tipoProductor, TIPOS_INDICADOR } from '../data/norma-ica';
+import { LIBERTADES, METODOS, NIVELES, TIPOS_INDICADOR } from '../data/norma-ica';
+import { muestraMinima, NOMBRE_PRODUCTOR, repartir, tipoProductor } from '../../../compartido/norma';
 import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
 
 const GRUPOS = [
@@ -35,10 +36,10 @@ export class GuiaBienestar {
 
   protected readonly total = computed(() => this.inventario().reduce((a, b) => a + b, 0));
   protected readonly productor = computed(() => tipoProductor(this.total()));
-  protected readonly productorTexto = computed(() => (this.total() === 0 ? 'Sin datos' : this.productor()));
+  protected readonly productorTexto = computed(() => (this.total() === 0 ? 'Sin datos' : NOMBRE_PRODUCTOR[this.productor()]));
   protected readonly metodologia = computed(() => {
     if (this.total() === 0) return 'La metodología depende del número de animales.';
-    return this.productor() === 'pequeño'
+    return this.productor() === 'PEQUENO'
       ? 'Hasta 50 animales. Se evalúa con el capítulo de pequeño productor.'
       : 'Más de 50 animales. Se evalúan 23 criterios con 59 indicadores.';
   });

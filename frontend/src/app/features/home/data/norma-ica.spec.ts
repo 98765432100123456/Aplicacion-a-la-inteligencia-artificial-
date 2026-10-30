@@ -1,4 +1,5 @@
-import { LIBERTADES, muestraMinima, repartir, tipoProductor } from './norma-ica';
+import { muestraMinima, repartir, tipoProductor } from '../../../compartido/norma';
+import { LIBERTADES } from './norma-ica';
 
 describe('Reglas de la metodología del ICA', () => {
   it('los pesos de las libertades suman 100 %', () => {
@@ -6,10 +7,10 @@ describe('Reglas de la metodología del ICA', () => {
   });
 
   it('clasifica el tamaño del productor', () => {
-    expect(tipoProductor(50)).toBe('pequeño');
-    expect(tipoProductor(51)).toBe('mediano');
-    expect(tipoProductor(500)).toBe('mediano');
-    expect(tipoProductor(501)).toBe('grande');
+    expect(tipoProductor(50)).toBe('PEQUENO');
+    expect(tipoProductor(51)).toBe('MEDIANO');
+    expect(tipoProductor(500)).toBe('MEDIANO');
+    expect(tipoProductor(501)).toBe('GRANDE');
   });
 
   it('aplica la tabla de muestra mínima', () => {
