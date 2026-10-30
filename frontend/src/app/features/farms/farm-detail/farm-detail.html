@@ -3,7 +3,7 @@
 </a>
 
 @if (error()) {
-  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+  <app-error-carga [mensaje]="error()!" (reintentar)="cargar()" />
 }
 
 @if (farm(); as f) {
@@ -155,5 +155,5 @@
     </div>
   </app-dialog>
 } @else if (!error()) {
-  <p class="cargando" role="status">Cargando predio…</p>
+  <app-esqueleto forma="ficha" [filas]="5" etiqueta="Cargando predio…" />
 }

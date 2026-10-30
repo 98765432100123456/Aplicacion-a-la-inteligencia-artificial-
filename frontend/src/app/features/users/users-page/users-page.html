@@ -37,10 +37,7 @@
   <h2 id="lista-titulo" class="visually-hidden">Lista de usuarios</h2>
 
   @if (loadError()) {
-    <div class="vacio">
-      <p class="aviso aviso-error" role="alert">{{ loadError() }}</p>
-      <button type="button" class="btn btn-secundario" (click)="load()">Reintentar</button>
-    </div>
+    <app-error-carga [mensaje]="loadError()!" (reintentar)="load()" />
   } @else if (!loading() && users().length === 0) {
     <div class="vacio">
       @if (hasFilters()) {
@@ -106,7 +103,7 @@
       </tbody>
     </table>
     @if (loading() && users().length === 0) {
-      <p class="vacio" role="status">Cargando usuarios…</p>
+      <app-esqueleto [filas]="5" etiqueta="Cargando usuarios…" />
     }
   }
 

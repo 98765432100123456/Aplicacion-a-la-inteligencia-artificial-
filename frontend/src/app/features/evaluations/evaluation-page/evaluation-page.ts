@@ -8,11 +8,13 @@ import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
 import { EvaluationForm } from '../evaluation-form/evaluation-form';
 import { EvaluationResult } from '../evaluation-result/evaluation-result';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 /** Muestra el formulario mientras la evaluación está en borrador y el resultado cuando se finaliza. */
 @Component({
   selector: 'app-evaluation-page',
-  imports: [RouterLink, EvaluationForm, EvaluationResult],
+  imports: [Esqueleto, ErrorCarga, RouterLink, EvaluationForm, EvaluationResult],
   templateUrl: './evaluation-page.html',
   styleUrl: './evaluation-page.scss',
 })
@@ -25,6 +27,11 @@ export class EvaluationPage implements OnInit, HasUnsavedChanges {
   protected readonly error = signal<string | null>(null);
 
   ngOnInit() {
+    this.cargar();
+  }
+
+  protected cargar() {
+    this.error.set(null);
     this.api.getEvaluation(this.id).subscribe({
       next: (e) => this.evaluation.set(e),
       error: (e) => this.error.set(errorMessage(e, 'No se pudo cargar la evaluación.')),

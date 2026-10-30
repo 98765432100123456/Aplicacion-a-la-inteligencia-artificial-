@@ -16,7 +16,9 @@
 }
 
 @if (error()) {
-  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+  <app-error-carga [mensaje]="error()!" (reintentar)="reintentar()" />
+} @else if (loading() && !farms().length) {
+  <app-esqueleto [filas]="4" etiqueta="Cargando predios…" />
 } @else if (empty()) {
   <div class="vacio">
     <app-foto class="vacio-imagen" nombre="potrero" [decorativa]="true" />

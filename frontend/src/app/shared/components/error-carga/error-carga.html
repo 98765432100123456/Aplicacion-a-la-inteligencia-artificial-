@@ -1,0 +1,7 @@
+<div class="error-carga" role="alert">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5v.01" /></svg>
+  <div>
+    <p class="mensaje">{{ mensaje() }}</p>
+    <button type="button" class="btn btn-secundario btn-sm" (click)="reintentar.emit()">Intentar de nuevo</button>
+  </div>
+</div>

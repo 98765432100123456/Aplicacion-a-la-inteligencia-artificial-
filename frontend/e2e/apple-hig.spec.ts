@@ -44,6 +44,30 @@ test.describe('Apariencia del sistema', () => {
   });
 });
 
+test.describe('Conexión y modo', () => {
+  test('avisa cuando se pierde la conexión y quita el aviso al volver', async ({ page, context }) => {
+    await login(page);
+    await context.setOffline(true);
+    await expect(page.getByText('Sin conexión a internet.')).toBeVisible();
+    await context.setOffline(false);
+    await expect(page.getByText('Sin conexión a internet.')).toBeHidden();
+  });
+
+  test('el botón de modo oscuro cambia los colores y se recuerda al recargar', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await login(page);
+    await page.getByRole('button', { name: 'Activar modo oscuro' }).first().click();
+    const fondo = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    await expect.poll(fondo).toBe('rgb(14, 18, 16)');
+    await page.reload();
+    await page.locator('h1').first().waitFor();
+    await expect.poll(fondo).toBe('rgb(14, 18, 16)');
+    await expectAccessible(page);
+    await page.getByRole('button', { name: 'Activar modo claro' }).first().click();
+    await expect.poll(fondo).toBe('rgb(242, 243, 240)');
+  });
+});
+
 test.describe('Teclado y modales', () => {
   test('el menú móvil se abre, recibe el foco y se cierra con Escape', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'Solo aplica al cajón del celular');

@@ -191,4 +191,6 @@ Uso en teléfono móvil y accesibilidad
 
 En pantallas pequeñas, el menú se abre con el botón ubicado en la esquina superior derecha y se cierra al elegir una sección, al tocar fuera de él o con la tecla `Escape`; al final del menú se encuentran el nombre de la persona y el botón **Cerrar sesión**. La lista de usuarios se presenta como fichas con las acciones al pie de cada una, y los formularios se abren como hojas que suben desde el borde inferior.
 
+Si el dispositivo pierde la conexión a internet, una franja amarilla lo indica en la parte superior; lo que se ve puede no estar actualizado y no se guarda nada hasta que vuelva la conexión. Si una pantalla no logra cargar, muestra el motivo y el botón **Intentar de nuevo**.
+
 La aplicación adopta el modo claro u oscuro configurado en el dispositivo. El botón con el ícono de luna o de sol, en la barra superior y en la pantalla de ingreso, cambia de modo, y la elección se recuerda en ese navegador. La aplicación también responde a la preferencia de contraste aumentado. Todas las funciones pueden usarse con el teclado y con lectores de pantalla, y la interfaz se reorganiza cuando se aumenta el tamaño de letra del navegador.

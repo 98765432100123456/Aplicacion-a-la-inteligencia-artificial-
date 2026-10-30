@@ -5,12 +5,9 @@
 </app-page-header>
 
 @if (error()) {
-  <div class="vacio">
-    <p class="aviso aviso-error" role="alert">{{ error() }}</p>
-    <button type="button" class="btn btn-secundario" (click)="load()">Reintentar</button>
-  </div>
+  <app-error-carga [mensaje]="error()!" (reintentar)="load()" />
 } @else if (roles() === null) {
-  <p class="cargando" role="status">Cargando roles…</p>
+  <app-esqueleto [filas]="4" etiqueta="Cargando roles…" />
 } @else {
   <ul class="roles entrada">
     @for (r of roles(); track r.id; let i = $index) {

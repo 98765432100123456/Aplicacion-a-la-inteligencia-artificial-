@@ -14,6 +14,8 @@ import { Nivel } from '../../../shared/components/nivel/nivel';
 import { ToastService } from '../../../shared/services/toast.service';
 import { FarmForm } from '../farm-form/farm-form';
 import { Foto } from '../../../shared/components/foto/foto';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 type Pestana = 'tecnicas' | 'recomendaciones';
 
@@ -23,7 +25,7 @@ type Pestana = 'tecnicas' | 'recomendaciones';
  */
 @Component({
   selector: 'app-farm-detail',
-  imports: [Foto, RouterLink, DatePipe, DecimalPipe, Dialog, Nivel, FarmForm],
+  imports: [Esqueleto, ErrorCarga, Foto, RouterLink, DatePipe, DecimalPipe, Dialog, Nivel, FarmForm],
   templateUrl: './farm-detail.html',
   styleUrl: './farm-detail.scss',
 })
@@ -56,6 +58,12 @@ export class FarmDetail implements OnInit, HasUnsavedChanges {
   protected readonly drafts = computed(() => this.history().filter((e) => e.status === 'BORRADOR'));
 
   ngOnInit() {
+    this.cargar();
+    if (this.canEdit) this.api.species().subscribe((s) => this.species.set(s));
+  }
+
+  protected cargar() {
+    this.error.set(null);
     forkJoin({ farm: this.api.getFarm(this.id), history: this.api.history(this.id) }).subscribe({
       next: ({ farm, history }) => {
         this.farm.set(farm);
@@ -63,7 +71,6 @@ export class FarmDetail implements OnInit, HasUnsavedChanges {
       },
       error: (e) => this.error.set(errorMessage(e, 'No se pudo cargar el predio.')),
     });
-    if (this.canEdit) this.api.species().subscribe((s) => this.species.set(s));
   }
 
   hasUnsavedChanges(): boolean {

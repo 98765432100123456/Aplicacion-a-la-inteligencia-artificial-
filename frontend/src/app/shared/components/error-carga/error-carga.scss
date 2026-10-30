@@ -1,0 +1,8 @@
+:host { display: block; }
+.error-carga {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--e-4); align-items: start;
+  padding: var(--e-5); border-radius: var(--radio-panel);
+  background: var(--alerta-fondo); color: var(--alerta-texto);
+}
+svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: var(--alerta); stroke-width: 2; stroke-linecap: round; }
+.mensaje { margin: 0 0 var(--e-3); font-weight: 600; }

@@ -13,11 +13,13 @@ import { PageHeader } from '../../../shared/components/page-header/page-header';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UserForm } from '../user-form/user-form';
 import { filtrosAUrl, filtrosDesdeUrl, textoDeRango, TAMANO_PAGINA } from './filtros';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 /** Lista de usuarios con búsqueda, filtros, paginación y acciones de gestión. */
 @Component({
   selector: 'app-users-page',
-  imports: [ReactiveFormsModule, DatePipe, PageHeader, Dialog, UserForm],
+  imports: [Esqueleto, ErrorCarga, ReactiveFormsModule, DatePipe, PageHeader, Dialog, UserForm],
   templateUrl: './users-page.html',
   styleUrl: './users-page.scss',
 })

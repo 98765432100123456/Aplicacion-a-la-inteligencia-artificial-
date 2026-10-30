@@ -9,7 +9,9 @@ Dentro de la aplicación, el administrador puede abrir la pantalla **Diseño** (
 Concepto
 --------
 
-El concepto rector es **mostrar el producto antes que prometerlo**. La pantalla de ingreso no describe la plataforma con viñetas: enseña, en un teléfono, cómo se verá una evaluación en finca con su puntaje, su nivel de bienestar y la lista de chequeo por secciones. El dibujo se rotula como ejemplo ilustrativo y corresponde a la pantalla de evaluación que hoy ofrece la aplicación.
+El concepto rector es **mostrar el producto antes que prometerlo**. La pantalla de ingreso no describe la plataforma con viñetas: enseña, en un teléfono, cómo se verá una evaluación en finca con su puntaje, su nivel de bienestar y la lista de chequeo por secciones. El dibujo se rotula como ejemplo ilustrativo y corresponde a la pantalla de evaluación que hoy ofrece la aplicación. Detrás, una fotografía de ganado en potrero bajo un velo oscuro sitúa la plataforma en el campo sin restarle contraste al texto.
+
+**Estados de carga y error.** Mientras llegan los datos, cada pantalla muestra una silueta de lo que va a aparecer (componente `app-esqueleto`) en lugar de una pantalla en blanco. Si algo no carga, el aviso dice qué falló y ofrece **Intentar de nuevo** sin recargar la página (`app-error-carga`). Cuando el dispositivo pierde internet, una franja amarilla lo advierte en todas las pantallas (`app-sin-conexion`).
 
 Dentro de la aplicación el concepto es **el libro de registro**: titulares grandes, filas separadas por líneas finas, una regla oscura que abre cada lista y un punto de color que indica el estado. Es la manera en que un técnico de campo lleva sus anotaciones, trasladada a la pantalla sin imitar el papel.
 

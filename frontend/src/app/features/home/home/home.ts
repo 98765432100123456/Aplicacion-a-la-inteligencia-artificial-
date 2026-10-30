@@ -6,6 +6,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { P } from '../../../core/models/models';
 import { GuiaBienestar } from '../guia-bienestar/guia-bienestar';
 import { Foto } from '../../../shared/components/foto/foto';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 interface Resumen {
   activos: number;
@@ -26,7 +28,7 @@ const RUTA = [
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, GuiaBienestar, Foto],
+  imports: [Esqueleto, ErrorCarga, RouterLink, GuiaBienestar, Foto],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -40,16 +42,21 @@ export class Home implements OnInit {
   private readonly canListRoles = this.auth.can(P.ROLES_VER, P.USUARIOS_GESTIONAR);
   protected readonly noPermission = !!inject(ActivatedRoute).snapshot.queryParamMap.get('sinPermiso');
   protected readonly resumen = signal<Resumen | null>(null);
+  protected readonly resumenError = signal(false);
 
   ngOnInit() {
-    if (!this.canManageUsers) return;
+    if (this.canManageUsers) this.cargarResumen();
+  }
+
+  protected cargarResumen() {
+    this.resumenError.set(false);
     forkJoin({
       activos: this.api.listUsers({ active: 'true', pageSize: 1 }),
       inactivos: this.api.listUsers({ active: 'false', pageSize: 1 }),
       roles: this.canListRoles ? this.api.listRoles() : of(null),
     }).subscribe({
       next: (r) => this.resumen.set({ activos: r.activos.total, inactivos: r.inactivos.total, roles: r.roles ? r.roles.length : null }),
-      error: () => this.resumen.set(null),
+      error: () => this.resumenError.set(true),
     });
   }
 }

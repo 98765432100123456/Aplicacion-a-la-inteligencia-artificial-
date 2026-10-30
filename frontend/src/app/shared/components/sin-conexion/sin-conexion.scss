@@ -1,0 +1,5 @@
+:host { display: block; }
+.franja {
+  margin: 0; padding: var(--e-3) var(--margen); text-align: center; font-size: var(--texto-sm);
+  background: var(--maiz-fondo); color: var(--maiz-texto); border-bottom: 1px solid color-mix(in srgb, var(--maiz) 35%, transparent);
+}

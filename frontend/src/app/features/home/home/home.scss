@@ -52,3 +52,5 @@
 }
 
 .ir { margin-top: var(--e-6); }
+.resumen-carga, .resumen-error { grid-column: 1 / -1; }
+.resumen-carga { margin-top: -1px; }

@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { P } from '../../core/models/models';
 import { Logo } from '../../shared/components/logo/logo';
 import { SelectorTema } from '../../shared/components/selector-tema/selector-tema';
+import { SinConexion } from '../../shared/components/sin-conexion/sin-conexion';
 
 interface NavItem {
   path: string;
@@ -24,7 +25,7 @@ const NAV: NavItem[] = [
 /** Estructura de la aplicación: barra superior translúcida y contenido centrado. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, SelectorTema],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, SelectorTema, SinConexion],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })

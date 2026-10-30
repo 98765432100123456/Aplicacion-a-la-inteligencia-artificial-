@@ -4,6 +4,14 @@
   padding: var(--e-8) clamp(var(--e-8), 5vw, var(--e-16));
   background: var(--noche); color: #f2f3f0;
 }
+/* Foto del potrero bajo un velo de noche: el texto blanco conserva el contraste. */
+.heroe { isolation: isolate; }
+.heroe::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(14 18 16 / 0.9) 0%, rgb(14 18 16 / 0.72) 45%, rgb(14 18 16 / 0.55) 100%),
+    url('/fotos/potrero.webp') center 60% / cover no-repeat;
+}
 .copia { position: relative; z-index: 1; max-width: 34rem; padding-top: clamp(var(--e-8), 6vh, var(--e-16)); }
 h1 { font-size: clamp(2.5rem, 1.2rem + 3.4vw, 4.25rem); line-height: 0.98; letter-spacing: -0.05em; color: #fff; }
 .copia p { margin-top: var(--e-5); max-width: 24rem; font-size: var(--texto-lg); line-height: 1.45; color: var(--sobre-noche); }

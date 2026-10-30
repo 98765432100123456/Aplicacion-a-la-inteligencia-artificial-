@@ -6,10 +6,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { errorMessage } from '../../../core/utils/http-error';
 import { P, RoleItem } from '../../../core/models/models';
 import { PageHeader } from '../../../shared/components/page-header/page-header';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 @Component({
   selector: 'app-roles-page',
-  imports: [RouterLink, DatePipe, PageHeader],
+  imports: [Esqueleto, ErrorCarga, RouterLink, DatePipe, PageHeader],
   templateUrl: './roles-page.html',
   styleUrl: './roles-page.scss',
 })

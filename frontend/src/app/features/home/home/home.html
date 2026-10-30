@@ -18,7 +18,9 @@
 @if (canManageUsers) {
   <section class="libro entrada" aria-labelledby="resumen-titulo">
     <h2 id="resumen-titulo" class="visually-hidden">Resumen de seguridad</h2>
-    @if (resumen(); as r) {
+    @if (resumenError()) {
+      <app-error-carga class="resumen-error" mensaje="No se pudo cargar el resumen de usuarios." (reintentar)="cargarResumen()" />
+    } @else if (resumen(); as r) {
       <a class="dato" routerLink="/usuarios" [queryParams]="{ estado: 'true' }">
         <span class="valor cifras">{{ r.activos }}</span>
         <span class="rotulo">Usuarios activos</span>
@@ -34,7 +36,7 @@
         </a>
       }
     } @else {
-      <p class="cargando" role="status">Cargando resumen…</p>
+      <app-esqueleto class="resumen-carga" forma="cifras" [filas]="3" etiqueta="Cargando resumen…" />
     }
   </section>
 }

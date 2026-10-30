@@ -9,6 +9,8 @@ import { HasUnsavedChanges } from '../../../core/guards/guards';
 import { P, PermissionDef, RoleItem } from '../../../core/models/models';
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { ToastService } from '../../../shared/services/toast.service';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 
 interface Group {
   module: string;
@@ -17,7 +19,7 @@ interface Group {
 
 @Component({
   selector: 'app-role-editor',
-  imports: [ReactiveFormsModule, RouterLink, Dialog],
+  imports: [Esqueleto, ErrorCarga, ReactiveFormsModule, RouterLink, Dialog],
   templateUrl: './role-editor.html',
   styleUrl: './role-editor.scss',
 })
@@ -54,6 +56,11 @@ export class RoleEditor implements OnInit, HasUnsavedChanges {
   });
 
   ngOnInit() {
+    this.cargar();
+  }
+
+  protected cargar() {
+    this.loadError.set(null);
     forkJoin({
       catalog: this.api.permissionCatalog(),
       role: this.id ? this.api.getRole(this.id) : of(null),

@@ -1,0 +1,13 @@
+<div class="esqueleto" [class]="'esqueleto ' + forma()" role="status">
+  <span class="visually-hidden">{{ etiqueta() }}</span>
+  @if (forma() === 'ficha') {
+    <span class="barra titulo" aria-hidden="true"></span>
+    <span class="barra corta" aria-hidden="true"></span>
+  }
+  @for (i of indices(); track i) {
+    <span class="fila" aria-hidden="true">
+      <span class="barra" [style.width.%]="forma() === 'cifras' ? 40 : 70 - (i % 3) * 12"></span>
+      <span class="barra fina" [style.width.%]="forma() === 'cifras' ? 70 : 45 - (i % 2) * 10"></span>
+    </span>
+  }
+</div>
