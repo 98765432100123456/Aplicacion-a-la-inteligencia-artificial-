@@ -54,3 +54,5 @@ h2 { font-size: var(--texto-xl); letter-spacing: -0.03em; margin-bottom: var(--e
   .lista li > span:empty { display: none; }
   .lista .btn { grid-column: 1 / -1; justify-self: start; padding-left: 0; }
 }
+
+.datos-imagen { max-width: 20rem; margin-bottom: var(--e-5); }

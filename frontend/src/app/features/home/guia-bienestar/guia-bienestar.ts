@@ -1,5 +1,6 @@
 import { Component, computed, ElementRef, signal, viewChildren } from '@angular/core';
 import { LIBERTADES, METODOS, muestraMinima, NIVELES, repartir, tipoProductor, TIPOS_INDICADOR } from '../data/norma-ica';
+import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
 
 const GRUPOS = [
   { id: 'crias', nombre: 'Crías' },
@@ -12,6 +13,7 @@ const GRUPOS = [
   selector: 'app-guia-bienestar',
   templateUrl: './guia-bienestar.html',
   styleUrl: './guia-bienestar.scss',
+  imports: [Ilustracion],
 })
 export class GuiaBienestar {
   protected readonly libertades = LIBERTADES;
@@ -20,7 +22,7 @@ export class GuiaBienestar {
   protected readonly metodosTexto = METODOS.map((m) => m.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1');
   protected readonly grupos = GRUPOS;
   protected readonly tablaMuestra = [
-    { id: 'm20', rango: '51 a 99', muestra: '20' },
+    { id: 'm20', rango: 'Hasta 99', muestra: '20 (todos, si son menos)' },
     { id: 'm30', rango: '100 a 499', muestra: '30' },
     { id: 'm40', rango: '500 a 999', muestra: '40' },
     { id: 'm5', rango: '1.000 o más', muestra: '5 % del total' },
@@ -44,7 +46,7 @@ export class GuiaBienestar {
   protected readonly reparto = computed(() => repartir(this.muestra() ?? 0, this.inventario()));
   protected readonly filaActual = computed(() => {
     const t = this.total();
-    if (t <= 50) return null;
+    if (t <= 0) return null;
     if (t <= 99) return 'm20';
     if (t <= 499) return 'm30';
     if (t <= 999) return 'm40';

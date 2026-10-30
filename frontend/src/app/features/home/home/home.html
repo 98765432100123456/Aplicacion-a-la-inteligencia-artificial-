@@ -1,11 +1,14 @@
 <section class="saludo entrada">
-  <h1 class="titular">Hola, {{ auth.user()?.firstName }}.</h1>
-  @if (ownerOnly) {
-    <p class="bajada">Aquí encuentra los resultados de las evaluaciones de su finca y lo que puede hacer para mejorar el bienestar de sus animales.</p>
-    <a class="btn btn-principal ir" routerLink="/predios">Ver mis predios</a>
-  } @else {
-    <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
-  }
+  <div class="saludo-texto">
+    <h1 class="titular">Hola, {{ auth.user()?.firstName }}.</h1>
+    @if (ownerOnly) {
+      <p class="bajada">Aquí encuentra los resultados de las evaluaciones de su finca y lo que puede hacer para mejorar el bienestar de sus animales.</p>
+      <a class="btn btn-principal ir" routerLink="/predios">Ver mis predios</a>
+    } @else {
+      <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
+    }
+  </div>
+  <app-ilustracion class="saludo-imagen" nombre="pradera" />
 </section>
 
 @if (noPermission) {
@@ -42,7 +45,7 @@
 <section class="ruta" aria-labelledby="ruta-titulo">
   <div class="ruta-texto">
     <h2 id="ruta-titulo">Módulos.</h2>
-    <p>La plataforma crece por módulos. Ya están disponibles los predios, la evaluación en campo, las recomendaciones con IA y los informes en PDF.</p>
+    <p>La plataforma crece por módulos. Ya están disponibles los predios, la evaluación en campo, las recomendaciones de mejora (redactadas con IA cuando está activa) y los informes en PDF.</p>
   </div>
   <ol class="ruta-lista">
     @for (m of ruta; track m.modulo; let i = $index) {

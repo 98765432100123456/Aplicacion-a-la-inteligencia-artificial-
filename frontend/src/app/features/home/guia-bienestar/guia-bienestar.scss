@@ -31,6 +31,7 @@ h4 { font-size: var(--texto-sm); font-weight: 800; margin: var(--e-6) 0 var(--e-
 @media (prefers-reduced-motion: no-preference) {
   .detalle { animation: entrar 320ms var(--curva) both; }
 }
+.panel-imagen { max-width: 22rem; margin-bottom: var(--e-5); }
 .pesa { margin-top: var(--e-2); color: var(--tinta-suave); }
 .pesa b { color: var(--tinta); }
 .revisa { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--e-2); color: var(--tinta-suave); }
@@ -89,6 +90,7 @@ h4 { font-size: var(--texto-sm); font-weight: 800; margin: var(--e-6) 0 var(--e-
 .tipos { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid var(--linea-fuerte); }
 .tipos div { padding: var(--e-5) var(--e-6) var(--e-5) 0; border-bottom: 1px solid var(--linea); }
 .tipos div + div { padding-left: var(--e-6); border-left: 1px solid var(--linea); }
+.tipo-imagen { max-width: 15rem; margin-bottom: var(--e-4); }
 .tipos dt { font-weight: 800; font-size: var(--texto-md); }
 .tipos dd { margin: var(--e-2) 0 0; color: var(--tinta-suave); font-size: var(--texto-sm); }
 

@@ -13,7 +13,9 @@ describe('Reglas de la metodología del ICA', () => {
   });
 
   it('aplica la tabla de muestra mínima', () => {
-    expect(muestraMinima(50)).toBeNull();
+    expect(muestraMinima(0)).toBeNull();
+    expect(muestraMinima(12)).toBe(12);
+    expect(muestraMinima(50)).toBe(20);
     expect(muestraMinima(51)).toBe(20);
     expect(muestraMinima(99)).toBe(20);
     expect(muestraMinima(100)).toBe(30);

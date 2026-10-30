@@ -19,6 +19,7 @@
   <p class="aviso aviso-error" role="alert">{{ error() }}</p>
 } @else if (empty()) {
   <div class="vacio">
+    <app-ilustracion class="vacio-imagen" nombre="finca" />
     @if (ownerOnly) {
       <h2>Aún no hay predios asociados a su cuenta.</h2>
       <p>Pida al evaluador que registre su correo <b>{{ auth.user()?.email }}</b> en los datos del predio. Cuando lo haga, su finca aparecerá aquí.</p>

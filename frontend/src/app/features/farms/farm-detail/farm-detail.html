@@ -34,6 +34,7 @@
   } @else {
     <div class="columnas">
       <section aria-labelledby="t-datos">
+        <app-ilustracion class="datos-imagen" nombre="finca" />
         <h2 id="t-datos">Datos del predio</h2>
         <dl class="ficha">
           <div><dt>Propietario</dt><dd>{{ f.owner.name }}@if (f.owner.document) { · {{ f.owner.document }} }</dd></div>
@@ -72,7 +73,7 @@
             </div>
             <p class="norma">
               {{ productor[s.producerType] }} ·
-              @if (s.sampleSize) { muestra mínima de {{ s.sampleSize }} animales } @else { capítulo de pequeño productor }
+              muestra mínima de {{ s.sampleSize ?? 0 }} animales
             </p>
             @if (canEvaluate && f.species.length > 1) {
               <button type="button" class="btn btn-secundario btn-sm" (click)="iniciar(s)" [disabled]="starting() !== null">
@@ -105,7 +106,7 @@
       <fieldset class="segmentado">
         <legend class="visually-hidden">Ver</legend>
         <label><input type="radio" name="pestana" value="tecnicas" [checked]="tab() === 'tecnicas'" (change)="tab.set('tecnicas')" />Evaluaciones técnicas</label>
-        <label><input type="radio" name="pestana" value="recomendaciones" [checked]="tab() === 'recomendaciones'" (change)="tab.set('recomendaciones')" />Recomendaciones IA</label>
+        <label><input type="radio" name="pestana" value="recomendaciones" [checked]="tab() === 'recomendaciones'" (change)="tab.set('recomendaciones')" />Recomendaciones</label>
       </fieldset>
     </div>
 

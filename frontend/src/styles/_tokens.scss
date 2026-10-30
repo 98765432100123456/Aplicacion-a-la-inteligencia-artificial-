@@ -85,6 +85,41 @@
 
   --alto-control: 3rem; /* 48 px */
 
+  /* Ilustraciones del campo (shared/components/ilustracion) */
+  --il-cielo: #e3f3e9;
+  --il-sol: #f2c45a;
+  --il-loma-lejana: #b8dcc4;
+  --il-loma: #86c79e;
+  --il-pasto: #5bb47f;
+  --il-copa: #1d6b40;
+  --il-copa-2: #2f8a55;
+  --il-tronco: #6b4a2f;
+  --il-sombra: rgb(14 18 16 / 0.14);
+  --il-vaca: #ffffff;
+  --il-vaca-pata: #e6e9e6;
+  --il-cafe: #a3592c;
+  --il-cafe-pata: #8a4a24;
+  --il-gris: #cfd3cf;
+  --il-gris-pata: #b8bdb8;
+  --il-oscuro: #1a1f1c;
+  --il-hocico: #eab5a3;
+  --il-oreja: #c98d78;
+  --il-cuerno: #efe6d2;
+  --il-agua: #78c2df;
+  --il-madera: #9a744f;
+  --il-madera-oscura: #6b4a2f;
+  --il-insignia: #1d6b40;
+  --il-insignia-signo: #ffffff;
+  --il-corazon: #d9534f;
+  --il-establo: #b5542f;
+  --il-techo: #6b2f1a;
+  --il-puerta: #8c3c1f;
+  --il-marco: #f6efe6;
+  --il-papel: #ffffff;
+  --il-gancho: #59625c;
+  --il-linea-papel: #c3cac5;
+  --il-check: #1d6b40;
+
   color-scheme: light dark;
 }
 
@@ -100,37 +135,84 @@
   }
 }
 
-/* Modo oscuro: sigue la preferencia del sistema (HIG dark-mode.md). */
+/* Modo oscuro: sigue la preferencia del sistema (HIG dark-mode.md), salvo que la persona
+   elija un modo con el botón de la barra; esa elección queda en data-tema del elemento html. */
+@mixin oscuro {
+  color-scheme: dark;
+  --fondo: #0e1210;
+  --superficie: #151a17;
+  --superficie-elevada: #1c221e;
+  --tinta: #e8ece9;
+  --tinta-suave: #a9b3ac;
+  --tinta-tenue: #a9b3ac;
+  --linea: #2a312c;
+  --linea-fuerte: #e8ece9;
+  --linea-control: #6f7c73;
+  --acento: #8fe0b0;
+  --acento-fuerte: #b6ecca;
+  --acento-suave: #1b3326;
+  --acento-tenue: #152219;
+  --exito: #8fe0b0;
+  --maiz: #e5ad4f;
+  --maiz-fondo: #33280f;
+  --maiz-texto: #f6dfb0;
+  --alerta: #ff8f80;
+  --alerta-fondo: #3a1a17;
+  --alerta-texto: #ffd9d3;
+  --peligro: #c2342a;
+  --peligro-hover: #a32a21;
+  --toast-fondo: #e8ece9;
+  --toast-texto: #0e1210;
+  --foco: #8fe0b0;
+  --velo: rgb(0 0 0 / 0.65);
+  --sombra-flotante: 0 16px 40px -8px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --il-cielo: #152219;
+  --il-sol: #e5ad4f;
+  --il-loma-lejana: #1c3526;
+  --il-loma: #23482f;
+  --il-pasto: #2b5e3d;
+  --il-copa: #3f9e66;
+  --il-copa-2: #2f7a4e;
+  --il-tronco: #7a5a3c;
+  --il-sombra: rgb(0 0 0 / 0.3);
+  --il-vaca: #e8ece9;
+  --il-vaca-pata: #c9cfca;
+  --il-cafe: #b5683a;
+  --il-cafe-pata: #97552e;
+  --il-gris: #aab1ab;
+  --il-gris-pata: #929a93;
+  --il-oscuro: #0e1210;
+  --il-hocico: #d9a08d;
+  --il-oreja: #b07a66;
+  --il-cuerno: #e6dcc4;
+  --il-agua: #4f9fbf;
+  --il-madera: #8a6a4a;
+  --il-madera-oscura: #5d4430;
+  --il-insignia: #8fe0b0;
+  --il-insignia-signo: #0e1210;
+  --il-corazon: #ff8f80;
+  --il-establo: #a34b2a;
+  --il-techo: #5a2716;
+  --il-puerta: #7a341b;
+  --il-marco: #e8dfd2;
+  --il-papel: #e8ece9;
+  --il-gancho: #a9b3ac;
+  --il-linea-papel: #a9b3ac;
+  --il-check: #1d6b40;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #0e1210;
-    --superficie: #151a17;
-    --superficie-elevada: #1c221e;
-    --tinta: #e8ece9;
-    --tinta-suave: #a9b3ac;
-    --tinta-tenue: #a9b3ac;
-    --linea: #2a312c;
-    --linea-fuerte: #e8ece9;
-    --linea-control: #6f7c73;
-    --acento: #8fe0b0;
-    --acento-fuerte: #b6ecca;
-    --acento-suave: #1b3326;
-    --acento-tenue: #152219;
-    --exito: #8fe0b0;
-    --maiz: #e5ad4f;
-    --maiz-fondo: #33280f;
-    --maiz-texto: #f6dfb0;
-    --alerta: #ff8f80;
-    --alerta-fondo: #3a1a17;
-    --alerta-texto: #ffd9d3;
-    --peligro: #c2342a;
-    --peligro-hover: #a32a21;
-    --toast-fondo: #e8ece9;
-    --toast-texto: #0e1210;
-    --foco: #8fe0b0;
-    --velo: rgb(0 0 0 / 0.65);
-    --sombra-flotante: 0 16px 40px -8px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.06);
+  :root:not([data-tema='claro']) {
+    @include oscuro;
   }
+}
+
+:root[data-tema='oscuro'] {
+  @include oscuro;
+}
+
+:root[data-tema='claro'] {
+  color-scheme: light;
 }
 
 @media (prefers-contrast: more) {
@@ -143,7 +225,14 @@
 }
 
 @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema='claro']) {
+    --linea: #6f7c73;
+    --linea-control: #b3bdb5;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root[data-tema='oscuro'] {
     --linea: #6f7c73;
     --linea-control: #b3bdb5;
   }

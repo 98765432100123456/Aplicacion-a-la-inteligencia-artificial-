@@ -29,6 +29,7 @@
     @if (i === activa()) {
       <div class="detalle" role="tabpanel" [id]="'panel-' + l.id" [attr.aria-labelledby]="'tab-' + l.id">
         <div class="panel-intro">
+          <app-ilustracion class="panel-imagen" [nombre]="l.id" />
           <h3>{{ l.nombre }}</h3>
           <p class="pesa">Pesa <b class="cifras">{{ l.peso }} %</b> de la calificación del predio.</p>
           <h4>Qué revisa el evaluador</h4>
@@ -146,8 +147,7 @@
         </ul>
       } @else {
         <p class="sin-muestra">
-          @if (total() === 0) { Escriba cuántos animales hay en cada grupo. }
-          @else { Con 50 animales o menos aplica el capítulo de pequeño productor, que tiene su propia escala de calificación. }
+          Escriba cuántos animales hay en cada grupo.
         </p>
       }
     </div>
@@ -163,7 +163,7 @@
   <dl class="tipos">
     @for (t of tipos; track t.nombre) {
       <div>
-        <dt>{{ t.nombre }}</dt>
+        <dt><app-ilustracion class="tipo-imagen" [nombre]="t.ilustracion" />{{ t.nombre }}</dt>
         <dd>{{ t.ejemplo }}</dd>
       </div>
     }

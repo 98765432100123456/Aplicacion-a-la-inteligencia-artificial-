@@ -68,6 +68,26 @@ const COLOR_NIVEL: Record<string, string> = {
   EXCELENTE: "#14502f",
 };
 
+/** Color de cada respuesta, para distinguir de un vistazo lo que no cumple. */
+const COLOR_RESPUESTA: Record<Respuesta, { color: string; fondo: string | null }> = {
+  CUMPLE: { color: "#1d6b40", fondo: "#e6f3ea" },
+  PARCIAL: { color: "#8a5a00", fondo: "#fdf1d6" },
+  NO_CUMPLE: { color: "#b42318", fondo: "#fbe4e1" },
+  NO_APLICA: { color: SUAVE, fondo: null },
+};
+
+/** Frase sencilla para el propietario sobre cada libertad que resultó en nivel alto o excelente. */
+const LOGRO_LIBERTAD: Record<CodigoLibertad, string> = {
+  NUTRICION:
+    "sus animales tienen agua y alimento suficientes y se mantienen en buena condición corporal.",
+  SALUD:
+    "sus animales se ven sanos, con pocas lesiones, cojeras o enfermedades, y el manejo sanitario va bien.",
+  CONFORT:
+    "los potreros, corrales y la sombra les dan a sus animales un lugar cómodo para descansar y protegerse del calor y la lluvia.",
+  COMPORTAMIENTO:
+    "sus animales están tranquilos frente a las personas y pueden comportarse de forma natural.",
+};
+
 const nombreNivel = (codigo: string | null) =>
   NIVELES.find((n) => n.codigo === codigo)?.nombre ?? "Sin dato";
 const decimal = (n: number | null) =>
@@ -160,9 +180,7 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
       ["Tipo de productor", d.productor],
       [
         "Muestra mínima",
-        d.muestra === null
-          ? "No aplica tabla de muestreo (capítulo de pequeño productor)"
-          : `${d.muestra} animales`,
+        d.muestra === null ? "—" : `${d.muestra} animales`,
       ],
       ["Evaluación", `${d.evaluacion.codigo} · ${d.evaluacion.fecha}`],
       ["Evaluador", d.evaluacion.evaluador],
@@ -224,7 +242,12 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
                 text: `${h.codigo} ${h.critico ? "(crítico) " : ""}`,
                 bold: true,
               },
-              `${h.texto} — ${NOMBRE_RESPUESTA[h.respuesta].toLowerCase()}.`,
+              `${h.texto} — `,
+              {
+                text: `${NOMBRE_RESPUESTA[h.respuesta].toLowerCase()}.`,
+                bold: true,
+                color: COLOR_RESPUESTA[h.respuesta].color,
+              },
               h.observacion
                 ? { text: ` Observación: ${h.observacion}`, color: SUAVE }
                 : "",
@@ -237,33 +260,48 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
     {
       text: "Detalle de indicadores evaluados",
       style: "seccion",
-      pageBreak: "before",
     },
     ...LIBERTADES.flatMap((l) => [
-      { text: l.nombre, bold: true, margin: [0, 8, 0, 4] },
       {
+        // El nombre de la libertad va como primera fila de encabezado para que no
+        // quede solo al final de una página.
         table: {
-          headerRows: 1,
-          widths: [24, "*", 80, 62, 110],
+          headerRows: 2,
+          keepWithHeaderRows: 1,
+          widths: [24, "*", 120, 74],
           body: [
             [
-              "Cód.",
-              "Indicador",
-              "Tipo y método",
-              "Resultado",
-              "Observación",
-            ].map((t) => ({ text: t, style: "encabezado" })),
+              { text: l.nombre, bold: true, fontSize: 10, colSpan: 4, margin: [0, 6, 0, 0] },
+              {},
+              {},
+              {},
+            ],
+            ["Cód.", "Indicador", "Tipo y método", "Resultado"].map((t) => ({
+              text: t,
+              style: "encabezado",
+            })),
             ...d.respuestas
               .filter((x) => x.libertad === l.codigo)
               .map((x) => [
                 x.codigo,
-                x.texto,
+                x.observacion
+                  ? {
+                      stack: [
+                        x.texto,
+                        { text: `Observación: ${x.observacion}`, style: "nota" },
+                      ],
+                    }
+                  : x.texto,
                 {
                   text: `${NOMBRE_TIPO[x.tipo]}. ${NOMBRE_METODO[x.metodo]}.`,
                   style: "nota",
                 },
-                { text: NOMBRE_RESPUESTA[x.respuesta], bold: true },
-                { text: x.observacion ?? "", style: "nota" },
+                {
+                  text: NOMBRE_RESPUESTA[x.respuesta],
+                  bold: true,
+                  color: COLOR_RESPUESTA[x.respuesta].color,
+                  fillColor: COLOR_RESPUESTA[x.respuesta].fondo,
+                },
               ]),
           ],
         },
@@ -366,10 +404,16 @@ export function informePropietario(d: DatosInforme): DocumentoPdf {
     contenido.push(
       { text: "Lo que está haciendo bien", style: "seccion" },
       {
-        ul: bien.map(
-          (l) =>
-            `${LIBERTADES.find((x) => x.codigo === l.codigo)!.corto}: nivel ${nombreNivel(l.nivel).toLowerCase()}.`,
-        ),
+        ul: bien.map((l) => ({
+          text: [
+            {
+              text: `${LIBERTADES.find((x) => x.codigo === l.codigo)!.corto} (nivel ${nombreNivel(l.nivel).toLowerCase()}): `,
+              bold: true,
+            },
+            LOGRO_LIBERTAD[l.codigo],
+          ],
+          margin: [0, 0, 0, 4],
+        })),
       },
     );
   }

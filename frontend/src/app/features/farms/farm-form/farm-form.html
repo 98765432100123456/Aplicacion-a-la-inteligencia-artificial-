@@ -115,8 +115,7 @@
           <p class="norma" aria-live="polite">
             @if (r.total) {
               <b class="cifras">{{ r.total }}</b> animales · {{ r.productor }} ·
-              @if (r.muestra) { muestra mínima <b class="cifras">{{ r.muestra }}</b> ({{ r.reparto![0] }} crías, {{ r.reparto![1] }} jóvenes, {{ r.reparto![2] }} adultos) }
-              @else { capítulo de pequeño productor }
+              muestra mínima <b class="cifras">{{ r.muestra }}</b> ({{ r.reparto![0] }} crías, {{ r.reparto![1] }} jóvenes, {{ r.reparto![2] }} adultos)
             } @else {
               Escriba cuántos animales hay en cada grupo de edad.
             }

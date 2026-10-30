@@ -1,0 +1,40 @@
+:host { display: block; overflow: hidden; border-radius: var(--radio-panel); }
+svg { display: block; width: 100%; height: auto; }
+
+.il-cielo { fill: var(--il-cielo); }
+.il-sol { fill: var(--il-sol); }
+.il-loma-lejana { fill: var(--il-loma-lejana); }
+.il-loma { fill: var(--il-loma); }
+.il-pasto { fill: var(--il-pasto); }
+.il-copa { fill: var(--il-copa); }
+.il-copa-2 { fill: var(--il-copa-2); }
+.il-tronco { fill: var(--il-tronco); }
+.il-sombra { fill: var(--il-sombra); }
+.il-vaca { fill: var(--il-vaca); }
+.il-vaca-pata { fill: var(--il-vaca-pata); }
+.il-vaca-cafe { fill: var(--il-cafe); }
+.il-vaca-cafe-pata { fill: var(--il-cafe-pata); }
+.il-vaca-gris { fill: var(--il-gris); }
+.il-vaca-gris-pata { fill: var(--il-gris-pata); }
+.il-mancha, .il-ojo, .il-pezuna { fill: var(--il-oscuro); }
+.il-trazo { stroke: var(--il-oscuro); }
+.il-hocico { fill: var(--il-hocico); }
+.il-oreja { fill: var(--il-oreja); }
+.il-cuerno { fill: var(--il-cuerno); }
+.il-agua { fill: var(--il-agua); }
+.il-cerca { fill: var(--il-madera); }
+.il-cerca-oscura { fill: var(--il-madera-oscura); }
+.il-alambre { stroke: var(--il-madera); }
+.il-insignia { fill: var(--il-insignia); }
+.il-insignia-signo { fill: var(--il-insignia-signo); }
+.il-corazon { fill: var(--il-corazon); }
+.il-establo { fill: var(--il-establo); }
+.il-techo { fill: var(--il-techo); }
+.il-puerta { fill: var(--il-puerta); }
+.il-marco, .il-marco-r { stroke: var(--il-marco); }
+.il-ventana { fill: var(--il-marco); }
+.il-tabla { fill: var(--il-madera); }
+.il-papel { fill: var(--il-papel); }
+.il-gancho { fill: var(--il-gancho); }
+.il-linea-papel { fill: var(--il-linea-papel); }
+.il-check { stroke: var(--il-check); }

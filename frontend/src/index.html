@@ -10,6 +10,13 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef1ed" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111613" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <!-- Aplica el modo elegido antes de pintar, para que no parpadee (core/services/tema.service.ts). -->
+    <script>
+      try {
+        var tema = localStorage.getItem('ica-tema');
+        if (tema === 'claro' || tema === 'oscuro') document.documentElement.dataset.tema = tema;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <app-root></app-root>

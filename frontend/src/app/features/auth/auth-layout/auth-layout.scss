@@ -44,8 +44,9 @@ figcaption { margin-bottom: var(--e-4); font-size: var(--texto-xs); font-weight:
 
 .pie { position: relative; z-index: 1; align-self: end; max-width: 22rem; font-size: var(--texto-sm); color: var(--sobre-noche); }
 
-.formulario { display: grid; place-items: center; padding: var(--e-12) clamp(var(--e-6), 4vw, var(--e-16)); background: var(--fondo); }
+.formulario { position: relative; display: grid; place-items: center; padding: var(--e-12) clamp(var(--e-6), 4vw, var(--e-16)); background: var(--fondo); }
 .hoja { width: 100%; max-width: 25rem; }
+.tema { position: absolute; top: var(--e-4); right: var(--e-4); }
 
 /* Pantallas bajas: el teléfono no cabe sin tapar el titular */
 @media (max-height: 47em) { .escenario { display: none; } }

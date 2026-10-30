@@ -5,6 +5,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { P } from '../../../core/models/models';
 import { GuiaBienestar } from '../guia-bienestar/guia-bienestar';
+import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
 
 interface Resumen {
   activos: number;
@@ -17,7 +18,7 @@ const RUTA = [
   { modulo: 'Seguridad y acceso', detalle: 'Ingreso, registro de propietarios, recuperación de contraseña, usuarios y roles', cuando: 'Disponible', listo: true },
   { modulo: 'Predios', detalle: 'Propietario, ubicación, especies e inventario por grupo etario', cuando: 'Disponible', listo: true },
   { modulo: 'Evaluación en campo', detalle: 'Lista de chequeo por libertad, guardado parcial y puntaje según la norma', cuando: 'Disponible', listo: true },
-  { modulo: 'Recomendaciones con IA', detalle: 'Lenguaje sencillo para el propietario, con respaldo por reglas', cuando: 'Disponible', listo: true },
+  { modulo: 'Recomendaciones de mejora', detalle: 'Lenguaje sencillo para el propietario; redactadas con IA cuando está activa, o por reglas', cuando: 'Disponible', listo: true },
   { modulo: 'Informes e historial', detalle: 'Informe técnico e informe para el propietario en PDF', cuando: 'Disponible', listo: true },
   { modulo: 'Parametrización por especie', detalle: 'Editar criterios, indicadores y ponderaciones desde la plataforma', cuando: 'Próximo sprint', listo: false },
   { modulo: 'Tableros y certificación', detalle: 'Indicadores por zona, comparación, Excel y certificado', cuando: 'Próximo sprint', listo: false },
@@ -25,7 +26,7 @@ const RUTA = [
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, GuiaBienestar],
+  imports: [RouterLink, GuiaBienestar, Ilustracion],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

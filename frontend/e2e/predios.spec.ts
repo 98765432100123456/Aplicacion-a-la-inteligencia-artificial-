@@ -49,7 +49,7 @@ test.describe('Predios y evaluaciones', () => {
 
     await page.goto('/predios');
     await page.getByRole('link', { name: new RegExp(nombre) }).click();
-    await page.getByText('Recomendaciones IA').click();
+    await page.getByText('Recomendaciones', { exact: true }).click();
     await expect(page.getByRole('button', { name: /Informe para el propietario/ })).toBeVisible();
   });
 });

@@ -1,0 +1,12 @@
+:host { display: inline-flex; }
+.selector {
+  display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0;
+  border: 1px solid var(--linea-control); border-radius: var(--radio-sello);
+  background: var(--superficie); color: var(--tinta); cursor: pointer;
+  transition: background-color var(--dur-rapida) ease, transform var(--dur-presion) var(--curva);
+}
+.selector:active { transform: scale(0.96); }
+@media (hover: hover) and (pointer: fine) {
+  .selector:hover { background: color-mix(in srgb, var(--tinta) 6%, var(--superficie)); }
+}
+svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

@@ -91,12 +91,12 @@ export function tipoProductor(total: number): Productor {
 }
 
 /**
- * Muestra mínima cuando la evaluación se hace por inspección visual con muestreo.
- * La norma no fija muestra para 50 animales o menos (capítulo de pequeño productor),
- * y para 1.000 animales o más se toma el 5 % del total.
+ * Muestra mínima cuando la evaluación se hace por inspección visual con muestreo:
+ * 20 animales hasta 99 (o todos, si el predio tiene menos de 20), 30 hasta 499,
+ * 40 hasta 999 y el 5 % del total desde 1.000.
  */
 export function muestraMinima(total: number): number | null {
-  if (total <= 50) return null;
+  if (total <= 0) return null;
   if (total <= 99) return Math.min(20, total);
   if (total <= 499) return 30;
   if (total <= 999) return 40;
