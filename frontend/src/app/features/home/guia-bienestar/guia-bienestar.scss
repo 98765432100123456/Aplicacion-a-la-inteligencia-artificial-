@@ -70,7 +70,7 @@ h4 { font-size: var(--texto-sm); font-weight: 800; margin: var(--e-6) 0 var(--e-
 .resultado { border-top: 1px solid var(--linea-fuerte); }
 .fila { display: flex; justify-content: space-between; align-items: baseline; gap: var(--e-4); padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); }
 .fila span { color: var(--tinta-suave); font-weight: 600; }
-.fila b { font-size: var(--texto-lg); letter-spacing: -0.02em; text-transform: capitalize; }
+.fila b { font-size: var(--texto-lg); letter-spacing: -0.02em; }
 .metodologia { padding: var(--e-3) 0; border-bottom: 1px solid var(--linea); font-size: var(--texto-sm); color: var(--tinta-suave); }
 .muestra { display: flex; align-items: baseline; gap: var(--e-3); padding-top: var(--e-6); }
 .muestra-valor { font-size: var(--texto-3xl); font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--acento); }
