@@ -111,6 +111,18 @@
       <p class="aviso aviso-error">No se pudo guardar la evaluación. Revise su conexión e intente de nuevo.</p>
     </article>
 
+    <article class="pieza">
+      <h3>Cargando</h3>
+      <app-esqueleto [filas]="3" etiqueta="Ejemplo de carga" />
+      <p class="nota">Silueta de lo que va a aparecer, en lugar de una pantalla en blanco.</p>
+    </article>
+
+    <article class="pieza">
+      <h3>Error al cargar</h3>
+      <app-error-carga mensaje="No se pudo cargar la lista de predios." (reintentar)="0" />
+      <p class="nota">Dice qué falló y permite intentar de nuevo sin recargar la página.</p>
+    </article>
+
     <article class="pieza completa">
       <h3>Imágenes</h3>
       <p class="nota">Fotografías del campo que acompañan cada tema de la norma, recortadas a 4:3 o 16:9, con bordes de 18 px como los paneles.</p>

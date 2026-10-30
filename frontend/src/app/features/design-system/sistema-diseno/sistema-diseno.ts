@@ -2,6 +2,8 @@ import { afterNextRender, ChangeDetectionStrategy, Component, effect, inject, si
 import { TemaService } from '../../../core/services/tema.service';
 import { Foto } from '../../../shared/components/foto/foto';
 import { Nivel } from '../../../shared/components/nivel/nivel';
+import { Esqueleto } from '../../../shared/components/esqueleto/esqueleto';
+import { ErrorCarga } from '../../../shared/components/error-carga/error-carga';
 import { PageHeader } from '../../../shared/components/page-header/page-header';
 
 interface Muestra {
@@ -57,7 +59,7 @@ const ESPACIOS = ['--e-1', '--e-2', '--e-3', '--e-4', '--e-6', '--e-8', '--e-12'
  */
 @Component({
   selector: 'app-sistema-diseno',
-  imports: [PageHeader, Nivel, Foto],
+  imports: [PageHeader, Nivel, Foto, Esqueleto, ErrorCarga],
   templateUrl: './sistema-diseno.html',
   styleUrl: './sistema-diseno.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
