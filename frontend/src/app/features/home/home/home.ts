@@ -5,7 +5,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { P } from '../../../core/models/models';
 import { GuiaBienestar } from '../guia-bienestar/guia-bienestar';
-import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
+import { Foto } from '../../../shared/components/foto/foto';
 
 interface Resumen {
   activos: number;
@@ -26,7 +26,7 @@ const RUTA = [
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, GuiaBienestar, Ilustracion],
+  imports: [RouterLink, GuiaBienestar, Foto],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

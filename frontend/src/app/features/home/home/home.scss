@@ -2,7 +2,7 @@
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-10); align-items: center;
   margin-bottom: var(--e-10);
 }
-.saludo-imagen { box-shadow: 0 0 0 1px var(--linea); }
+.saludo-imagen { aspect-ratio: 16 / 9; }
 @media (max-width: 56em) {
   .saludo { grid-template-columns: 1fr; gap: var(--e-6); }
 }

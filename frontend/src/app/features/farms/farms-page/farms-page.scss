@@ -20,7 +20,7 @@
 }
 
 .vacio { padding: var(--e-12) 0; border-top: 1px solid var(--linea-fuerte); display: grid; gap: var(--e-4); justify-items: start; max-width: 38rem; }
-.vacio-imagen { width: min(100%, 18rem); }
+.vacio-imagen { width: min(100%, 22rem); aspect-ratio: 16 / 9; }
 .vacio h2 { font-size: var(--texto-xl); letter-spacing: -0.03em; }
 .vacio p { color: var(--tinta-suave); }
 

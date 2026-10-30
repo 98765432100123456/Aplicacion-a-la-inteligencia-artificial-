@@ -55,4 +55,4 @@ h2 { font-size: var(--texto-xl); letter-spacing: -0.03em; margin-bottom: var(--e
   .lista .btn { grid-column: 1 / -1; justify-self: start; padding-left: 0; }
 }
 
-.datos-imagen { max-width: 20rem; margin-bottom: var(--e-5); }
+.datos-imagen { max-width: 24rem; aspect-ratio: 16 / 9; margin-bottom: var(--e-5); }

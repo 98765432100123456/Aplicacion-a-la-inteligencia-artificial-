@@ -1,3 +1,4 @@
+import type { NombreFoto } from '../../../shared/components/foto/foto';
 /**
  * Contenido de referencia de la metodología del ICA para evaluar el bienestar
  * animal en bovinos y bufalinos (versión 2.0, 2023), según el análisis
@@ -10,6 +11,7 @@
 
 export interface Libertad {
   id: 'hambre' | 'salud' | 'confort' | 'comportamiento';
+  foto: NombreFoto;
   nombre: string;
   corto: string;
   peso: number;
@@ -21,6 +23,7 @@ export interface Libertad {
 export const LIBERTADES: Libertad[] = [
   {
     id: 'hambre',
+    foto: 'bebedero',
     nombre: 'Libre de hambre, sed y desnutrición',
     corto: 'Alimento y agua',
     peso: 20,
@@ -40,6 +43,7 @@ export const LIBERTADES: Libertad[] = [
   },
   {
     id: 'salud',
+    foto: 'veterinaria',
     nombre: 'Libre de dolor, lesión y enfermedad',
     corto: 'Salud',
     peso: 50,
@@ -60,6 +64,7 @@ export const LIBERTADES: Libertad[] = [
   },
   {
     id: 'confort',
+    foto: 'sombra',
     nombre: 'Libre de molestias físicas y térmicas',
     corto: 'Confort',
     peso: 15,
@@ -78,6 +83,7 @@ export const LIBERTADES: Libertad[] = [
   },
   {
     id: 'comportamiento',
+    foto: 'cria',
     nombre: 'Libre de temor y angustia, y de manifestar su comportamiento natural',
     corto: 'Comportamiento',
     peso: 15,
@@ -114,9 +120,9 @@ export const NIVELES: Nivel[] = [
 ];
 
 export const TIPOS_INDICADOR = [
-  { nombre: 'Basados en el animal', ilustracion: 'animal' as const, ejemplo: 'Se observa directamente el ejemplar: condición corporal, cojeras, lesiones.' },
-  { nombre: 'Basados en los recursos', ilustracion: 'recursos' as const, ejemplo: 'Se revisa el entorno: agua, alimento, sombra e instalaciones.' },
-  { nombre: 'Basados en la gestión', ilustracion: 'gestion' as const, ejemplo: 'Se revisan registros, uso de anestesia y capacitación del personal.' },
+  { nombre: 'Basados en el animal', foto: 'cria' as const, ejemplo: 'Se observa directamente el ejemplar: condición corporal, cojeras, lesiones.' },
+  { nombre: 'Basados en los recursos', foto: 'bebedero' as const, ejemplo: 'Se revisa el entorno: agua, alimento, sombra e instalaciones.' },
+  { nombre: 'Basados en la gestión', foto: 'veterinaria' as const, ejemplo: 'Se revisan registros, uso de anestesia y capacitación del personal.' },
 ];
 
 export const METODOS = ['Revisión documental', 'Inspección visual sin muestreo', 'Inspección visual con muestreo'];

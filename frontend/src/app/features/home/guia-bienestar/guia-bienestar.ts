@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, signal, viewChildren } from '@angular/core';
 import { LIBERTADES, METODOS, NIVELES, TIPOS_INDICADOR } from '../data/norma-ica';
 import { muestraMinima, NOMBRE_PRODUCTOR, repartir, tipoProductor } from '../../../compartido/norma';
-import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
+import { Foto } from '../../../shared/components/foto/foto';
 
 const GRUPOS = [
   { id: 'crias', nombre: 'Crías' },
@@ -14,7 +14,7 @@ const GRUPOS = [
   selector: 'app-guia-bienestar',
   templateUrl: './guia-bienestar.html',
   styleUrl: './guia-bienestar.scss',
-  imports: [Ilustracion],
+  imports: [Foto],
 })
 export class GuiaBienestar {
   protected readonly libertades = LIBERTADES;

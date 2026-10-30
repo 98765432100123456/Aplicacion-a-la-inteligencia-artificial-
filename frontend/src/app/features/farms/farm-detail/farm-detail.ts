@@ -13,7 +13,7 @@ import { Dialog } from '../../../shared/components/dialog/dialog';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { ToastService } from '../../../shared/services/toast.service';
 import { FarmForm } from '../farm-form/farm-form';
-import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
+import { Foto } from '../../../shared/components/foto/foto';
 
 type Pestana = 'tecnicas' | 'recomendaciones';
 
@@ -23,7 +23,7 @@ type Pestana = 'tecnicas' | 'recomendaciones';
  */
 @Component({
   selector: 'app-farm-detail',
-  imports: [Ilustracion, RouterLink, DatePipe, DecimalPipe, Dialog, Nivel, FarmForm],
+  imports: [Foto, RouterLink, DatePipe, DecimalPipe, Dialog, Nivel, FarmForm],
   templateUrl: './farm-detail.html',
   styleUrl: './farm-detail.scss',
 })

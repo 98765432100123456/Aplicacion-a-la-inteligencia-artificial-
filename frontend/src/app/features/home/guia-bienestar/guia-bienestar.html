@@ -29,7 +29,7 @@
     @if (i === activa()) {
       <div class="detalle" role="tabpanel" [id]="'panel-' + l.id" [attr.aria-labelledby]="'tab-' + l.id">
         <div class="panel-intro">
-          <app-ilustracion class="panel-imagen" [nombre]="l.id" />
+          <app-foto class="panel-imagen" [nombre]="l.foto" [decorativa]="true" />
           <h3>{{ l.nombre }}</h3>
           <p class="pesa">Pesa <b class="cifras">{{ l.peso }} %</b> de la calificación del predio.</p>
           <h4>Qué revisa el evaluador</h4>
@@ -163,7 +163,7 @@
   <dl class="tipos">
     @for (t of tipos; track t.nombre) {
       <div>
-        <dt><app-ilustracion class="tipo-imagen" [nombre]="t.ilustracion" />{{ t.nombre }}</dt>
+        <dt><app-foto class="tipo-imagen" [nombre]="t.foto" [decorativa]="true" />{{ t.nombre }}</dt>
         <dd>{{ t.ejemplo }}</dd>
       </div>
     }

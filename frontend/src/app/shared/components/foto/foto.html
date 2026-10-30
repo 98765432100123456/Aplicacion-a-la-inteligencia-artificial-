@@ -1,0 +1,8 @@
+<img
+  [src]="'fotos/' + nombre() + '.webp'"
+  [alt]="decorativa() ? '' : datos().descripcion"
+  width="960"
+  [attr.height]="datos().alto"
+  [attr.loading]="prioridad() ? 'eager' : 'lazy'"
+  decoding="async"
+/>

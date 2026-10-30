@@ -1,6 +1,6 @@
 import { afterNextRender, ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { TemaService } from '../../../core/services/tema.service';
-import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
+import { Foto } from '../../../shared/components/foto/foto';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { PageHeader } from '../../../shared/components/page-header/page-header';
 
@@ -57,7 +57,7 @@ const ESPACIOS = ['--e-1', '--e-2', '--e-3', '--e-4', '--e-6', '--e-8', '--e-12'
  */
 @Component({
   selector: 'app-sistema-diseno',
-  imports: [PageHeader, Nivel, Ilustracion],
+  imports: [PageHeader, Nivel, Foto],
   templateUrl: './sistema-diseno.html',
   styleUrl: './sistema-diseno.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

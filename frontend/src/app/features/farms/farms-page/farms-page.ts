@@ -11,12 +11,12 @@ import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { PageHeader } from '../../../shared/components/page-header/page-header';
-import { Ilustracion } from '../../../shared/components/ilustracion/ilustracion';
+import { Foto } from '../../../shared/components/foto/foto';
 
 /** Lista de predios; el propietario ve solo los suyos. */
 @Component({
   selector: 'app-farms-page',
-  imports: [Ilustracion, ReactiveFormsModule, RouterLink, DatePipe, PageHeader, Nivel],
+  imports: [Foto, ReactiveFormsModule, RouterLink, DatePipe, PageHeader, Nivel],
   templateUrl: './farms-page.html',
   styleUrl: './farms-page.scss',
 })

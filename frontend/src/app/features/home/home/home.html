@@ -8,7 +8,7 @@
       <p class="bajada">Ingresó como {{ auth.user()?.role?.name }}. Esto es lo que hay hoy en la plataforma.</p>
     }
   </div>
-  <app-ilustracion class="saludo-imagen" nombre="pradera" />
+  <app-foto class="saludo-imagen" nombre="potrero" [prioridad]="true" />
 </section>
 
 @if (noPermission) {

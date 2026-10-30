@@ -34,7 +34,7 @@
   } @else {
     <div class="columnas">
       <section aria-labelledby="t-datos">
-        <app-ilustracion class="datos-imagen" nombre="finca" />
+        <app-foto class="datos-imagen" nombre="potrero" [decorativa]="true" />
         <h2 id="t-datos">Datos del predio</h2>
         <dl class="ficha">
           <div><dt>Propietario</dt><dd>{{ f.owner.name }}@if (f.owner.document) { · {{ f.owner.document }} }</dd></div>

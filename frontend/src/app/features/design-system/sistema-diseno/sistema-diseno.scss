@@ -31,6 +31,7 @@ code { font-size: var(--texto-xs); color: var(--tinta-suave); font-variant-numer
 .fila { display: flex; flex-wrap: wrap; gap: var(--e-3); align-items: center; }
 .niveles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-3); }
 .imagenes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--e-3); }
+.imagenes app-foto { aspect-ratio: 4 / 3; }
 
 @media (max-width: 47.49em) {
   .rejilla-componentes { grid-template-columns: 1fr; }
