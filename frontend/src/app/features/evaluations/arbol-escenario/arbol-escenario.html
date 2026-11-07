@@ -1,0 +1,67 @@
+@let a = arbol();
+@let s = estado();
+<article class="arbol" [class.completo]="s.completo" [id]="'arbol-' + a.id" tabindex="-1">
+  <header class="cabeza">
+    <div>
+      <p class="titulo">{{ a.titulo }}</p>
+      <p class="meta">Árbol de escenarios · Diagrama {{ a.diagrama }}{{ a.diagrama === 1 ? ' (20 para pequeño productor)' : '' }}</p>
+    </div>
+    <p class="marcador cifras" aria-live="polite">
+      @if (s.noAplica) {
+        <b>No aplica</b>
+      } @else {
+        <b>{{ s.puntos }}</b> de {{ s.maximo }} puntos
+      }
+    </p>
+  </header>
+
+  <ol class="pasos">
+    @for (paso of s.pasos; track paso.pregunta.id) {
+      <li class="paso">
+        <label [for]="'q-' + a.id + '-' + paso.pregunta.id">{{ paso.pregunta.texto }}</label>
+        <div class="fila">
+          <select class="control" [id]="'q-' + a.id + '-' + paso.pregunta.id" (change)="elegir(paso.pregunta.id, $any($event.target).value)">
+            @for (o of paso.pregunta.opciones; track o.id) {
+              <option [value]="o.id" [selected]="o.id === paso.opcion.id">{{ texto(o) }}</option>
+            }
+          </select>
+          <span class="acumulado cifras" [attr.aria-label]="'Acumulado: ' + paso.acumulado + ' puntos'">{{ paso.acumulado }}</span>
+        </div>
+      </li>
+    }
+    <!-- Se recorre por identificador para que cada pregunta nueva estrene su lista sin selección previa. -->
+    @for (q of s.siguiente ? [s.siguiente] : []; track q.id) {
+      <li class="paso pendiente">
+        <label [for]="'q-' + a.id + '-' + q.id">{{ q.texto }}</label>
+        <div class="fila">
+          <select class="control" [id]="'q-' + a.id + '-' + q.id" (change)="elegir(q.id, $any($event.target).value)">
+            <option value="" selected disabled>Seleccione una respuesta</option>
+            @for (o of q.opciones; track o.id) {
+              <option [value]="o.id">{{ texto(o) }}</option>
+            }
+          </select>
+          <span class="acumulado cifras" aria-hidden="true">…</span>
+        </div>
+      </li>
+    }
+  </ol>
+
+  @if (s.completo) {
+    <p class="resultado" role="status">
+      @if (s.noAplica) {
+        El diagrama marca este caso como <b>No aplica</b>: no entra en el cálculo.
+      } @else {
+        <span class="nivel" [class]="'nivel ' + s.nivel!.toLowerCase()">{{ nivel() }}</span>
+        <span class="cifras">{{ s.puntos }} de {{ s.maximo }} puntos</span>
+      }
+    </p>
+    @if (observando() || valor()?.observacion) {
+      <div class="campo observacion">
+        <label [for]="'obs-arbol-' + a.id">Observación</label>
+        <textarea class="control" rows="2" maxlength="1000" [id]="'obs-arbol-' + a.id" [value]="valor()?.observacion ?? ''" (input)="observar($any($event.target).value)"></textarea>
+      </div>
+    } @else {
+      <button type="button" class="btn btn-texto btn-sm agregar" (click)="mostrarObservacion()">Agregar observación</button>
+    }
+  }
+</article>

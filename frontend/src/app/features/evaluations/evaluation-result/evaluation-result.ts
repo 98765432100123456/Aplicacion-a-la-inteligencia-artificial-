@@ -6,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
 import { NOMBRE_RESPUESTA } from '../../../compartido/lista-chequeo';
-import { LIBERTADES, NOMBRE_PRODUCTOR, puntajeTexto } from '../../../compartido/norma';
+import { LIBERTADES, NIVELES, NOMBRE_PRODUCTOR, puntajeTexto } from '../../../compartido/norma';
 import { AVISO_RECOMENDACIONES, NOMBRE_PRIORIDAD } from '../../../compartido/recomendaciones';
 import { Nivel } from '../../../shared/components/nivel/nivel';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -35,14 +35,18 @@ export class EvaluationResult {
   protected readonly regenerating = signal(false);
   protected readonly downloading = signal<string | null>(null);
 
+  protected readonly nombreNivel = (codigo: string | null) => NIVELES.find((n) => n.codigo === codigo)?.nombre ?? 'No aplica';
   protected readonly corto = (codigo: string) => LIBERTADES.find((l) => l.codigo === codigo)?.corto ?? codigo;
   protected readonly bajas = computed(() => (this.evaluation().results?.libertadesBajas ?? []).map(this.corto));
   protected readonly respuestasPorLibertad = computed(() => {
     const e = this.evaluation();
     const porCodigo = new Map(e.answers.map((a) => [a.indicatorCode, a]));
+    const arboles = e.results?.escenarios ?? [];
+    const conArbol = new Set(arboles.map((a) => a.criterio));
     return LIBERTADES.map((l) => ({
       nombre: l.nombre,
-      filas: e.checklist.filter((i) => i.libertad === l.codigo).map((i) => ({ ...i, r: porCodigo.get(i.codigo) })),
+      filas: e.checklist.filter((i) => i.libertad === l.codigo && !conArbol.has(i.criterio)).map((i) => ({ ...i, r: porCodigo.get(i.codigo) })),
+      arboles: arboles.filter((a) => a.libertad === l.codigo),
     }));
   });
 

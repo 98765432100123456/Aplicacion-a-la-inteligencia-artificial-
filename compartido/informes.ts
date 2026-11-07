@@ -1,5 +1,6 @@
 import { Resultado } from "./calificacion";
 import {
+  CRITERIOS,
   NOMBRE_METODO,
   NOMBRE_RESPUESTA,
   NOMBRE_TIPO,
@@ -85,6 +86,21 @@ const LOGRO_LIBERTAD: Record<CodigoLibertad, string> = {
   COMPORTAMIENTO:
     "sus animales están tranquilos frente a las personas y pueden comportarse de forma natural.",
 };
+
+const FONDO_NIVEL: Record<string, string> = {
+  BAJO: "#fbe4e1",
+  MEDIO: "#fdf1d6",
+  ALTO: "#e6f3ea",
+  EXCELENTE: "#d7eee0",
+};
+
+/** "10.2" → 10,02, para ordenar por criterio y luego por indicador. */
+const ordenCodigo = (codigo: string) => {
+  const [criterio, indicador] = codigo.split(".").map(Number);
+  return criterio + (indicador ?? 0) / 100;
+};
+const ordenCriterio = (id: string) =>
+  CRITERIOS.find((c) => c.id === id)?.orden ?? 99;
 
 const nombreNivel = (codigo: string | null) =>
   NIVELES.find((n) => n.codigo === codigo)?.nombre ?? "Sin dato";
@@ -278,9 +294,10 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
               text: t,
               style: "encabezado",
             })),
+            ...[
             ...d.respuestas
               .filter((x) => x.libertad === l.codigo)
-              .map((x) => [
+              .map((x) => ({ orden: ordenCodigo(x.codigo), fila: [
                 x.codigo,
                 x.observacion
                   ? {
@@ -300,7 +317,41 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
                   color: COLOR_RESPUESTA[x.respuesta].color,
                   fillColor: COLOR_RESPUESTA[x.respuesta].fondo,
                 },
-              ]),
+              ] })),
+            // Criterios calificados con su árbol de escenarios: recorrido y puntos.
+            ...(r.escenarios ?? [])
+              .filter((a) => a.libertad === l.codigo)
+              .map((a) => ({ orden: ordenCriterio(a.criterio), fila: [
+                `D${a.diagrama}`,
+                {
+                  stack: [
+                    { text: a.titulo, bold: true },
+                    {
+                      ul: a.pasos.map(
+                        (p) => `${p.pregunta} ${p.respuesta} (${p.puntos >= 0 ? "+" : ""}${p.puntos})`,
+                      ),
+                      style: "nota",
+                    },
+                    a.observacion
+                      ? { text: `Observación: ${a.observacion}`, style: "nota" }
+                      : "",
+                  ],
+                },
+                {
+                  text: `Árbol de escenarios. Diagrama ${a.diagrama} de la metodología.`,
+                  style: "nota",
+                },
+                {
+                  text: `${a.puntos} de ${a.maximo} puntos\n${a.nivel ? nombreNivel(a.nivel) : "No aplica"}`,
+                  bold: true,
+                  color: a.nivel ? COLOR_NIVEL[a.nivel] : SUAVE,
+                  fillColor: a.nivel ? FONDO_NIVEL[a.nivel] : null,
+                },
+              ] })),
+            ]
+              // Indicadores y árboles en el orden de la lista de chequeo.
+              .sort((x, y) => x.orden - y.orden)
+              .map((x) => x.fila),
           ],
         },
         layout: lineas,
@@ -321,6 +372,7 @@ export function informeTecnico(d: DatosInforme): DocumentoPdf {
         {
           text:
             "Cada libertad se califica de 0 a 5 promediando sus indicadores según su peso (cumple = 1, cumple en parte = 0,5, no cumple = 0; los indicadores que no aplican se excluyen). " +
+            "Los criterios con árbol de escenarios se califican sumando los puntos de cada respuesta del diagrama; su nivel sigue los cortes del diagrama y en el promedio valen sus puntos sobre el máximo posible. " +
             "La calificación del predio pondera las libertades con los pesos de la Metodología para evaluar el bienestar animal en las especies bovina y bufalina del ICA (versión 2.0, 2023): " +
             "hambre y sed 20 %, dolor, lesión y enfermedad 50 %, molestias físicas y térmicas 15 %, temor, angustia y comportamiento natural 15 %. " +
             `Escala: bajo menos de 3,0; medio 3,0 a 3,9; alto 4,0 a 4,5; excelente 4,6 a 5,0. Lista de chequeo de referencia, versión ${d.evaluacion.version}.`,

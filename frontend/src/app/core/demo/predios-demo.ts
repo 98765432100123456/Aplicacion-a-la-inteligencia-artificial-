@@ -3,6 +3,7 @@ import { listaPara, Respuesta } from '../../compartido/lista-chequeo';
 import { Sistema } from '../../compartido/norma';
 import { recomendacionesPorReglas, Recomendaciones } from '../../compartido/recomendaciones';
 import { Answer, Species } from '../models/predios';
+import { RutaArbol } from '../../compartido/escenarios';
 
 export type { Species };
 
@@ -42,6 +43,8 @@ export interface DemoEvaluation {
   adults: number;
   generalObservation: string | null;
   answers: Answer[];
+  /** Recorridos de los árboles de escenarios; no existe en datos guardados antes de los árboles. */
+  scenarios?: Record<string, RutaArbol>;
   results: Resultado | null;
   recommendation: (Recomendaciones & { createdAt: string }) | null;
   lastSavedAt: string;

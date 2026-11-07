@@ -1,4 +1,5 @@
 import { Resultado } from '../../compartido/calificacion';
+import { RutaArbol } from '../../compartido/escenarios';
 import { Indicador, Respuesta } from '../../compartido/lista-chequeo';
 import { CodigoNivel, Productor, Sistema } from '../../compartido/norma';
 import { Recomendaciones } from '../../compartido/recomendaciones';
@@ -103,12 +104,16 @@ export interface EvaluationSummary {
 export interface EvaluationDetail extends EvaluationSummary {
   checklist: Omit<Indicador, 'propietario'>[];
   answers: Answer[];
+  /** Recorrido de cada árbol de escenarios, por identificador del árbol. */
+  scenarios: Record<string, RutaArbol>;
 }
 
 export interface SaveEvaluationInput {
   visitDate?: string;
   generalObservation?: string | null;
   answers?: Answer[];
+  /** Cada árbol enviado reemplaza su recorrido anterior completo. */
+  scenarios?: Record<string, RutaArbol>;
 }
 
 export type Proveedor = 'google' | 'facebook' | 'microsoft';

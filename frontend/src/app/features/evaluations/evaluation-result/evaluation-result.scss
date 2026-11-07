@@ -60,3 +60,5 @@ section { margin-bottom: var(--e-12); }
   .barra { grid-column: 1 / -1; grid-row: 2; }
   .tarjetas { grid-template-columns: 1fr; }
 }
+.ruta { margin: var(--e-2) 0 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; font-size: var(--texto-xs); font-weight: 400; color: var(--tinta-suave); }
+.ruta b { color: var(--tinta); font-weight: 700; }

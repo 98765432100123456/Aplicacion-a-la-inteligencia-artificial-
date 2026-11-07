@@ -3,21 +3,25 @@ import { Component, computed, DestroyRef, inject, input, OnInit, output, signal 
 import { Answer, EvaluationDetail } from '../../../core/models/predios';
 import { FarmsApiService } from '../../../core/services/farms-api.service';
 import { errorMessage } from '../../../core/utils/http-error';
+import { arbolesPara } from '../../../compartido/calificacion';
+import { Arbol, recorrerArbol, RutaArbol } from '../../../compartido/escenarios';
 import { NOMBRE_METODO, NOMBRE_TIPO, Respuesta } from '../../../compartido/lista-chequeo';
 import { LIBERTADES, NOMBRE_PRODUCTOR } from '../../../compartido/norma';
 import { Dialog } from '../../../shared/components/dialog/dialog';
+import { ArbolEscenario } from '../arbol-escenario/arbol-escenario';
 import { ToastService } from '../../../shared/services/toast.service';
 
 const AUTOGUARDADO_MS = 1200;
 
 /**
  * Diligenciamiento por secciones (una por libertad) con guardado automático
- * parcial (RF15, RF16), observaciones por indicador (RF18) y validación de
- * obligatorios antes de finalizar (RF17).
+ * parcial (RF15, RF16), observaciones (RF18) y validación de obligatorios antes de
+ * finalizar (RF17). Los criterios con diagrama del ICA se califican recorriendo su
+ * árbol de escenarios; los demás, indicador por indicador.
  */
 @Component({
   selector: 'app-evaluation-form',
-  imports: [DatePipe, Dialog],
+  imports: [DatePipe, Dialog, ArbolEscenario],
   templateUrl: './evaluation-form.html',
   styleUrl: './evaluation-form.scss',
 })
@@ -32,6 +36,7 @@ export class EvaluationForm implements OnInit {
   protected readonly productor = NOMBRE_PRODUCTOR;
 
   protected readonly answers = signal<Record<string, Answer>>({});
+  protected readonly escenarios = signal<Record<string, RutaArbol>>({});
   protected readonly observando = signal<Set<string>>(new Set());
   protected readonly visitDate = signal('');
   protected readonly general = signal('');
@@ -40,15 +45,46 @@ export class EvaluationForm implements OnInit {
   protected readonly confirming = signal(false);
   protected readonly finalizing = signal(false);
   private readonly pendientes = new Set<string>();
+  private readonly arbolesPorGuardar = new Set<string>();
   private camposPendientes = false;
   private temporizador: ReturnType<typeof setTimeout> | null = null;
 
+  /** Árboles que aplican; las evaluaciones anteriores ya respondidas por indicadores los conservan. */
+  private readonly arboles = computed(() => {
+    const respuestas = Object.fromEntries(Object.values(this.answers()).map((a) => [a.indicatorCode, { respuesta: a.answer }]));
+    return arbolesPara(this.evaluation().checklist, respuestas, this.escenarios());
+  });
+  private readonly indicadores = computed(() => {
+    const conArbol = new Set(this.arboles().map((a) => a.criterio));
+    return this.evaluation().checklist.filter((i) => !conArbol.has(i.criterio));
+  });
   protected readonly secciones = computed(() =>
-    LIBERTADES.map((l) => ({ ...l, indicadores: this.evaluation().checklist.filter((i) => i.libertad === l.codigo) })),
+    LIBERTADES.map((l) => {
+      const lista = this.evaluation().checklist.filter((i) => i.libertad === l.codigo);
+      const criterios = [...new Set(lista.map((i) => i.criterio))].map((id) => ({
+        id,
+        nombre: lista.find((i) => i.criterio === id)!.nombreCriterio,
+        arboles: this.arboles().filter((a) => a.criterio === id),
+        indicadores: this.indicadores().filter((i) => i.criterio === id),
+      }));
+      return { ...l, criterios };
+    }),
   );
-  protected readonly respondidas = computed(() => Object.keys(this.answers()).length);
-  protected readonly total = computed(() => this.evaluation().checklist.length);
-  protected readonly faltantes = computed(() => this.evaluation().checklist.filter((i) => !this.answers()[i.codigo]));
+  private readonly arbolesSinTerminar = computed(() => this.arboles().filter((a) => !recorrerArbol(a, this.escenarios()[a.id]?.ruta).completo));
+  protected readonly total = computed(() => this.indicadores().length + this.arboles().length);
+  protected readonly respondidas = computed(
+    () => this.indicadores().filter((i) => this.answers()[i.codigo]).length + this.arboles().length - this.arbolesSinTerminar().length,
+  );
+  /** Identificadores de lo que falta, en el orden del formulario. */
+  protected readonly faltantes = computed(() => {
+    const sinTerminar = new Set(this.arbolesSinTerminar().map((a) => a.id));
+    return this.secciones().flatMap((s) =>
+      s.criterios.flatMap((c) => [
+        ...c.arboles.filter((a) => sinTerminar.has(a.id)).map((a) => `arbol-${a.id}`),
+        ...c.indicadores.filter((i) => !this.answers()[i.codigo]).map((i) => `ind-${i.codigo}`),
+      ]),
+    );
+  });
 
   constructor() {
     // Los mensajes emergentes suben para no tapar la barra inferior de esta pantalla.
@@ -62,6 +98,7 @@ export class EvaluationForm implements OnInit {
   ngOnInit() {
     const e = this.evaluation();
     this.answers.set(Object.fromEntries(e.answers.map((a) => [a.indicatorCode, a])));
+    this.escenarios.set({ ...e.scenarios });
     this.observando.set(new Set(e.answers.filter((a) => a.observation).map((a) => a.indicatorCode)));
     this.visitDate.set(e.visitDate);
     this.general.set(e.generalObservation ?? '');
@@ -69,7 +106,7 @@ export class EvaluationForm implements OnInit {
   }
 
   hasPending(): boolean {
-    return this.pendientes.size > 0 || this.camposPendientes || this.saving();
+    return this.pendientes.size > 0 || this.arbolesPorGuardar.size > 0 || this.camposPendientes || this.saving();
   }
 
   protected opciones(respuesta: 'SI_NO' | 'ESCALA'): { valor: Respuesta; texto: string }[] {
@@ -81,6 +118,12 @@ export class EvaluationForm implements OnInit {
   protected responder(codigo: string, valor: Respuesta) {
     this.answers.update((a) => ({ ...a, [codigo]: { indicatorCode: codigo, answer: valor, observation: a[codigo]?.observation ?? null } }));
     this.marcar(codigo);
+  }
+
+  protected responderArbol(a: Arbol, valor: RutaArbol) {
+    this.escenarios.update((e) => ({ ...e, [a.id]: valor }));
+    this.arbolesPorGuardar.add(a.id);
+    this.programar();
   }
 
   protected observar(codigo: string, texto: string) {
@@ -114,9 +157,11 @@ export class EvaluationForm implements OnInit {
   /** Envía solo lo que cambió desde el último guardado. */
   protected async guardar(silencioso = true): Promise<boolean> {
     if (this.temporizador) clearTimeout(this.temporizador);
-    if (!this.pendientes.size && !this.camposPendientes) return true;
+    if (!this.pendientes.size && !this.arbolesPorGuardar.size && !this.camposPendientes) return true;
     const codigos = [...this.pendientes];
     this.pendientes.clear();
+    const arboles = [...this.arbolesPorGuardar];
+    this.arbolesPorGuardar.clear();
     const campos = this.camposPendientes;
     this.camposPendientes = false;
     this.saving.set(true);
@@ -124,6 +169,7 @@ export class EvaluationForm implements OnInit {
       this.api
         .saveEvaluation(this.evaluation().id, {
           answers: codigos.map((c) => this.answers()[c]).filter(Boolean),
+          ...(arboles.length ? { scenarios: Object.fromEntries(arboles.map((id) => [id, this.escenarios()[id]])) } : {}),
           ...(campos ? { visitDate: this.visitDate(), generalObservation: this.general().trim() || null } : {}),
         })
         .subscribe({
@@ -136,6 +182,7 @@ export class EvaluationForm implements OnInit {
           error: (err) => {
             this.saving.set(false);
             codigos.forEach((c) => this.pendientes.add(c));
+            arboles.forEach((id) => this.arbolesPorGuardar.add(id));
             this.camposPendientes ||= campos;
             this.toast.error(errorMessage(err, 'No se pudo guardar. Revise la conexión e intente de nuevo.'));
             resolve(false);
@@ -147,9 +194,10 @@ export class EvaluationForm implements OnInit {
   protected pedirFinalizar() {
     const falta = this.faltantes()[0];
     if (falta) {
-      this.toast.error(`Faltan ${this.faltantes().length} indicadores por responder.`);
-      document.getElementById(`ind-${falta.codigo}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      document.getElementById(`ind-${falta.codigo}`)?.focus({ preventScroll: true });
+      const n = this.faltantes().length;
+      this.toast.error(`Faltan ${n} ${n === 1 ? 'punto' : 'puntos'} por responder.`);
+      document.getElementById(falta)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById(falta)?.focus({ preventScroll: true });
       return;
     }
     this.confirming.set(true);

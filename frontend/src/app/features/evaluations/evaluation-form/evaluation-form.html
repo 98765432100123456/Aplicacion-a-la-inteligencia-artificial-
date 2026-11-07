@@ -29,38 +29,41 @@
       <h2 [id]="'sec-' + s.codigo">{{ s.nombre }}</h2>
       <span class="peso cifras">{{ s.peso }} % de la nota</span>
     </div>
-    @for (i of s.indicadores; track i.codigo; let k = $index) {
-      @if (k === 0 || s.indicadores[k - 1].criterio !== i.criterio) {
-        <h3 class="criterio">{{ i.nombreCriterio }}</h3>
+    @for (c of s.criterios; track c.id) {
+      <h3 class="criterio">{{ c.nombre }}</h3>
+      @for (a of c.arboles; track a.id) {
+        <app-arbol-escenario class="arbol" [arbol]="a" [valor]="escenarios()[a.id]" (cambio)="responderArbol(a, $event)" />
       }
-      @let r = answers()[i.codigo];
-      <article class="indicador" [class.respondido]="r" [id]="'ind-' + i.codigo" tabindex="-1">
-        <div class="pregunta">
-          <p class="texto"><span class="codigo cifras">{{ i.codigo }}</span> {{ i.texto }}</p>
-          <p class="ayuda">{{ i.ayuda }}</p>
-          <p class="meta">
-            {{ tipo[i.tipo] }} · {{ metodo[i.metodo] }}
-            @if (i.critico) { <span class="critico">Crítico</span> }
-          </p>
-        </div>
-        <fieldset class="respuestas">
-          <legend class="visually-hidden">Respuesta para {{ i.codigo }}</legend>
-          @for (o of opciones(i.respuesta); track o.valor) {
-            <label class="opcion" [class]="'opcion ' + o.valor.toLowerCase()">
-              <input type="radio" [name]="'r-' + i.codigo" [value]="o.valor" [checked]="r?.answer === o.valor" (change)="responder(i.codigo, o.valor)" />
-              {{ o.texto }}
-            </label>
-          }
-        </fieldset>
-        @if (r && observando().has(i.codigo)) {
-          <div class="campo observacion">
-            <label [for]="'obs-' + i.codigo">Observación</label>
-            <textarea class="control" rows="2" maxlength="1000" [id]="'obs-' + i.codigo" [value]="r.observation ?? ''" (input)="observar(i.codigo, $any($event.target).value)"></textarea>
+      @for (i of c.indicadores; track i.codigo) {
+        @let r = answers()[i.codigo];
+        <article class="indicador" [class.respondido]="r" [id]="'ind-' + i.codigo" tabindex="-1">
+          <div class="pregunta">
+            <p class="texto"><span class="codigo cifras">{{ i.codigo }}</span> {{ i.texto }}</p>
+            <p class="ayuda">{{ i.ayuda }}</p>
+            <p class="meta">
+              {{ tipo[i.tipo] }} · {{ metodo[i.metodo] }}
+              @if (i.critico) { <span class="critico">Crítico</span> }
+            </p>
           </div>
-        } @else if (r) {
-          <button type="button" class="btn btn-texto btn-sm agregar" (click)="mostrarObservacion(i.codigo)">Agregar observación</button>
-        }
-      </article>
+          <fieldset class="respuestas">
+            <legend class="visually-hidden">Respuesta para {{ i.codigo }}</legend>
+            @for (o of opciones(i.respuesta); track o.valor) {
+              <label class="opcion" [class]="'opcion ' + o.valor.toLowerCase()">
+                <input type="radio" [name]="'r-' + i.codigo" [value]="o.valor" [checked]="r?.answer === o.valor" (change)="responder(i.codigo, o.valor)" />
+                {{ o.texto }}
+              </label>
+            }
+          </fieldset>
+          @if (r && observando().has(i.codigo)) {
+            <div class="campo observacion">
+              <label [for]="'obs-' + i.codigo">Observación</label>
+              <textarea class="control" rows="2" maxlength="1000" [id]="'obs-' + i.codigo" [value]="r.observation ?? ''" (input)="observar(i.codigo, $any($event.target).value)"></textarea>
+            </div>
+          } @else if (r) {
+            <button type="button" class="btn btn-texto btn-sm agregar" (click)="mostrarObservacion(i.codigo)">Agregar observación</button>
+          }
+        </article>
+      }
     }
   </section>
 }

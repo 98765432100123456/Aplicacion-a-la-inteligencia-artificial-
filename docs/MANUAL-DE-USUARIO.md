@@ -91,11 +91,13 @@ Evaluación
 
 La evaluación presenta la fecha de la visita, el inventario, el tipo de productor y la muestra mínima, y debajo los 23 criterios de la norma del ICA con sus indicadores, agrupados por libertad. Solo aparecen los criterios que aplican al sistema productivo y al tamaño del predio: los registros documentales y el uso de medicamentos se exigen a medianos y grandes productores. Los indicadores críticos se marcan como **Crítico**.
 
-Cada indicador se responde con **Cumple**, **Cumple en parte**, **No cumple** o **No aplica**; algunos solo admiten cumple o no cumple. Con **Agregar observación** se registra lo observado, por ejemplo cuántos animales presentan una condición. Al final hay un espacio para la observación general de la visita.
+**Criterios con árbol de escenarios.** Los criterios que la metodología del ICA califica con un diagrama (suministro de agua, suministro de alimento, topizado y descorne, castración, identificación y marcaje, pezones supernumerarios, lesiones e inflamaciones, ectoparásitos, cojeras, animales de descarte, procedimientos y registros, medicamentos, confort físico, confort térmico, espacio en estabulación, interacción comportamental y capacitación) se responden siguiendo exactamente su diagrama. Cada pregunta es una lista desplegable con las opciones del diagrama y sus puntos, por ejemplo *Sí, todos (+3 puntos)*. Al responder aparece la siguiente pregunta del camino; junto a cada respuesta se ve el puntaje acumulado y, arriba, el total frente al máximo posible. Al terminar el recorrido se muestra el nivel del criterio (Excelente, Alto, Medio o Bajo) con los cortes del diagrama. Si se cambia una respuesta anterior, las preguntas que ya no están en el camino desaparecen y el puntaje se recalcula. Los puntos solo los ve el evaluador.
+
+Los demás indicadores se responden con **Cumple**, **Cumple en parte**, **No cumple** o **No aplica**; algunos solo admiten cumple o no cumple. Con **Agregar observación** se registra lo observado, por ejemplo cuántos animales presentan una condición. Al final hay un espacio para la observación general de la visita.
 
 Las respuestas se guardan solas unos segundos después de cada cambio; la barra inferior muestra el avance y la hora del último guardado. El botón **Guardar** guarda de inmediato. Es posible salir y continuar después desde la ficha del predio.
 
-Cuando todos los indicadores tienen respuesta se selecciona **Finalizar**. El sistema pide confirmación, porque después ya no es posible cambiar las respuestas, y calcula el resultado. La preparación de las recomendaciones y los informes puede tardar hasta un minuto.
+Cuando todos los indicadores tienen respuesta y todos los árboles están recorridos se selecciona **Finalizar**. El sistema pide confirmación, porque después ya no es posible cambiar las respuestas, y calcula el resultado. La preparación de las recomendaciones y los informes puede tardar hasta un minuto.
 
 
 Resultado e informes

@@ -130,6 +130,8 @@ describe('evaluaciones', () => {
   it('el propietario no ve borradores; al finalizar, el nivel debe coincidir con el puntaje', async () => {
     const eva = como('eva', 'eva@ica.co');
     await setDoc(doc(eva, 'evaluaciones', 'e1'), borrador('dueno@ica.co'));
+    // En borrador se guarda el recorrido de los árboles de escenarios.
+    await assertSucceeds(updateDoc(doc(eva, 'evaluaciones', 'e1'), { 'escenarios.agua': { ruta: { disponibilidad: 'todos' }, observacion: null } }));
     const dueno = como('dueno', 'dueno@ica.co');
     await assertFails(getDoc(doc(dueno, 'evaluaciones', 'e1')));
     await assertFails(updateDoc(doc(eva, 'evaluaciones', 'e1'), { ...finalizada, nivel: 'BAJO' }));
@@ -137,6 +139,7 @@ describe('evaluaciones', () => {
     await assertSucceeds(getDoc(doc(dueno, 'evaluaciones', 'e1')));
     // Finalizada no cambia, salvo sus recomendaciones.
     await assertFails(updateDoc(doc(eva, 'evaluaciones', 'e1'), { respuestas: { '1.1': { respuesta: 'CUMPLE' } } }));
+    await assertFails(updateDoc(doc(eva, 'evaluaciones', 'e1'), { 'escenarios.agua': { ruta: { disponibilidad: '50' }, observacion: null } }));
     await assertFails(updateDoc(doc(eva, 'evaluaciones', 'e1'), { puntaje: 5, nivel: 'EXCELENTE' }));
     await assertSucceeds(updateDoc(doc(eva, 'evaluaciones', 'e1'), { recomendacion: { origen: 'IA' } }));
   });

@@ -10,6 +10,7 @@ const fechaLarga = (d: string) =>
 /** Datos de los informes a partir de una evaluación finalizada. */
 export function datosInforme(e: EvaluationDetail, telefono: string | null): DatosInforme {
   const porCodigo = new Map(e.checklist.map((i) => [i.codigo, i]));
+  const conArbol = new Set((e.results?.escenarios ?? []).map((a) => a.criterio));
   return {
     predio: { nombre: e.farm.name, propietario: e.farm.ownerName, telefono, ubicacion: e.farm.location },
     especie: e.species.name,
@@ -25,7 +26,8 @@ export function datosInforme(e: EvaluationDetail, telefono: string | null): Dato
     },
     resultado: e.results!,
     respuestas: e.answers
-      .filter((a) => porCodigo.has(a.indicatorCode))
+      // Los criterios calificados con árbol aparecen con su recorrido, no con indicadores sueltos.
+      .filter((a) => porCodigo.has(a.indicatorCode) && !conArbol.has(porCodigo.get(a.indicatorCode)!.criterio))
       .map((a) => {
         const i = porCodigo.get(a.indicatorCode)!;
         return {

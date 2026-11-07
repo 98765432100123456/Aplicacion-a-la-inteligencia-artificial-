@@ -1,5 +1,6 @@
 import type { DocumentData, DocumentSnapshot, Query } from 'firebase/firestore';
-import { calificar, pendientes, RespuestaIndicador } from '../../compartido/calificacion';
+import { calificar, faltantes, RespuestaIndicador } from '../../compartido/calificacion';
+import { ARBOLES, RutaArbol, rutaLimpia } from '../../compartido/escenarios';
 import { listaPara, Respuesta, VERSION_LISTA } from '../../compartido/lista-chequeo';
 import { muestraMinima, NOMBRE_PRODUCTOR, repartir, Sistema, tipoProductor } from '../../compartido/norma';
 import { recomendacionesPorReglas, Recomendaciones } from '../../compartido/recomendaciones';
@@ -133,7 +134,7 @@ export class PrediosEvaluacionesFirebase {
       predioId: farmId, propietarioCorreo: predio.get('propietarioCorreo') ?? null, especieId: speciesId,
       evaluadorId: a.uid, evaluadorNombre: a.nombre, estado: 'borrador', versionLista: VERSION_LISTA, fechaVisita: hoy(),
       inventario: { crias: especie.crias, jovenes: especie.jovenes, adultos: especie.adultos }, sistema: predio.get('sistema') ?? null,
-      respuestas: {}, observacionGeneral: null, guardadoEn: serverTimestamp(), creadoEn: serverTimestamp(),
+      respuestas: {}, escenarios: {}, observacionGeneral: null, guardadoEn: serverTimestamp(), creadoEn: serverTimestamp(),
     });
     auditar(fb, lote, a.uid, 'evaluacion.creada', 'evaluacion', ref.id, { predioId: farmId });
     await lote.commit();
@@ -164,6 +165,11 @@ export class PrediosEvaluacionesFirebase {
       // El código lleva punto (1.2): FieldPath evita que se lea como un campo anidado.
       campos.push(new FieldPath('respuestas', a.indicatorCode), { respuesta: a.answer, observacion: a.observation?.trim() || null });
     }
+    for (const [id, r] of Object.entries(input.scenarios ?? {})) {
+      const arbol = ARBOLES.find((a) => a.id === id);
+      if (!arbol || !actual.checklist.some((i) => i.criterio === arbol.criterio)) throw new ErrorVisible('Ese árbol de escenarios no pertenece a esta lista de chequeo.');
+      campos.push(new FieldPath('escenarios', id), { ruta: rutaLimpia(arbol, r.ruta), observacion: r.observacion?.trim() || null });
+    }
     if (input.visitDate !== undefined) campos.push('fechaVisita', input.visitDate);
     if (input.generalObservation !== undefined) campos.push('observacionGeneral', input.generalObservation?.trim() || null);
     await (updateDoc as (...args: unknown[]) => Promise<void>)(doc(fb.db, 'evaluaciones', id), 'guardadoEn', serverTimestamp(), ...campos);
@@ -176,11 +182,9 @@ export class PrediosEvaluacionesFirebase {
     if (e.status !== 'BORRADOR') throw new ErrorVisible('La evaluación ya está finalizada y no se puede modificar.');
     const lista = listaDe(e);
     const respuestas = respuestasDe(e);
-    const faltan = pendientes(lista, respuestas);
-    if (faltan.length) {
-      throw new ErrorVisible(`Faltan ${faltan.length} ${faltan.length === 1 ? 'indicador' : 'indicadores'} por responder: ${faltan.map((i) => i.codigo).join(', ')}.`);
-    }
-    const resultado = calificar(lista, respuestas);
+    const faltan = faltantes(lista, respuestas, e.scenarios);
+    if (faltan) throw new ErrorVisible(faltan);
+    const resultado = calificar(lista, respuestas, e.scenarios);
     const rec = await this.recomendaciones(e, resultado);
     const fb = await firebase();
     const { doc, writeBatch, serverTimestamp } = fb.fs;
@@ -368,6 +372,7 @@ function vistaEvaluacion(d: Doc, predio: Doc, especies: Species[]): EvaluationDe
     checklist: listaPara(especie.code, sistema, total).map(({ propietario: _paraElPropietario, ...i }) => i),
     answers: Object.entries((e['respuestas'] ?? {}) as Record<string, { respuesta: Respuesta; observacion: string | null }>)
       .map(([indicatorCode, r]) => ({ indicatorCode, answer: r.respuesta, observation: r.observacion ?? null })),
+    scenarios: (e['escenarios'] ?? {}) as Record<string, RutaArbol>,
     generalObservation: e['observacionGeneral'] ?? null,
     score: e['puntaje'] ?? null, level: e['nivel'] ?? null, results: e['resultado'] ?? null,
     lastSavedAt: iso(e['guardadoEn']) ?? new Date().toISOString(),

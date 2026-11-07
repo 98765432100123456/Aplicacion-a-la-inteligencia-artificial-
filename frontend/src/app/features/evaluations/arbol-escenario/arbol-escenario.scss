@@ -1,0 +1,34 @@
+:host { display: block; }
+.arbol {
+  padding: var(--e-5); border: 1px solid var(--linea); border-radius: var(--radio-panel); background: var(--superficie);
+  transition: border-color var(--dur-media) var(--curva);
+}
+.arbol:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+.arbol.completo { border-color: color-mix(in srgb, var(--acento) 45%, var(--linea)); }
+
+.cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--e-4); }
+.titulo { font-weight: 800; font-size: var(--texto-md); }
+.meta { margin-top: 0.15rem; font-size: var(--texto-xs); color: var(--tinta-suave); }
+.marcador { flex: none; padding: var(--e-1) var(--e-3); border-radius: var(--radio-sello); background: var(--acento-tenue); color: var(--tinta); font-size: var(--texto-sm); white-space: nowrap; }
+.marcador b { font-size: var(--texto-lg); color: var(--acento); }
+
+.pasos { list-style: none; margin: var(--e-4) 0 0; padding: 0; display: grid; gap: var(--e-4); counter-reset: paso; }
+.paso { display: grid; gap: var(--e-2); counter-increment: paso; }
+.paso label { font-weight: 700; font-size: var(--texto-sm); }
+.paso label::before { content: counter(paso) '. '; color: var(--tinta-suave); }
+.fila { display: grid; grid-template-columns: minmax(0, 1fr) 2.75rem; gap: var(--e-3); align-items: center; }
+.acumulado { text-align: center; font-weight: 800; color: var(--tinta-suave); }
+.pendiente select { border-color: var(--acento); }
+
+.resultado { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3); margin-top: var(--e-5); padding-top: var(--e-4); border-top: 1px solid var(--linea); font-size: var(--texto-sm); }
+.nivel { display: inline-flex; align-items: center; min-height: 1.75rem; padding: 0 var(--e-3); border-radius: var(--radio-sello); font-weight: 800; }
+.nivel.excelente { background: var(--acento-suave); color: var(--acento-fuerte); }
+.nivel.alto { background: var(--acento-tenue); color: var(--acento); }
+.nivel.medio { background: var(--maiz-fondo); color: var(--maiz-texto); }
+.nivel.bajo { background: var(--alerta-fondo); color: var(--alerta-texto); }
+.observacion { margin-top: var(--e-4); }
+.agregar { margin-top: var(--e-3); }
+
+@media (max-width: 47.49em) {
+  .cabeza { flex-direction: column; gap: var(--e-2); }
+}

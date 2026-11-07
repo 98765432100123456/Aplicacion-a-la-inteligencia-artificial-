@@ -102,6 +102,19 @@
         @for (f of g.filas; track f.codigo) {
           <div><dt>{{ f.codigo }} · {{ f.nombreCriterio }}: {{ f.texto }}</dt><dd>{{ f.r ? respuesta[f.r.answer] : 'Sin respuesta' }}@if (f.r?.observation) { <br /><small>{{ f.r!.observation }}</small> }</dd></div>
         }
+        @for (a of g.arboles; track a.arbol) {
+          <div class="arbol">
+            <dt>
+              Diagrama {{ a.diagrama }} · {{ a.titulo }}
+              <ol class="ruta">
+                @for (p of a.pasos; track $index) {
+                  <li>{{ p.pregunta }} <b>{{ p.respuesta }}</b> <span class="cifras">({{ p.puntos >= 0 ? '+' : '' }}{{ p.puntos }})</span></li>
+                }
+              </ol>
+            </dt>
+            <dd><b class="cifras">{{ a.puntos }} de {{ a.maximo }}</b> · {{ nombreNivel(a.nivel) }}@if (a.observacion) { <br /><small>{{ a.observacion }}</small> }</dd>
+          </div>
+        }
       </dl>
     }
     @if (e.generalObservation) {

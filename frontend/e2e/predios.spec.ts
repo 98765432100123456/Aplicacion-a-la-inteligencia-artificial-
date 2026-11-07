@@ -35,12 +35,29 @@ test.describe('Predios y evaluaciones', () => {
     await expect(page.getByRole('heading', { name: 'Castración' })).toHaveCount(0);
     const grupos = await page.locator('input[type=radio]').evaluateAll((xs) => [...new Set(xs.map((x) => (x as HTMLInputElement).name))]);
     for (const g of grupos) await page.locator(`input[name="${g}"][value="CUMPLE"]`).check();
+    // Árboles de escenarios: se elige la primera opción de cada pregunta hasta terminar el recorrido.
+    const agua = page.locator('#arbol-agua');
+    await agua.locator('select').first().selectOption({ index: 1 });
+    await expect(agua.locator('.marcador')).toContainText('3 de 14 puntos');
+    const pendiente = page.locator('.paso.pendiente select');
+    while (await pendiente.count()) await pendiente.first().selectOption({ index: 1 });
+    await expect(agua.locator('.marcador')).toContainText('14 de 14 puntos');
+    await expect(agua.getByText('Excelente')).toBeVisible();
+    // Cambiar una respuesta anterior recorta el camino y recalcula el puntaje.
+    await agua.locator('select').first().selectOption({ label: 'Sí, al menos el 50 % (+1 punto)' });
+    await expect(agua.locator('.marcador')).toContainText('1 de 14 puntos');
+    await expect(agua.locator('select')).toHaveCount(1);
+    await agua.locator('select').first().selectOption({ index: 0 });
+    while (await pendiente.count()) await pendiente.first().selectOption({ index: 1 });
+    await expect(agua.locator('.marcador')).toContainText('14 de 14 puntos');
     await expect(page.getByText(/Guardado a las/)).toBeVisible({ timeout: 10_000 });
     await expectAccessible(page);
 
     await page.getByRole('button', { name: 'Finalizar' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Finalizar' }).click();
-    await expect(page.getByText('Excelente').first()).toBeVisible({ timeout: 30_000 });
+    // Pantalla de resultado: el nivel de los árboles ya decía "Excelente" en el formulario.
+    await expect(page.getByRole('button', { name: /Informe técnico/ })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText('Excelente').first()).toBeVisible();
     await expectAccessible(page);
 
     const descarga = page.waitForEvent('download');

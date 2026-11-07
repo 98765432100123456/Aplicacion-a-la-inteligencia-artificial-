@@ -10,6 +10,7 @@
 .indicador { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--e-3) var(--e-6); padding: var(--e-5) 0; border-bottom: 1px solid var(--linea); scroll-margin-top: 6rem; }
 .indicador:focus { outline: none; }
 .indicador:focus-visible { box-shadow: inset 3px 0 0 var(--foco); }
+.arbol { display: block; margin: var(--e-3) 0 var(--e-5); scroll-margin-top: 6rem; }
 .texto { font-weight: 600; }
 .codigo { display: inline-block; min-width: 2rem; color: var(--tinta-suave); font-weight: 800; }
 .ayuda, .meta { margin-top: var(--e-1); font-size: var(--texto-sm); color: var(--tinta-suave); }

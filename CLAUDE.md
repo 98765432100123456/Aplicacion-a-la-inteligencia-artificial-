@@ -69,7 +69,11 @@ In the UI, `permissionGuard` and `AuthService.can(...)` only hide things; route 
 
 ### Evaluation flow
 
-The checklist is filtered per farm by production system (`LECHERIA`/`CARNE`/`DOBLE_PROPOSITO`) and size (`listaPara`). Answers are stored by indicator code (`1.1`…`23.x`). If you reorder indicators, the codes of saved evaluations no longer match. On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, scale 0–5) and the level. Recommendations are then generated with Firebase AI Logic (`core/firebase/ia.ts`, validated by `validarSalidaIA`), falling back to the rule-based ones. Both PDFs are built in the browser with pdfmake from `compartido/informes.ts` and are never stored.
+The checklist is filtered per farm by production system (`LECHERIA`/`CARNE`/`DOBLE_PROPOSITO`) and size (`listaPara`). Answers are stored by indicator code (`1.1`…`23.x`). If you reorder indicators, the codes of saved evaluations no longer match.
+
+17 criteria are scored with the ICA "árbol de escenarios" decision trees (`compartido/escenarios.ts`, diagrams 1–19). Each answer adds the points from the diagram, and the cut-offs in `cortes` give the level. The route is stored in the evaluation's `escenarios.{arbolId}.ruta`; `rutaLimpia` drops answers that fall off the path. `usaArboles` keeps older evaluations, fully answered by indicators, on the indicator scoring. The diagrams are checked leaf by leaf in `core/norma/escenarios.spec.ts`, so update both together.
+
+On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, scale 0–5) and the level. Inside a freedom, a tree counts as `puntos / máximo` with the weight of its criterion's indicators. Recommendations are then generated with Firebase AI Logic (`core/firebase/ia.ts`, validated by `validarSalidaIA`), falling back to the rule-based ones. Both PDFs are built in the browser with pdfmake from `compartido/informes.ts` and are never stored.
 
 ### UI conventions
 

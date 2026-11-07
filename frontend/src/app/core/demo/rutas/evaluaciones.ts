@@ -1,6 +1,7 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { from, map } from 'rxjs';
-import { calificar, pendientes, RespuestaIndicador } from '../../../compartido/calificacion';
+import { calificar, faltantes, RespuestaIndicador } from '../../../compartido/calificacion';
+import { ARBOLES, RutaArbol, rutaLimpia } from '../../../compartido/escenarios';
 import { listaPara, VERSION_LISTA } from '../../../compartido/lista-chequeo';
 import { muestraMinima, repartir, tipoProductor } from '../../../compartido/norma';
 import { generarInforme, nombreInforme } from '../../informes/informes';
@@ -45,6 +46,7 @@ function vista(e: DemoEvaluation, f: DemoFarm): EvaluationDetail {
     inventory: { calves: e.calves, young: e.young, adults: e.adults, total }, producerType: tipoProductor(total), productionSystem: e.sistema,
     sampleSize: muestra, sampleByGroup: muestra === null ? null : repartir(muestra, [e.calves, e.young, e.adults]),
     checklistVersion: VERSION_LISTA, checklist: lista(e).map(({ propietario: _paraElPropietario, ...i }) => i), answers: e.answers,
+    scenarios: e.scenarios ?? {},
     generalObservation: e.generalObservation, score: e.results?.puntaje ?? null, level: e.results?.nivel ?? null, results: e.results,
     lastSavedAt: e.lastSavedAt, finishedAt: e.finishedAt, recommendation: e.recommendation, reports: informes(e),
   };
@@ -85,7 +87,7 @@ export function rutasDeEvaluaciones({ metodo, ruta, cuerpo }: Peticion, yo: Demo
       const e: DemoEvaluation = {
         id: `ev-${Date.now()}`, farmId: f.id, speciesId: s.speciesId, evaluatorId: yo.id, status: 'BORRADOR', sistema: f.productionSystem,
         visitDate: (cuerpo['visitDate'] as string) ?? hoy(), calves: s.calves, young: s.young, adults: s.adults,
-        generalObservation: null, answers: [], results: null, recommendation: null, lastSavedAt: ahora, finishedAt: null, createdAt: ahora,
+        generalObservation: null, answers: [], scenarios: {}, results: null, recommendation: null, lastSavedAt: ahora, finishedAt: null, createdAt: ahora,
       };
       estado.datos.evaluations.push(e);
       guardar();
@@ -125,6 +127,11 @@ export function rutasDeEvaluaciones({ metodo, ruta, cuerpo }: Peticion, yo: Demo
       if (pos >= 0) e.answers[pos] = nueva;
       else e.answers.push(nueva);
     }
+    for (const [id, r] of Object.entries((cuerpo['scenarios'] as Record<string, RutaArbol> | undefined) ?? {})) {
+      const arbol = ARBOLES.find((a) => a.id === id);
+      if (!arbol || !lista(e).some((i) => i.criterio === arbol.criterio)) return fallo(400, 'Ese árbol de escenarios no pertenece a esta lista de chequeo.');
+      e.scenarios = { ...e.scenarios, [id]: { ruta: rutaLimpia(arbol, r.ruta), observacion: r.observacion?.trim() || null } };
+    }
     if (cuerpo['visitDate'] !== undefined) e.visitDate = cuerpo['visitDate'] as string;
     if (cuerpo['generalObservation'] !== undefined) e.generalObservation = (cuerpo['generalObservation'] as string | null) || null;
     e.lastSavedAt = new Date().toISOString();
@@ -133,12 +140,10 @@ export function rutasDeEvaluaciones({ metodo, ruta, cuerpo }: Peticion, yo: Demo
   }
   if (metodo === 'POST' && accion === 'finalize') {
     if (e.status !== 'BORRADOR') return fallo(409, 'La evaluación ya está finalizada y no se puede modificar.');
-    const faltan = pendientes(lista(e), respuestas(e));
-    if (faltan.length) {
-      return fallo(400, `Faltan ${faltan.length} ${faltan.length === 1 ? 'indicador' : 'indicadores'} por responder: ${faltan.map((i) => i.codigo).join(', ')}.`);
-    }
+    const faltan = faltantes(lista(e), respuestas(e), e.scenarios);
+    if (faltan) return fallo(400, faltan);
     const ahora = new Date().toISOString();
-    e.results = calificar(lista(e), respuestas(e));
+    e.results = calificar(lista(e), respuestas(e), e.scenarios);
     e.recommendation = { ...recomendacionesPorReglas(e.results, lista(e)), createdAt: ahora };
     Object.assign(e, { status: 'FINALIZADA', finishedAt: ahora, lastSavedAt: ahora });
     guardar();

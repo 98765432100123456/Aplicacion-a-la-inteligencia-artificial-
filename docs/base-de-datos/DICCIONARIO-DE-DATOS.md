@@ -124,10 +124,11 @@ Predios y evaluaciones
 | `inventario` | mapa | Sí | Copia de `crias`, `jovenes` y `adultos` al iniciar |
 | `sistema` | texto o nulo | No | Copia del sistema productivo del predio |
 | `respuestas` | mapa | Sí | Por código de indicador (`1.1`, `1.2`…): `respuesta` (`CUMPLE`, `PARCIAL`, `NO_CUMPLE`, `NO_APLICA`) y `observacion` |
+| `escenarios` | mapa | No | Por árbol de escenarios (`agua`, `alimento`…, ver `compartido/escenarios.ts`): `ruta` (pregunta → opción elegida) y `observacion` |
 | `observacionGeneral` | texto o nulo | No | Observación de la visita |
 | `puntaje` | número | Al finalizar | Puntaje total de 0 a 5 |
 | `nivel` | texto | Al finalizar | `BAJO`, `MEDIO`, `ALTO` o `EXCELENTE`; debe corresponder al puntaje |
-| `resultado` | mapa | Al finalizar | Puntaje por libertad, libertades en nivel bajo y hallazgos |
+| `resultado` | mapa | Al finalizar | Puntaje por libertad, libertades en nivel bajo, hallazgos y `escenarios` (puntos, máximo, nivel y recorrido de cada árbol) |
 | `recomendacion` | mapa | Al finalizar | Recomendaciones vigentes: `origen`, `modelo`, `resumen`, `recomendaciones` y `creadoEn` |
 | `guardadoEn` | fecha | Sí | Último guardado |
 | `finalizadaEn` | fecha | Al finalizar | Hora del servidor al finalizar |
