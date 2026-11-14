@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoginResponse, SessionUser } from '../../models/models';
-import { ProveedorSesion } from './sesion';
+import { ErrorVisible } from '../../utils/http-error';
+import { DesafioCodigo, enmascarar, ProveedorSesion, ResultadoIngreso } from './sesion';
 
 const CLAVE_TOKEN = 'ica.token';
 
@@ -10,6 +11,8 @@ const CLAVE_TOKEN = 'ica.token';
 export class SesionDemo implements ProveedorSesion {
   private readonly api = environment.apiUrl;
   token: string | null = leer();
+  /** Ingreso que espera el código; la demostración no envía correos y muestra el código en pantalla. */
+  private pendiente: { respuesta: LoginResponse; codigo: string } | null = null;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -23,12 +26,26 @@ export class SesionDemo implements ProveedorSesion {
     }
   }
 
-  async ingresar(email: string, password: string) {
-    return this.abrir(await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password })));
+  async ingresar(email: string, password: string): Promise<ResultadoIngreso> {
+    const respuesta = await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password }));
+    return { desafio: this.desafio(respuesta) };
   }
 
-  ingresarConProveedor(): Promise<SessionUser> {
+  ingresarConProveedor(): Promise<ResultadoIngreso> {
     return Promise.reject(new Error('El modo demostración no tiene proveedores externos.'));
+  }
+
+  async reenviarCodigo() {
+    if (!this.pendiente) throw new ErrorVisible('Su sesión terminó. Ingrese de nuevo.');
+    return this.desafio(this.pendiente.respuesta);
+  }
+
+  async verificarCodigo(codigo: string) {
+    if (!this.pendiente) throw new ErrorVisible('Su sesión terminó. Ingrese de nuevo.');
+    if (codigo.replace(/\D/g, '') !== this.pendiente.codigo) throw new ErrorVisible('El código no es correcto. Revíselo e intente de nuevo.');
+    const { respuesta } = this.pendiente;
+    this.pendiente = null;
+    return this.abrir(respuesta);
   }
 
   async registrar(firstName: string, lastName: string, email: string) {
@@ -52,11 +69,18 @@ export class SesionDemo implements ProveedorSesion {
   }
 
   async salir() {
+    this.pendiente = null;
     this.guardar(null);
   }
 
   observar() {
     // La API simulada no avisa cambios; el interceptor cierra la sesión si el token deja de valer.
+  }
+
+  private desafio(respuesta: LoginResponse): DesafioCodigo {
+    const codigo = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000).padStart(6, '0');
+    this.pendiente = { respuesta, codigo };
+    return { correo: enmascarar(respuesta.user.email), minutos: 10, codigoPrueba: codigo };
   }
 
   private abrir(res: LoginResponse) {

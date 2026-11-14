@@ -1,0 +1,94 @@
+@if (abierto()) {
+  <section
+    #panel
+    id="asistente-panel"
+    class="panel"
+    role="dialog"
+    aria-labelledby="asistente-titulo"
+    aria-describedby="asistente-descripcion"
+    tabindex="-1"
+  >
+    <header class="cabeza">
+      <div class="retrato"><app-mascota [estado]="estado()" /></div>
+      <div class="titulos">
+        <h2 id="asistente-titulo">Clara</h2>
+        <p id="asistente-descripcion">Asistente de bienestar animal</p>
+      </div>
+      <button type="button" class="icono-btn" (click)="limpiar()" [disabled]="pensando()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /></svg>
+        <span class="visually-hidden">Empezar de nuevo</span>
+      </button>
+      <button type="button" class="icono-btn" (click)="cerrar(true)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <span class="visually-hidden">Cerrar asistente</span>
+      </button>
+    </header>
+
+    <div #registro class="registro" role="log" aria-live="polite" aria-label="Conversación con Clara">
+      @for (m of mensajes(); track m.id) {
+        <div class="mensaje" [class.mio]="m.autor === 'persona'">
+          <span class="visually-hidden">{{ m.autor === 'persona' ? 'Usted:' : 'Clara:' }}</span>
+          @for (p of m.parrafos; track $index) {
+            <p>{{ p }}</p>
+          }
+          @if (m.enlace; as e) {
+            <a class="enlace" [routerLink]="e.ruta" (click)="cerrar(false)">
+              {{ e.texto }}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          }
+        </div>
+      }
+      @if (pensando()) {
+        <div class="mensaje escribiendo">
+          <span class="visually-hidden">Clara está escribiendo…</span>
+          <span class="punto"></span><span class="punto"></span><span class="punto"></span>
+        </div>
+      }
+    </div>
+
+    @if (sugeridas().length) {
+      <div class="sugeridas" role="group" aria-label="Preguntas sugeridas">
+        @for (p of sugeridas(); track p.id) {
+          <button type="button" class="sugerida" (click)="elegir(p)" [disabled]="pensando()">{{ p.pregunta }}</button>
+        }
+        @if (hayMas()) {
+          <button type="button" class="sugerida mas" (click)="todas.set(true)">Más preguntas</button>
+        }
+      </div>
+    }
+
+    <form class="escribir" (ngSubmit)="enviar()">
+      <label class="visually-hidden" for="asistente-pregunta">Escriba su pregunta</label>
+      <input
+        id="asistente-pregunta"
+        class="control"
+        name="pregunta"
+        autocomplete="off"
+        maxlength="500"
+        placeholder="Escriba su pregunta…"
+        [ngModel]="texto()"
+        (ngModelChange)="texto.set($event)"
+      />
+      <button type="submit" class="enviar" [disabled]="!texto().trim() || pensando()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        <span class="visually-hidden">Enviar pregunta</span>
+      </button>
+    </form>
+    <p class="nota">Las respuestas orientan; no reemplazan al médico veterinario ni la norma del ICA.</p>
+  </section>
+}
+
+<button
+  #lanzador
+  type="button"
+  class="lanzador"
+  [class.abierto]="abierto()"
+  (click)="alternar()"
+  [attr.aria-expanded]="abierto()"
+  aria-controls="asistente-panel"
+>
+  <span class="cara"><app-mascota [estado]="abierto() ? 'reposo' : estado()" /></span>
+  <span class="etiqueta">{{ abierto() ? 'Cerrar' : 'Asistente' }}</span>
+  <span class="visually-hidden">{{ abierto() ? ' Clara' : ' de bienestar animal' }}</span>
+</button>

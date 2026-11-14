@@ -1,0 +1,9 @@
+# ICA Bienestar Animal: las pantallas internas exigen sesión; solo se indexan las páginas públicas.
+User-agent: *
+Allow: /ingresar
+Allow: /privacidad
+Allow: /terminos
+Allow: /cookies
+Disallow: /
+
+Sitemap: https://bienestar-animal-ica.web.app/sitemap.xml

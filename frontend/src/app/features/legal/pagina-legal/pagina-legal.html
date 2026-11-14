@@ -1,0 +1,34 @@
+<header class="barra">
+  <a class="marca" [routerLink]="auth.isAuthenticated() ? '/inicio' : '/ingresar'" aria-label="ICA Bienestar, volver"><app-logo /></a>
+  <app-selector-tema />
+</header>
+
+<main id="contenido" class="contenido">
+  <a class="volver" [routerLink]="auth.isAuthenticated() ? '/inicio' : '/ingresar'">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+    {{ auth.isAuthenticated() ? 'Volver al inicio' : 'Volver al ingreso' }}
+  </a>
+  <article>
+    <h1>{{ doc().titulo }}</h1>
+    <p class="resumen">{{ doc().resumen }}</p>
+    <p class="fecha">Última actualización: {{ actualizado }}</p>
+
+    @for (s of doc().secciones; track s.titulo) {
+      <section>
+        <h2>{{ s.titulo }}</h2>
+        @for (p of s.parrafos; track $index) {
+          <p>{{ p }}</p>
+        }
+        @if (s.lista) {
+          <ul>
+            @for (item of s.lista; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </article>
+</main>
+
+<app-pie-legal />

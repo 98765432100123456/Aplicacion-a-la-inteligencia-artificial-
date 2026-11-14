@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ADMIN, esperarCarga, expectAccessible, expectNoHorizontalOverflow, expectTouchTargets, login } from './helpers';
+import { ADMIN, esperarCarga, expectAccessible, expectNoHorizontalOverflow, expectTouchTargets, login, verificarCodigo } from './helpers';
 
 test.describe('Ingreso', () => {
   test('valida los campos y explica el error', async ({ page }) => {
@@ -33,12 +33,49 @@ test.describe('Ingreso', () => {
     await page.getByLabel('Correo electrónico').fill(ADMIN.email);
     await page.getByLabel('Contraseña', { exact: true }).fill(ADMIN.password);
     await page.getByRole('button', { name: 'Ingresar' }).click();
+    await verificarCodigo(page);
     await expect(page).toHaveURL(/\/usuarios/);
     if (isMobile) await page.getByRole('button', { name: 'Menú' }).click();
     await page.getByRole('button', { name: 'Cerrar sesión' }).click();
     await expect(page).toHaveURL(/\/ingresar/);
     await page.goto('/inicio');
     await expect(page).toHaveURL(/\/ingresar/);
+  });
+
+  test('pide el código del correo y no deja entrar con uno incorrecto', async ({ page }) => {
+    await page.goto('/ingresar');
+    await page.getByLabel('Correo electrónico').fill(ADMIN.email);
+    await page.getByLabel('Contraseña', { exact: true }).fill(ADMIN.password);
+    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await expect(page.getByRole('heading', { name: 'Verifique que es usted' })).toBeVisible();
+    await expect(page.getByLabel('Código de verificación')).toBeFocused();
+    await expect(page.getByRole('button', { name: /Reenviar en \d+ s/ })).toBeDisabled();
+    await expectAccessible(page);
+    await expectNoHorizontalOverflow(page);
+    await expectTouchTargets(page);
+
+    const correcto = (await page.locator('.codigo-prueba').textContent())!.trim();
+    const incorrecto = correcto === '000000' ? '111111' : '000000';
+    await page.getByLabel('Código de verificación').fill(incorrecto);
+    await page.getByRole('button', { name: 'Verificar e ingresar' }).click();
+    await expect(page.getByRole('alert')).toHaveText('El código no es correcto. Revíselo e intente de nuevo.');
+    await expect(page).toHaveURL(/\/ingresar/);
+
+    // Sin el código, la sesión de Firebase no lee nada: al recargar vuelve al formulario.
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
+    await page.goto('/inicio');
+    await expect(page).toHaveURL(/\/ingresar/);
+  });
+
+  test('"Usar otra cuenta" vuelve al formulario de ingreso', async ({ page }) => {
+    await page.goto('/ingresar');
+    await page.getByLabel('Correo electrónico').fill(ADMIN.email);
+    await page.getByLabel('Contraseña', { exact: true }).fill(ADMIN.password);
+    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await page.getByRole('button', { name: 'Usar otra cuenta' }).click();
+    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
+    await expect(page.getByLabel('Contraseña', { exact: true })).toHaveValue('');
   });
 
   test('las pantallas públicas cumplen accesibilidad y diseño responsivo', async ({ page }) => {

@@ -1,0 +1,30 @@
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-1) var(--e-6);
+  padding: var(--e-3) var(--margen);
+  border-top: 1px solid var(--linea);
+  font-size: var(--texto-xs);
+  color: var(--tinta-suave);
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-4);
+}
+
+a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--tinta-suave);
+  font-weight: 600;
+  text-underline-offset: 4px;
+
+  &:hover {
+    color: var(--tinta);
+  }
+}

@@ -2,6 +2,7 @@ import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import { environment } from '../../../environments/environment';
+import { ErrorVisible } from '../utils/http-error';
 
 /** Módulos del SDK de Firebase; se descargan la primera vez que se usan, nunca en el modo demostración. */
 export interface Firebase {
@@ -32,6 +33,32 @@ async function conectar(): Promise<Firebase> {
     fs.connectFirestoreEmulator(db, '127.0.0.1', 8080);
   }
   return { app, auth, db, fa, fs };
+}
+
+let funcionesEnEmulador = false;
+
+/** Errores que las Cloud Functions devuelven con un mensaje en español para la persona. */
+const ERRORES_CON_MENSAJE = ['resource-exhausted', 'invalid-argument', 'failed-precondition', 'unavailable', 'unauthenticated'];
+
+/** Llama una Cloud Function (código de verificación en dos pasos); el SDK se descarga al primer uso. */
+export async function llamarFuncion<E, S = unknown>(nombre: string, datos: E): Promise<S> {
+  const { app } = await firebase();
+  const f = await import('firebase/functions');
+  const funciones = f.getFunctions(app, 'us-central1');
+  if (environment.firebase.emuladores && !funcionesEnEmulador) {
+    f.connectFunctionsEmulator(funciones, '127.0.0.1', 5001);
+    funcionesEnEmulador = true;
+  }
+  try {
+    return (await f.httpsCallable<E, S>(funciones, nombre)(datos)).data;
+  } catch (e) {
+    const codigo = String((e as { code?: string }).code ?? '').replace('functions/', '');
+    // El SDK agrega el estado HTTP al final del mensaje ("… [400]"); a la persona no le sirve.
+    const mensaje = e instanceof Error ? e.message.replace(/\s*\[\d{3}\]$/, '') : '';
+    if (ERRORES_CON_MENSAJE.includes(codigo) && mensaje) throw new ErrorVisible(mensaje);
+    console.error(`Cloud Function ${nombre}`, e);
+    throw new ErrorVisible('No se pudo completar la verificación en dos pasos. Intente de nuevo en unos minutos.');
+  }
 }
 
 /** Segunda instancia de Firebase para crear cuentas sin cerrar la sesión del administrador. */

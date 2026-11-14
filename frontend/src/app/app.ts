@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { environment } from '../environments/environment';
 import { resetDemoData } from './core/demo/demo-api.interceptor';
+import { AvisoCookies } from './shared/components/aviso-cookies/aviso-cookies';
 import { Toasts } from './shared/components/toasts/toasts';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Toasts],
+  imports: [RouterOutlet, Toasts, AvisoCookies],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

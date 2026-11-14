@@ -9,7 +9,12 @@ service cloud.firestore {
 
     // ---------- Identidad y permisos ----------
     function ruta(coleccion, id) { return /databases/$(database)/documents/$(coleccion)/$(id); }
-    function sesion() { return request.auth != null; }
+    // Verificación en dos pasos: el inicio de sesión actual (auth_time del token) debe estar en
+    // verificaciones/{uid}. Solo la Cloud Function que comprueba el código por correo escribe ahí.
+    function dosPasos() {
+      return request.auth.token.auth_time in get(ruta('verificaciones', request.auth.uid)).data.sesiones;
+    }
+    function sesion() { return request.auth != null && dosPasos(); }
     function yo() { return get(ruta('usuarios', request.auth.uid)).data; }
     function miRol() { return get(ruta('roles', yo().rol)).data; }
     // Usuario con documento, activo y con un rol activo.
@@ -28,6 +33,14 @@ service cloud.firestore {
     function textoOpcional(v, max) { return v == null || (v is string && v.size() <= max); }
 
     function personal() { return puede(['evaluaciones.ver', 'evaluaciones.diligenciar', 'reportes.ver']); }
+
+    // ---------- Verificación en dos pasos ----------
+    // La interfaz lee su propia verificación para saber si debe pedir el código.
+    // codigosAcceso no tiene reglas: nadie la lee ni la escribe desde la aplicación.
+    match /verificaciones/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
 
     // ---------- Roles ----------
     function todosLosPermisos() {

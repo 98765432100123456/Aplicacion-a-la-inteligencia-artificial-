@@ -20,9 +20,13 @@ const borrador = (correo: string | null) => ({
   versionLista: 'ICA-2023.1', inventario: { crias: 18, jovenes: 34, adultos: 68 }, respuestas: {}, creadoEn: serverTimestamp(),
 });
 
-// Contextos autenticados: el token lleva el correo y si está verificado.
-const como = (uid: string, correo: string, verificado = true) =>
-  env.authenticatedContext(uid, { email: correo, email_verified: verificado }).firestore();
+// Inicio de sesión de las pruebas; verificaciones/{uid} lo registra como verificado con el código por correo.
+const INGRESO = 1_000;
+const VERIFICADOS = ['admin', 'eva', 'dueno', 'otro', 'inactivo', 'nuevo'];
+
+// Contextos autenticados: el token lleva el correo, si está verificado y el momento del ingreso.
+const como = (uid: string, correo: string, verificado = true, ingreso = INGRESO) =>
+  env.authenticatedContext(uid, { email: correo, email_verified: verificado, auth_time: ingreso }).firestore();
 
 before(async () => {
   env = await initializeTestEnvironment({
@@ -45,6 +49,7 @@ beforeEach(async () => {
     await setDoc(doc(db, 'usuarios', 'dueno'), usuario('propietario', 'dueno@ica.co'));
     await setDoc(doc(db, 'usuarios', 'otro'), usuario('propietario', 'otro@ica.co'));
     await setDoc(doc(db, 'usuarios', 'inactivo'), usuario('evaluador', 'inactivo@ica.co', false));
+    for (const uid of VERIFICADOS) await setDoc(doc(db, 'verificaciones', uid), { sesiones: [INGRESO] });
     await setDoc(doc(db, 'especies', 'bovino'), { nombre: 'Bovinos', activa: true });
     await setDoc(doc(db, 'predios', 'p1'), predio('dueno@ica.co'));
     await setDoc(doc(db, 'predios', 'p2'), predio('nadie@ica.co'));
@@ -56,6 +61,26 @@ describe('autenticación y usuarios', () => {
     const db = env.unauthenticatedContext().firestore();
     await assertFails(getDoc(doc(db, 'predios', 'p1')));
     await assertFails(getDoc(doc(db, 'especies', 'bovino')));
+  });
+
+  it('sin el código del segundo paso, la sesión no lee ni escribe nada', async () => {
+    // Ingreso nuevo (otro auth_time) que todavía no verificó el código.
+    const sinCodigo = como('admin', 'admin@ica.co', true, 2_000);
+    await assertFails(getDoc(doc(sinCodigo, 'predios', 'p1')));
+    await assertFails(getDoc(doc(sinCodigo, 'usuarios', 'admin')));
+    await assertFails(getDoc(doc(sinCodigo, 'roles', 'administrador')));
+    // Sí puede leer su propia verificación, para saber que debe pedir el código.
+    await assertSucceeds(getDoc(doc(sinCodigo, 'verificaciones', 'admin')));
+    await assertFails(getDoc(doc(sinCodigo, 'verificaciones', 'eva')));
+    // Una cuenta sin ninguna verificación tampoco entra.
+    await assertFails(getDoc(doc(como('sinverificar', 'x@ica.co'), 'especies', 'bovino')));
+  });
+
+  it('nadie registra su propia verificación ni lee los códigos', async () => {
+    const sinCodigo = como('admin', 'admin@ica.co', true, 2_000);
+    await assertFails(setDoc(doc(sinCodigo, 'verificaciones', 'admin'), { sesiones: [2_000] }));
+    await assertFails(setDoc(doc(como('admin', 'admin@ica.co'), 'verificaciones', 'admin'), { sesiones: [1_000, 2_000] }));
+    await assertFails(getDoc(doc(como('admin', 'admin@ica.co'), 'codigosAcceso', 'admin')));
   });
 
   it('una persona se registra solo como propietario y con su propio correo', async () => {

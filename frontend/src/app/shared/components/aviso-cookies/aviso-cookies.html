@@ -1,0 +1,13 @@
+@if (visible()) {
+  <section class="aviso-cookies" aria-labelledby="cookies-titulo">
+    <h2 id="cookies-titulo">Su privacidad</h2>
+    <p>
+      Solo guardamos en su navegador lo necesario para mantener su sesión y su preferencia de modo claro u oscuro. No usamos
+      cookies de publicidad ni de analítica.
+    </p>
+    <div class="acciones">
+      <a class="btn btn-texto btn-sm" routerLink="/cookies">Política de cookies</a>
+      <button type="button" class="btn btn-principal btn-sm" (click)="entendido()">Entendido</button>
+    </div>
+  </section>
+}

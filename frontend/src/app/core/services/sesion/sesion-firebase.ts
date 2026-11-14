@@ -1,12 +1,13 @@
 import type { User } from 'firebase/auth';
 import { ROLES_BASE } from '../../../compartido/permisos';
-import { firebase, Firebase } from '../../firebase/conexion';
+import { firebase, Firebase, llamarFuncion } from '../../firebase/conexion';
 import { SessionUser } from '../../models/models';
 import { Proveedor } from '../../models/predios';
 import { ErrorVisible } from '../../utils/http-error';
-import { enmascarar, ProveedorSesion } from './sesion';
+import { DesafioCodigo, enmascarar, ProveedorSesion, ResultadoIngreso } from './sesion';
 
 const INACTIVO = 'Su usuario está inactivo. Contacte al administrador del sistema.';
+const SIN_SESION = 'Su sesión terminó. Ingrese de nuevo.';
 const SIN_PERFIL = 'Su cuenta no tiene un perfil en la plataforma. Contacte al administrador del sistema.';
 
 /**
@@ -23,6 +24,8 @@ export class SesionFirebase implements ProveedorSesion {
     const usuario = fb.auth.currentUser;
     if (!usuario) return null;
     try {
+      // Un ingreso que no terminó la verificación en dos pasos no se retoma: se pide de nuevo.
+      if (!(await this.verificada(fb, usuario))) throw new Error('sin verificar');
       return await this.sesionDe(fb, usuario);
     } catch {
       await fb.fa.signOut(fb.auth);
@@ -33,7 +36,7 @@ export class SesionFirebase implements ProveedorSesion {
   async ingresar(correo: string, clave: string) {
     const fb = await firebase();
     const { user } = await fb.fa.signInWithEmailAndPassword(fb.auth, correo.trim().toLowerCase(), clave);
-    return this.abrir(fb, user);
+    return this.siguientePaso(fb, user);
   }
 
   async ingresarConProveedor(proveedor: Proveedor) {
@@ -44,7 +47,21 @@ export class SesionFirebase implements ProveedorSesion {
       microsoft: () => new fb.fa.OAuthProvider('microsoft.com').addScope('email'),
     };
     const { user } = await fb.fa.signInWithPopup(fb.auth, proveedores[proveedor]());
-    return this.abrir(fb, user);
+    return this.siguientePaso(fb, user);
+  }
+
+  async reenviarCodigo() {
+    const fb = await firebase();
+    if (!fb.auth.currentUser) throw new ErrorVisible(SIN_SESION);
+    return llamarFuncion<null, DesafioCodigo>('enviarCodigoAcceso', null);
+  }
+
+  async verificarCodigo(codigo: string) {
+    const fb = await firebase();
+    const usuario = fb.auth.currentUser;
+    if (!usuario) throw new ErrorVisible(SIN_SESION);
+    await llamarFuncion('verificarCodigoAcceso', { codigo });
+    return this.abrir(fb, usuario);
   }
 
   /** Cuenta de propietario: se crea, se envía la verificación del correo y se cierra la sesión. */
@@ -123,6 +140,29 @@ export class SesionFirebase implements ProveedorSesion {
       }, () => alCambiar(null));
       this.cancelar[0] = dejarUsuario;
     });
+  }
+
+  /**
+   * Segundo paso: si este inicio de sesión ya verificó su código (p. ej. al recargar), entra;
+   * si no, la Cloud Function envía un código al correo. Las reglas de Firestore no dejan leer
+   * nada hasta verificarlo.
+   */
+  private async siguientePaso(fb: Firebase, usuario: User): Promise<ResultadoIngreso> {
+    try {
+      if (await this.verificada(fb, usuario)) return { usuario: await this.abrir(fb, usuario) };
+      return { desafio: await llamarFuncion<null, DesafioCodigo>('enviarCodigoAcceso', null) };
+    } catch (e) {
+      await fb.fa.signOut(fb.auth);
+      throw e;
+    }
+  }
+
+  /** El inicio de sesión actual (auth_time del token) está en verificaciones/{uid}. */
+  private async verificada(fb: Firebase, usuario: User) {
+    const { doc, getDoc } = fb.fs;
+    const ingreso = Number((await usuario.getIdTokenResult()).claims['auth_time']);
+    const verificacion = await getDoc(doc(fb.db, 'verificaciones', usuario.uid)).catch(() => null);
+    return !!verificacion?.exists() && ((verificacion.get('sesiones') as number[] | undefined) ?? []).includes(ingreso);
   }
 
   private async abrir(fb: Firebase, usuario: User) {

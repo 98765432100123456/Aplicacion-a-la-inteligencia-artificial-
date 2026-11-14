@@ -1,0 +1,278 @@
+// Asistente flotante: un botón con la mascota y un panel pequeño anclado a él.
+// Por encima de la barra de la evaluación (--barra-inferior) y por debajo de los avisos.
+:host {
+  --abajo: calc(var(--e-5) + var(--barra-inferior, 0px) + env(safe-area-inset-bottom));
+  --lado: max(var(--e-4), env(safe-area-inset-right));
+}
+
+// ---------- Botón ----------
+.lanzador {
+  position: fixed;
+  right: var(--lado);
+  bottom: var(--abajo);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 3.5rem;
+  padding: var(--e-1) var(--e-5) var(--e-1) var(--e-1);
+  border: 0;
+  border-radius: var(--radio-sello);
+  background: var(--accion);
+  color: var(--sobre-accion);
+  font: inherit;
+  font-weight: 800;
+  font-size: var(--texto-sm);
+  letter-spacing: -0.01em;
+  box-shadow: var(--sombra-flotante);
+  cursor: pointer;
+  transition:
+    transform var(--dur-presion) var(--curva),
+    background-color var(--dur-rapida) ease;
+
+  &:hover { background: var(--accion-hover); }
+  &:active { transform: scale(0.96); }
+}
+
+.cara {
+  width: 3rem;
+  height: 3rem;
+  padding: 0.3rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sobre-accion) 12%, var(--accion));
+}
+
+// ---------- Panel ----------
+.panel {
+  position: fixed;
+  right: var(--lado);
+  bottom: calc(var(--abajo) + 3.5rem + var(--e-3));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  width: min(23rem, calc(100vw - 2 * var(--lado)));
+  max-height: min(37rem, calc(100dvh - var(--abajo) - 9rem));
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-panel);
+  background: var(--superficie-elevada);
+  box-shadow: var(--sombra-flotante);
+  overflow: hidden;
+  transform-origin: calc(100% - 2rem) 100%;
+  outline: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: abrir var(--dur-media) var(--curva);
+  }
+}
+
+@keyframes abrir {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.94);
+    filter: blur(2px);
+  }
+}
+
+.cabeza {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-2) var(--e-3) var(--e-4);
+  border-bottom: 1px solid var(--linea);
+}
+
+.retrato {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  background: var(--accion);
+}
+
+.titulos {
+  flex: 1;
+  min-width: 0;
+
+  h2 { font-size: var(--texto-md); line-height: 1.2; letter-spacing: -0.02em; }
+  p { font-size: var(--texto-xs); color: var(--tinta-suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+.icono-btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--tinta-suave);
+  cursor: pointer;
+  transition: background-color var(--dur-rapida) ease, color var(--dur-rapida) ease;
+
+  &:hover:not(:disabled) { background: var(--acento-tenue); color: var(--tinta); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+// ---------- Conversación ----------
+.registro {
+  flex: 1 1 auto;
+  min-height: 7rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linea-control) transparent;
+}
+
+.mensaje {
+  max-width: 88%;
+  padding: var(--e-3) var(--e-4);
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-size: var(--texto-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+
+  p + p { margin-top: var(--e-2); }
+
+  &.mio {
+    align-self: flex-end;
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    background: var(--acento-suave);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: entrar var(--dur-media) var(--curva);
+  }
+}
+
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(0.375rem); }
+}
+
+.enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  min-height: 2.75rem;
+  margin-top: var(--e-1);
+  color: var(--acento);
+  font-weight: 700;
+  text-underline-offset: 4px;
+
+  svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+.escribiendo {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  width: fit-content;
+  padding: var(--e-4);
+}
+
+.punto {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--tinta-suave);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: punto 1s ease-in-out infinite;
+    &:nth-of-type(2) { animation-delay: 0.15s; }
+    &:nth-of-type(3) { animation-delay: 0.3s; }
+  }
+}
+
+@keyframes punto {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30% { transform: translateY(-0.25rem); opacity: 1; }
+}
+
+// ---------- Preguntas sugeridas ----------
+.sugeridas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  max-height: 9.5rem;
+  padding: var(--e-3) var(--e-4);
+  border-top: 1px solid var(--linea);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.sugerida {
+  min-height: 2.75rem;
+  padding: var(--e-2) var(--e-4);
+  border: 1px solid var(--linea-control);
+  border-radius: var(--radio-sello);
+  background: var(--superficie-elevada);
+  color: var(--tinta);
+  font: inherit;
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-rapida) ease,
+    border-color var(--dur-rapida) ease,
+    transform var(--dur-presion) var(--curva);
+
+  &:hover:not(:disabled) { border-color: var(--acento); background: var(--acento-tenue); }
+  &:active:not(:disabled) { transform: scale(0.97); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  &.mas { border-style: dashed; color: var(--tinta-suave); }
+}
+
+// ---------- Pregunta libre ----------
+.escribir {
+  display: flex;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4) var(--e-2);
+  border-top: 1px solid var(--linea);
+
+  .control { flex: 1; min-width: 0; }
+}
+
+.enviar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--alto-control);
+  height: var(--alto-control);
+  border: 0;
+  border-radius: 50%;
+  background: var(--accion);
+  color: var(--sobre-accion);
+  cursor: pointer;
+  transition: transform var(--dur-presion) var(--curva), opacity var(--dur-rapida) ease;
+
+  &:active:not(:disabled) { transform: scale(0.94); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+.nota {
+  padding: 0 var(--e-4) var(--e-3);
+  font-size: var(--texto-xs);
+  line-height: 1.4;
+  color: var(--tinta-suave);
+}
+
+// En teléfonos el panel ocupa el ancho disponible; el botón solo muestra la mascota al estar abierto.
+@media (max-width: 29.99em) {
+  .lanzador.abierto .etiqueta { display: none; }
+  .lanzador.abierto { padding-right: var(--e-1); }
+}

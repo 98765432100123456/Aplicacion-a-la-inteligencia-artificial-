@@ -1,0 +1,44 @@
+// Tarjeta flotante abajo a la izquierda: no tapa el asistente ni la acción principal.
+.aviso-cookies {
+  position: fixed;
+  left: max(var(--e-4), env(safe-area-inset-left));
+  bottom: calc(var(--e-5) + var(--barra-inferior, 0px) + env(safe-area-inset-bottom));
+  z-index: 60;
+  width: min(25rem, calc(100vw - 2 * var(--e-4)));
+  padding: var(--e-5);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-panel);
+  background: var(--superficie-elevada);
+  box-shadow: var(--sombra-flotante);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: subir var(--dur-media) var(--curva) 400ms both;
+  }
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+h2 {
+  font-size: var(--texto-md);
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin-top: var(--e-2);
+  font-size: var(--texto-sm);
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--e-2);
+  margin-top: var(--e-4);
+}

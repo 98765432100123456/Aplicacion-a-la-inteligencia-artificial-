@@ -8,17 +8,18 @@ import { PasswordInput } from '../../../shared/components/password-input/passwor
 import { enfocarPrimerError, mostrarError } from '../../../shared/utils/formularios';
 import { AuthLayout } from '../auth-layout/auth-layout';
 import { ExternalLogin } from '../external-login/external-login';
+import { VerificacionCodigo } from '../verificacion-codigo/verificacion-codigo';
 import { avisoDeIngreso } from './avisos';
 
 /** Pantalla de ingreso con correo y contraseña. */
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, AuthLayout, PasswordInput, ExternalLogin],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout, PasswordInput, ExternalLogin, VerificacionCodigo],
   templateUrl: './login.html',
   styleUrl: '../auth.scss',
 })
 export class Login {
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly params = inject(ActivatedRoute).snapshot.queryParamMap;
   protected readonly cargando = signal(false);
@@ -38,12 +39,17 @@ export class Login {
     this.cargando.set(true);
     try {
       const { email, password } = this.form.getRawValue();
-      await this.auth.login(email.trim(), password);
-      await this.router.navigateByUrl(rutaDeRegreso(this.params.get('volver')));
+      // Con la verificación en dos pasos la pantalla cambia al código del correo.
+      if (await this.auth.login(email.trim(), password)) await this.entrar();
+      else this.form.controls.password.reset();
     } catch (e) {
       this.error.set(errorMessage(e));
       this.form.controls.password.reset();
     }
     this.cargando.set(false);
+  }
+
+  protected entrar() {
+    return this.router.navigateByUrl(rutaDeRegreso(this.params.get('volver')));
   }
 }

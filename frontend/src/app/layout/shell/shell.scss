@@ -81,3 +81,6 @@ main:focus { outline: none; }
   .velo { display: block; position: fixed; inset: 3.75rem 0 0; z-index: 35; background: var(--velo); }
   main { padding-top: var(--e-8); }
 }
+
+/* El pie legal deja espacio al botón flotante del asistente. */
+app-pie-legal { display: block; margin-bottom: calc(5.5rem + var(--barra-inferior, 0px)); }

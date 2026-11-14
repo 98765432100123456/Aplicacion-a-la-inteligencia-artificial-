@@ -2,7 +2,10 @@ import { Component, computed, effect, ElementRef, HostListener, inject, signal, 
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
+import { InactividadService } from '../../core/services/inactividad.service';
+import { PieLegal } from '../../shared/components/pie-legal/pie-legal';
 import { P } from '../../core/models/models';
+import { Asistente } from '../../features/asistente/asistente/asistente';
 import { Logo } from '../../shared/components/logo/logo';
 import { SelectorTema } from '../../shared/components/selector-tema/selector-tema';
 import { SinConexion } from '../../shared/components/sin-conexion/sin-conexion';
@@ -25,7 +28,7 @@ const NAV: NavItem[] = [
 /** Estructura de la aplicación: barra superior translúcida y contenido centrado. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, SelectorTema, SinConexion],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, SelectorTema, SinConexion, Asistente, PieLegal],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
@@ -50,6 +53,7 @@ export class Shell {
   });
 
   constructor() {
+    inject(InactividadService).vigilar();
     inject(Router)
       .events.pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => this.menuOpen.set(false));

@@ -25,18 +25,18 @@ Firebase tools (`cd firebase`):
 
 | Command | Purpose |
 |---|---|
-| `npm run emuladores` | Auth :9099, Firestore :8080, UI :4000 (project `demo-ica`) |
+| `npm run emuladores` | Builds `funciones/`, then Auth :9099, Firestore :8080, Functions :5001, UI :4000 (project `demo-ica`) |
 | `npm run semilla:emulador` | Seed the emulators; set `SEMILLA_ADMIN_CORREO` and `SEMILLA_ADMIN_CLAVE` first to create an admin |
 | `npm run test:reglas` | Firestore rules tests (node:test + `@firebase/rules-unit-testing`) inside the emulators |
 | `npm run typecheck` | tsc on rules tests and seed |
 | `npm run semilla` | Seed the real project (needs `GOOGLE_APPLICATION_CREDENTIALS` with a service-account key, never committed) |
-| `npm run desplegar:reglas` / `npm run desplegar:sitio` | Deploy rules / Hosting to `bienestar-animal-ica` |
+| `npm run desplegar:funciones` / `desplegar:reglas` / `desplegar:sitio` | Deploy Cloud Functions / rules / Hosting to `bienestar-animal-ica` (functions before rules: the rules require the 2FA they write) |
 
 Full E2E run exactly as CI does it (from `firebase/`):
 
 ```
 SEMILLA_ADMIN_CORREO=admin@ica-bienestar.local SEMILLA_ADMIN_CLAVE=CambiarEsta.2026 \
-  npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore \
+  npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore,functions \
   "npm run semilla:emulador && cd ../frontend && npx playwright test"
 ```
 
@@ -67,6 +67,10 @@ A feature change usually touches the facade, the Firebase implementation and the
 
 In the UI, `permissionGuard` and `AuthService.can(...)` only hide things; route `data.permissions` in `app.routes.ts` mirrors the rules.
 
+### Two-step verification (email code)
+
+After the password or OAuth popup, `SesionFirebase.siguientePaso` checks `verificaciones/{uid}.sesiones` for the token's `auth_time`; if absent it calls the Cloud Function `enviarCodigoAcceso` (`firebase/funciones/`, needs the Blaze plan and the `CORREO_USUARIO`/`CORREO_CLAVE` secrets) and `AuthService.desafio` makes the login screen show `verificacion-codigo`. `verificarCodigoAcceso` checks the SHA-256 hash in `codigosAcceso/{uid}` (no client access) and appends the `auth_time` to `verificaciones/{uid}`. In the rules, `sesion()` requires `dosPasos()`, so an unverified sign-in reads nothing. In the emulators and in demo mode no email is sent: the code comes back as `codigoPrueba` and the screen shows it (E2E reads `.codigo-prueba` in `e2e/helpers.ts`). Rule tests pass `auth_time` in the token and seed `verificaciones`.
+
 ### Evaluation flow
 
 The checklist is filtered per farm by production system (`LECHERIA`/`CARNE`/`DOBLE_PROPOSITO`) and size (`listaPara`). Answers are stored by indicator code (`1.1`…`23.x`). If you reorder indicators, the codes of saved evaluations no longer match.
@@ -83,6 +87,8 @@ On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, s
 - Dark mode follows the system preference unless the user picks one; the choice is stored as `data-tema` on `<html>` (`TemaService`, plus an inline script in `index.html`).
 - Shared building blocks are in `shared/components`: `esqueleto` (loading skeleton), `error-carga` (error with retry), `sin-conexion` (offline banner), `foto` (photos in `public/fotos`).
 - The admin-only `/sistema-de-diseno` page shows the system live; documented in `docs/SISTEMA-DE-DISENO.md`.
+- The floating assistant "Clara" (`features/asistente/`) lives in the shell: fixed answers in `preguntas.ts` (built from `compartido/norma.ts`), free questions via Gemini (`core/firebase/asistente-ia.ts`) with keyword fallback. The mascot SVG animates with CSS only and respects reduced motion.
+- Public pages: `/privacidad`, `/terminos`, `/cookies` (`features/legal/documentos.ts`; fill `CONTACTO_PRIVACIDAD`), the `pie-legal` footer and the `aviso-cookies` notice. Hosting sends a CSP without inline scripts, so the theme bootstrap is `public/tema.js` and production builds set `inlineCritical: false`. Sessions close after 30 minutes idle (`InactividadService`).
 - E2E tests assert axe accessibility, no horizontal overflow and ≥44 px touch targets (`e2e/helpers.ts`), so UI changes must keep those passing.
 
 ## Repository conventions

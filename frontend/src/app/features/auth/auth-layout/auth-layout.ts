@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Logo } from '../../../shared/components/logo/logo';
+import { PieLegal } from '../../../shared/components/pie-legal/pie-legal';
 import { SelectorTema } from '../../../shared/components/selector-tema/selector-tema';
 
 /**
@@ -8,7 +9,7 @@ import { SelectorTema } from '../../../shared/components/selector-tema/selector-
  */
 @Component({
   selector: 'app-auth-layout',
-  imports: [Logo, SelectorTema],
+  imports: [Logo, SelectorTema, PieLegal],
   templateUrl: './auth-layout.html',
   styleUrl: './auth-layout.scss',
 })

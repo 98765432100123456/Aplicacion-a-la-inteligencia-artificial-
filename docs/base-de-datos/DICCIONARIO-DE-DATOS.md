@@ -35,6 +35,24 @@ Personas con acceso a la plataforma. El identificador es el `uid` de Firebase Au
 | `ultimoIngreso` | fecha o nulo | No | Último ingreso |
 | `creadoEn`, `actualizadoEn` | fecha | No | Creación y última modificación |
 
+**verificaciones**
+
+Inicios de sesión que ya verificaron el código enviado al correo (verificación en dos pasos). El identificador es el `uid`. Solo la Cloud Function `verificarCodigoAcceso` escribe aquí; cada persona puede leer únicamente su propio documento. Las reglas de Firestore no responden a una sesión cuyo `auth_time` no esté en la lista.
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `sesiones` | lista de enteros | Sí | Valores `auth_time` (segundos) de los últimos 10 ingresos verificados |
+| `actualizadoEn` | fecha | Sí | Última verificación |
+
+**codigosAcceso**
+
+Códigos pendientes de la verificación en dos pasos. El identificador es el `uid`. Ningún usuario puede leerla ni escribirla: solo las Cloud Functions, con permisos de administrador.
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `envios` | lista de números | Sí | Momentos (milisegundos) de los envíos de la última hora; máximo 5 |
+| `pendientes` | mapa | Sí | Por cada `auth_time` pendiente: `resumen` (SHA-256 del código, nunca el código), `expira`, `intentos` (máximo 5) y `ultimoEnvio` |
+
 **auditoria**
 
 Bitácora de acciones relevantes. Solo se agregan entradas.

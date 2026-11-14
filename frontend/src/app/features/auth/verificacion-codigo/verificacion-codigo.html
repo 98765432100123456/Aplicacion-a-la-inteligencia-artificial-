@@ -1,0 +1,59 @@
+<div class="sello" aria-hidden="true">
+  <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 19.3 5 15.4 5 11V6l7-3z" /><path d="M9 12l2 2 4-4" /></svg>
+</div>
+<h2>Verifique que es usted</h2>
+<p class="intro">
+  Enviamos un código de 6 dígitos a <b>{{ desafio().correo }}</b>. Vence en {{ desafio().minutos }} minutos.
+</p>
+
+@if (desafio().codigoPrueba; as prueba) {
+  <p class="aviso aviso-advertencia" role="status">
+    <span>Modo de pruebas: no se envían correos. Su código es <b class="codigo-prueba">{{ prueba }}</b></span>
+  </p>
+}
+@if (aviso()) {
+  <p class="aviso" role="status">{{ aviso() }}</p>
+}
+@if (error()) {
+  <p class="aviso aviso-error" role="alert">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="verificar()" novalidate>
+  <div class="campo">
+    <label for="codigo">Código de verificación</label>
+    <input
+      #entrada
+      id="codigo"
+      class="control codigo"
+      [formControl]="codigo"
+      (input)="soloDigitos()"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="6"
+      spellcheck="false"
+      placeholder="000000"
+      aria-describedby="codigo-ayuda"
+      [attr.aria-invalid]="error() ? true : null"
+    />
+    <span class="ayuda" id="codigo-ayuda">¿No llegó? Revise la carpeta de spam o de promociones.</span>
+  </div>
+
+  <button class="btn btn-principal btn-bloque" type="submit" [disabled]="cargando()">
+    @if (cargando()) {
+      <span class="spinner" aria-hidden="true"></span> Verificando…
+    } @else {
+      Verificar e ingresar
+    }
+  </button>
+</form>
+
+<div class="acciones">
+  <button type="button" class="btn btn-texto" (click)="reenviar()" [disabled]="espera() > 0 || reenviando()">
+    @if (espera() > 0) {
+      Reenviar en {{ espera() }} s
+    } @else {
+      Reenviar código
+    }
+  </button>
+  <button type="button" class="btn btn-texto" (click)="cancelar()">Usar otra cuenta</button>
+</div>

@@ -1,0 +1,52 @@
+// Segundo paso del ingreso: un solo campo grande para el código.
+.sello {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--e-5);
+  border-radius: 1rem;
+  background: var(--acento-suave);
+  color: var(--acento);
+
+  svg {
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.intro b {
+  color: var(--tinta);
+  overflow-wrap: anywhere;
+}
+
+.codigo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.codigo-prueba {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.15em;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--e-2);
+  margin-top: var(--e-5);
+
+  .btn {
+    padding: 0;
+    font-size: var(--texto-sm);
+  }
+}

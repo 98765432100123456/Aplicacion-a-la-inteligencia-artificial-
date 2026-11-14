@@ -25,6 +25,8 @@ jobs:
           java-version: 21
       - run: node ../scripts/compartido.mjs --verificar
       - run: npm ci
+      - run: npm ci
+        working-directory: firebase/funciones
       - run: npm run typecheck
       - run: npm run test:reglas
 
@@ -45,7 +47,7 @@ jobs:
       - run: npx ng build --configuration production
       - run: npx ng build --configuration demo
 
-  # Flujos completos en el navegador contra los emuladores de Auth y Firestore.
+  # Flujos completos en el navegador contra los emuladores de Auth, Firestore y Functions.
   extremo-a-extremo:
     runs-on: ubuntu-latest
     needs: [reglas, interfaz]
@@ -63,7 +65,9 @@ jobs:
           java-version: 21
       - run: npm ci
         working-directory: firebase
+      - run: npm ci && npm run build
+        working-directory: firebase/funciones
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: frontend
-      - run: npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore "npm run semilla:emulador && cd ../frontend && npx playwright test"
+      - run: npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore,functions "npm run semilla:emulador && cd ../frontend && npx playwright test"
         working-directory: firebase

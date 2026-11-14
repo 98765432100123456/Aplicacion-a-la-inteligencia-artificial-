@@ -27,6 +27,25 @@ export const routes: Routes = [
     title: 'Crear contraseña | ICA Bienestar Animal',
     loadComponent: () => import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
   },
+  // Páginas legales: públicas, con o sin sesión.
+  {
+    path: 'privacidad',
+    title: 'Política de privacidad | ICA Bienestar Animal',
+    data: { documento: 'privacidad' },
+    loadComponent: () => import('./features/legal/pagina-legal/pagina-legal').then((m) => m.PaginaLegal),
+  },
+  {
+    path: 'terminos',
+    title: 'Términos y condiciones | ICA Bienestar Animal',
+    data: { documento: 'terminos' },
+    loadComponent: () => import('./features/legal/pagina-legal/pagina-legal').then((m) => m.PaginaLegal),
+  },
+  {
+    path: 'cookies',
+    title: 'Política de cookies | ICA Bienestar Animal',
+    data: { documento: 'cookies' },
+    loadComponent: () => import('./features/legal/pagina-legal/pagina-legal').then((m) => m.PaginaLegal),
+  },
   {
     path: '',
     canActivate: [authGuard],

@@ -5,18 +5,24 @@
     <title>ICA Bienestar Animal</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Plataforma para evaluar el bienestar animal en fincas." />
+    <meta name="description" content="Evaluación del bienestar animal en predios de bovinos y búfalos con la metodología del ICA: lista de chequeo, puntaje automático, informes y recomendaciones." />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="ICA Bienestar Animal" />
+    <meta property="og:title" content="ICA Bienestar Animal" />
+    <meta property="og:description" content="Evaluación del bienestar animal en predios ganaderos con la metodología del ICA." />
+    <meta property="og:url" content="https://bienestar-animal-ica.web.app/" />
+    <meta property="og:image" content="https://bienestar-animal-ica.web.app/fotos/potrero.webp" />
+    <link rel="canonical" href="https://bienestar-animal-ica.web.app/" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef1ed" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111613" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <!-- Aplica el modo elegido antes de pintar, para que no parpadee (core/services/tema.service.ts). -->
-    <script>
-      try {
-        var tema = localStorage.getItem('ica-tema');
-        if (tema === 'claro' || tema === 'oscuro') document.documentElement.dataset.tema = tema;
-      } catch (e) {}
-    </script>
+    <!-- Aplica el modo elegido antes de pintar, para que no parpadee (core/services/tema.service.ts).
+         Es un archivo y no un script en línea porque la política de seguridad (CSP) los bloquea. -->
+    <script src="tema.js"></script>
   </head>
   <body>
     <app-root></app-root>

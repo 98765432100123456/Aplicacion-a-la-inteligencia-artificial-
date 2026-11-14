@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { SessionUser } from '../models/models';
 import { AuthConfig, Proveedor } from '../models/predios';
-import { ProveedorSesion } from './sesion/sesion';
+import { DesafioCodigo, ProveedorSesion, ResultadoIngreso } from './sesion/sesion';
 import { SesionDemo } from './sesion/sesion-demo';
 import { SesionFirebase } from './sesion/sesion-firebase';
 
@@ -21,9 +21,12 @@ export class AuthService {
   private readonly sesion = inject(PROVEEDOR_SESION);
 
   private readonly _user = signal<SessionUser | null>(null);
+  private readonly _desafio = signal<DesafioCodigo | null>(null);
   private restaurando: Promise<boolean> | null = null;
 
   readonly user = this._user.asReadonly();
+  /** Ingreso a medio camino: falta el código que llegó al correo (verificación en dos pasos). */
+  readonly desafio = this._desafio.asReadonly();
   readonly isAuthenticated = computed(() => this._user() !== null);
   readonly fullName = computed(() => {
     const u = this._user();
@@ -57,12 +60,28 @@ export class AuthService {
     if (u) this._user.set(u);
   }
 
-  async login(email: string, password: string): Promise<void> {
-    this.abrir(await this.sesion.ingresar(email, password));
+  /** true si la sesión quedó abierta; false si falta el código del correo (ver `desafio`). */
+  async login(email: string, password: string): Promise<boolean> {
+    return this.continuar(await this.sesion.ingresar(email, password));
   }
 
-  async loginWithProvider(proveedor: Proveedor): Promise<void> {
-    this.abrir(await this.sesion.ingresarConProveedor(proveedor));
+  async loginWithProvider(proveedor: Proveedor): Promise<boolean> {
+    return this.continuar(await this.sesion.ingresarConProveedor(proveedor));
+  }
+
+  async verificarCodigo(codigo: string): Promise<void> {
+    this.abrir(await this.sesion.verificarCodigo(codigo));
+    this._desafio.set(null);
+  }
+
+  async reenviarCodigo(): Promise<void> {
+    this._desafio.set(await this.sesion.reenviarCodigo());
+  }
+
+  /** Vuelve al formulario de ingreso y cierra el ingreso que esperaba el código. */
+  cancelarVerificacion(): void {
+    this._desafio.set(null);
+    void this.sesion.salir();
   }
 
   /** Opciones de ingreso: registro de propietarios y los proveedores externos configurados. */
@@ -91,10 +110,21 @@ export class AuthService {
     return this.sesion.restablecerClave(token, password);
   }
 
-  logout(reason?: 'expired'): void {
+  logout(reason?: 'expired' | 'inactividad'): void {
     this._user.set(null);
+    this._desafio.set(null);
     void this.sesion.salir();
     this.router.navigate(['/ingresar'], { queryParams: reason ? { motivo: reason } : {} });
+  }
+
+  private continuar(resultado: ResultadoIngreso): boolean {
+    if ('desafio' in resultado) {
+      this._desafio.set(resultado.desafio);
+      return false;
+    }
+    this._desafio.set(null);
+    this.abrir(resultado.usuario);
+    return true;
   }
 
   private abrir(u: SessionUser) {

@@ -34,8 +34,8 @@ export class ExternalLogin implements OnInit {
     this.error.set(null);
     this.cargando.set(p);
     try {
-      await this.auth.loginWithProvider(p);
-      await this.router.navigateByUrl(rutaDeRegreso(this.volver));
+      // Si falta el código del correo, la pantalla de ingreso lo pide y luego continúa.
+      if (await this.auth.loginWithProvider(p)) await this.router.navigateByUrl(rutaDeRegreso(this.volver));
     } catch (e) {
       const mensaje = mensajeProveedor(e);
       if (mensaje !== null) this.error.set(mensaje ?? errorMessage(e, 'No se pudo ingresar con el proveedor. Intente de nuevo o use su correo y contraseña.'));

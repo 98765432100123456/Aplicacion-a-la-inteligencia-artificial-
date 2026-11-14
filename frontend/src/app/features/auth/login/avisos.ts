@@ -4,5 +4,8 @@ import { ParamMap } from '@angular/router';
 export function avisoDeIngreso(params: ParamMap): string | null {
   if (params.get('restablecida')) return 'Contraseña actualizada. Ingrese con la nueva contraseña.';
   if (params.get('motivo') === 'expired') return 'Su sesión terminó. Ingrese de nuevo para continuar.';
+  if (params.get('motivo') === 'inactividad') {
+    return 'Cerramos su sesión tras 30 minutos sin actividad, para proteger sus datos. Lo que había respondido quedó guardado.';
+  }
   return null;
 }

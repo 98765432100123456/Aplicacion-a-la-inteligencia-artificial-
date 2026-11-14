@@ -11,13 +11,32 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
   await page.getByLabel('Correo electrónico').fill(email);
   await page.getByLabel('Contraseña', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Ingresar' }).click();
+  await verificarCodigo(page);
   await expect(page).toHaveURL(/\/inicio/);
+}
+
+/**
+ * Segundo paso del ingreso. En los emuladores la Cloud Function no envía correos y devuelve
+ * el código, que la pantalla muestra como "modo de pruebas".
+ */
+export async function verificarCodigo(page: Page) {
+  const codigo = (await page.locator('.codigo-prueba').textContent({ timeout: 20_000 }))!.trim();
+  await page.getByLabel('Código de verificación').fill(codigo);
+  await page.getByRole('button', { name: 'Verificar e ingresar' }).click();
 }
 
 /** 0 violaciones de axe (WCAG 2.1 A/AA). */
 export async function expectAccessible(page: Page) {
   // Las animaciones de entrada parten de opacidad 0: se mide el contraste ya en reposo.
-  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
+  // Las que se repiten sin fin (el parpadeo de la mascota del asistente) no terminan nunca.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
 }

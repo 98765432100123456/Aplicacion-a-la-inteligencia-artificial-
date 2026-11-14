@@ -14,7 +14,10 @@ flowchart LR
     U[Navegador del usuario] -->|HTTPS| H[Firebase Hosting<br/>interfaz Angular]
     U -->|HTTPS| A[Firebase Authentication<br/>correo · Google · Facebook · Microsoft]
     U -->|HTTPS · reglas de seguridad| F[(Cloud Firestore)]
-    U -->|HTTPS| IA[Firebase AI Logic<br/>Gemini · recomendaciones]
+    U -->|HTTPS| IA[Firebase AI Logic<br/>Gemini · recomendaciones y asistente]
+    U -->|HTTPS| CF[Cloud Functions<br/>código de verificación]
+    CF -->|SMTP| C[Correo de la persona]
+    CF -->|sesión verificada| F
     A -.->|token con el correo verificado| F
 ```
 
@@ -23,7 +26,8 @@ flowchart LR
 | Firebase Hosting | Sirve la interfaz compilada con HTTPS y certificado automático | `firebase.json` |
 | Firebase Authentication | Identidad: correo y contraseña, Google, Facebook y Microsoft | Consola de Firebase |
 | Cloud Firestore | Base de datos: usuarios, roles, catálogos, predios, evaluaciones, recomendaciones y bitácora | `firebase/firestore.rules`, `firebase/firestore.indexes.json` |
-| Firebase AI Logic | Redacta las recomendaciones para el propietario con un modelo Gemini | Consola de Firebase y `modeloIA` en `frontend/src/environments/firebase.config.ts` |
+| Firebase AI Logic | Redacta las recomendaciones para el propietario y responde las preguntas libres del asistente Clara con un modelo Gemini | Consola de Firebase y `modeloIA` en `frontend/src/environments/firebase.config.ts` |
+| Cloud Functions | Verificación en dos pasos: genera el código, lo envía por correo y registra la sesión verificada | `firebase/funciones/` |
 
 La interfaz se comunica con cada servicio mediante el SDK web de Firebase. No existe una API intermedia: la seguridad de los datos la garantizan las **reglas de Firestore**, que se evalúan en los servidores de Google en cada lectura y escritura, sin importar desde dónde llegue la petición.
 
@@ -58,6 +62,20 @@ Estos pasos se hacen una vez, en `console.firebase.google.com`, con una cuenta q
 - Se recomienda activar **App Check** con reCAPTCHA Enterprise para que solo la aplicación publicada pueda usar el modelo.
 - Si AI Logic no está habilitado o no responde en 60 segundos, la aplicación genera las recomendaciones con reglas a partir de la norma y lo indica en el informe. La evaluación nunca se bloquea.
 
+**Cloud Functions y correo del código de verificación**
+
+- Cloud Functions exige el plan **Blaze** (pago por uso). El uso de este proyecto cabe en la cuota gratuita mensual, pero Google pide una tarjeta. En *Uso y facturación* conviene crear una **alerta de presupuesto** (por ejemplo, 5 USD).
+- Los códigos se envían desde una cuenta de correo del equipo. Con Gmail: activar la verificación en dos pasos de esa cuenta y crear una **contraseña de aplicación** en *Cuenta de Google*, *Seguridad*, *Contraseñas de aplicaciones*.
+- Guardar los dos secretos (se piden por la terminal y quedan en Secret Manager, nunca en el repositorio):
+
+```
+cd firebase
+npx firebase functions:secrets:set CORREO_USUARIO --project bienestar-animal-ica
+npx firebase functions:secrets:set CORREO_CLAVE --project bienestar-animal-ica
+```
+
+- Para otro servidor de correo que no sea Gmail, se crea `firebase/funciones/.env` con `CORREO_SERVIDOR=smtp.ejemplo.com` (puerto 465 con TLS).
+
 **Acceso del equipo**
 
 - En *Configuración del proyecto*, *Usuarios y permisos*, se agrega el Gmail de cada integrante. Para administrar la configuración basta el rol **Editor**; el rol **Propietario** se reserva para quien responde por el proyecto.
@@ -73,6 +91,7 @@ Credenciales
 | Cuenta de servicio (archivo JSON) | Solo en el equipo de quien ejecuta la semilla | **Sí**. Da acceso total al proyecto. Nunca se sube al repositorio ni se comparte por chat; `firebase/.gitignore` la excluye |
 | Contraseña del administrador inicial | Variables `SEMILLA_ADMIN_CORREO` y `SEMILLA_ADMIN_CLAVE`, solo al ejecutar la semilla | **Sí**. Se cambia en el primer ingreso |
 | Clave del modelo de IA | La administra Firebase AI Logic | No existe en la aplicación |
+| Correo y contraseña de aplicación que envían los códigos | Secret Manager (`CORREO_USUARIO`, `CORREO_CLAVE`) | **Sí**. Solo los leen las Cloud Functions |
 
 La cuenta de servicio se genera en *Configuración del proyecto*, *Cuentas de servicio*, *Generar nueva clave privada*. Al terminar de usarla, se recomienda borrar la clave desde la misma pantalla.
 
@@ -82,7 +101,16 @@ Publicación
 
 Se necesita la herramienta de Firebase, que ya viene en `firebase/` (`npm install` en esa carpeta), y haber iniciado sesión una vez con `npx firebase login`.
 
-**Reglas e índices de Firestore.** Se publican antes que nada, y siempre después de que pasen sus pruebas:
+**Orden con la verificación en dos pasos.** Las reglas exigen la sesión verificada por la Cloud Function, así que las funciones se publican **antes** que las reglas; si no, nadie podría ingresar. Requiere el plan Blaze y los secretos del correo (ver *Configuración del proyecto*):
+
+```
+cd firebase\funciones
+npm.cmd install
+cd ..
+npm.cmd run desplegar:funciones
+```
+
+**Reglas e índices de Firestore.** Se publican después de las funciones, y siempre después de que pasen sus pruebas:
 
 ```
 cd firebase
@@ -117,11 +145,13 @@ Seguridad
 
 | Capa | Medida |
 |---|---|
-| Transporte | HTTPS obligatorio en Hosting, Authentication, Firestore y AI Logic; HSTS en la interfaz |
-| Identidad | Contraseñas administradas por Firebase con bloqueo ante intentos repetidos; verificación del correo para los propietarios; proveedores externos opcionales |
+| Transporte | HTTPS obligatorio en Hosting, Authentication, Firestore, Functions y AI Logic; HSTS de dos años con subdominios |
+| Navegador | Cabeceras en `firebase.json`: política de seguridad de contenido (CSP) sin scripts en línea, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy` |
+| Identidad | Contraseñas administradas por Firebase con bloqueo ante intentos repetidos; **verificación en dos pasos** con código de 6 dígitos por correo (10 minutos, 5 intentos, 5 envíos por hora, guardado solo como resumen SHA-256); verificación del correo para los propietarios; proveedores externos opcionales |
+| Sesión | La sesión dura lo que la pestaña y se cierra tras 30 minutos sin actividad. Las reglas de Firestore no responden a un ingreso cuyo `auth_time` no esté en `verificaciones/{uid}`, que solo escribe la Cloud Function |
 | Autorización | Reglas de Firestore por permiso del rol, evaluadas en el servidor en cada operación; usuarios y roles inactivos pierden el acceso de inmediato |
 | Integridad | Validación de los datos en las reglas; una evaluación finalizada no se modifica; el nivel debe coincidir con el puntaje; las recomendaciones y la bitácora solo se agregan |
-| Privacidad | El propietario solo ve sus predios; a la IA no se envían nombres, documentos, teléfonos ni correos |
+| Privacidad | El propietario solo ve sus predios; a la IA no se envían nombres, documentos, teléfonos ni correos; política de tratamiento de datos (Ley 1581 de 2012), términos y política de cookies públicos en `/privacidad`, `/terminos` y `/cookies`; sin cookies de publicidad ni analítica |
 | Trazabilidad | Colección `auditoria` de solo escritura para quien actúa y solo lectura para quien tiene `auditoria.ver` |
 | Navegador | Cabeceras `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` y `Strict-Transport-Security` en Hosting |
 
@@ -163,7 +193,7 @@ Después de publicar se hace esta verificación en `https://bienestar-animal-ica
 Desarrollo sin tocar el proyecto real
 -------------------------------------
 
-Los emuladores de Firebase reproducen Authentication y Firestore en el propio equipo, con las mismas reglas. Requieren Java 21:
+Los emuladores de Firebase reproducen Authentication, Firestore y las Cloud Functions en el propio equipo, con las mismas reglas. En los emuladores no se envían correos: la pantalla de verificación muestra el código como *modo de pruebas* (lo mismo ocurre en `npm run demo`). Antes de la primera vez, `npm install` en `firebase/funciones`. Requieren Java 21:
 
 ```
 cd firebase

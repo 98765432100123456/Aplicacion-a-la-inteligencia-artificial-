@@ -4,13 +4,16 @@
   "description": "Reglas, siembra y pruebas de Firestore de ICA Bienestar Animal",
   "type": "module",
   "scripts": {
-    "emuladores": "firebase emulators:start --config ../firebase.json --project demo-ica",
+    "funciones:compilar": "npm --prefix funciones run build",
+    "emuladores": "npm run funciones:compilar && firebase emulators:start --config ../firebase.json --project demo-ica",
     "test:reglas": "firebase emulators:exec --config ../firebase.json --project demo-ica --only firestore,auth \"tsx --test pruebas/*.test.ts\"",
     "semilla": "tsx semilla.ts",
     "semilla:emulador": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=demo-ica tsx semilla.ts",
     "desplegar:reglas": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only firestore",
+    "desplegar:funciones": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only functions",
     "desplegar:sitio": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only hosting",
-    "typecheck": "tsc --noEmit"
+    "desplegar:todo": "firebase deploy --config ../firebase.json --project bienestar-animal-ica --only functions,firestore,hosting",
+    "typecheck": "tsc --noEmit && npm --prefix funciones run typecheck"
   },
   "dependencies": {
     "firebase-admin": "^13.10.0"

@@ -1,0 +1,12 @@
+{
+  "name": "ICA Bienestar Animal",
+  "short_name": "ICA Bienestar",
+  "description": "Evaluación del bienestar animal en predios ganaderos con la metodología del ICA.",
+  "lang": "es-CO",
+  "start_url": "/inicio",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f2f3f0",
+  "theme_color": "#1d6b40",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

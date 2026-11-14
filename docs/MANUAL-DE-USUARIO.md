@@ -28,7 +28,9 @@ Cuando los datos no son correctos, el sistema muestra el mensaje *Correo o contr
 
 **Ingreso con Google, Facebook o Microsoft.** Debajo del formulario aparecen los botones **Google**, **Facebook** y **Microsoft**. Al seleccionar uno se abre una ventana del proveedor para confirmar la identidad; el correo de esa cuenta debe estar verificado. Si la persona no tenía cuenta, se crea con el rol Propietario. El proveedor solo confirma quién es la persona: lo que puede ver y hacer lo define siempre su rol en la plataforma.
 
-La sesión se cierra al seleccionar **Cerrar sesión** en el menú o al cerrar el navegador. Si el administrador inactiva la cuenta, la sesión se cierra de inmediato; si cambia el rol o sus permisos, el menú se actualiza sin necesidad de volver a ingresar.
+**Verificación en dos pasos.** Después de la contraseña, o del proveedor externo, la pantalla **Verifique que es usted** pide un código de 6 dígitos que llega al correo de la cuenta. El código vence en 10 minutos, sirve para un solo ingreso y admite cinco intentos; con **Reenviar código** se pide otro pasado un minuto, y con **Usar otra cuenta** se vuelve al formulario. Si el correo no llega, conviene revisar las carpetas de spam y de promociones. Mientras el código no se verifique, la cuenta no puede consultar ningún dato.
+
+La sesión se cierra al seleccionar **Cerrar sesión** en el menú, al cerrar el navegador o tras 30 minutos sin actividad; en ese caso lo respondido en una evaluación ya quedó guardado. Si el administrador inactiva la cuenta, la sesión se cierra de inmediato; si cambia el rol o sus permisos, el menú se actualiza sin necesidad de volver a ingresar.
 
 
 Registro de propietarios
@@ -186,6 +188,20 @@ Cuenta
 La sección **Cuenta** muestra el nombre, el correo y el rol de la persona. Para corregir esos datos debe solicitarse el cambio a un administrador.
 
 Desde esta sección se cambia la contraseña: se escribe la contraseña actual, la nueva y su confirmación, y se selecciona **Cambiar contraseña**. Quien ingresa con Google, Facebook o Microsoft cambia su contraseña en ese servicio.
+
+
+Asistente Clara
+---------------
+
+En la esquina inferior derecha de todas las pantallas internas está el botón **Asistente**, con la cara de Clara, una vaca animada. Al seleccionarlo se abre un panel pequeño, sin bloquear la pantalla, con preguntas sugeridas según el rol: cómo hacer una evaluación, qué es el árbol de escenarios, cómo se calcula el puntaje, qué significa cada nivel, cuántos animales revisar, cómo descargar los informes, entre otras. Al elegir una pregunta, Clara responde al instante; algunas respuestas incluyen un enlace a la sección correspondiente. **Más preguntas** muestra la lista completa.
+
+También se puede escribir una pregunta propia. Si Firebase AI Logic está disponible, Clara la responde con inteligencia artificial, limitada a la información de la aplicación y de la norma; si no, busca la respuesta establecida que más se parezca. El botón con la flecha circular empieza la conversación de nuevo, y la tecla `Escape` o la **X** cierran el panel. Las respuestas orientan y no reemplazan al médico veterinario.
+
+
+Privacidad, términos y cookies
+------------------------------
+
+Al pie de la pantalla de ingreso y de la aplicación están los enlaces **Privacidad**, **Términos** y **Cookies**, que se pueden leer sin iniciar sesión. En la primera visita aparece un aviso que explica que el sitio solo guarda lo indispensable para funcionar (la sesión y el modo claro u oscuro) y no usa cookies de publicidad ni de analítica; se cierra con **Entendido**.
 
 
 Uso en teléfono móvil y accesibilidad

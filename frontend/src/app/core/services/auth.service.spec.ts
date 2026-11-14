@@ -20,7 +20,7 @@ function sesionFalsa(restaurar: SessionUser | null = null) {
   const sesion = {
     token: null,
     restaurar: jasmine.createSpy().and.resolveTo(restaurar),
-    ingresar: jasmine.createSpy().and.resolveTo(eva),
+    ingresar: jasmine.createSpy().and.resolveTo({ usuario: eva }),
     salir: jasmine.createSpy().and.resolveTo(undefined),
     observar: (f: (u: SessionUser | null) => void) => (avisar = f),
   } as unknown as ProveedorSesion;
@@ -65,5 +65,27 @@ describe('AuthService', () => {
   it('no restaura la sesión si no hay usuario', async () => {
     const { service } = crear(null);
     expect(await service.restore()).toBeFalse();
+  });
+
+  it('con verificación en dos pasos no abre la sesión hasta que el código es correcto', async () => {
+    const { service, sesion } = crear();
+    const desafio = { correo: 'ev•••@prueba.co', minutos: 10 };
+    (sesion.ingresar as jasmine.Spy).and.resolveTo({ desafio });
+    (sesion as unknown as Record<string, unknown>)['verificarCodigo'] = jasmine.createSpy().and.resolveTo(eva);
+    expect(await service.login('eva@prueba.co', 'Clave2026xx')).toBeFalse();
+    expect(service.isAuthenticated()).toBeFalse();
+    expect(service.desafio()).toEqual(desafio);
+    await service.verificarCodigo('123456');
+    expect(service.isAuthenticated()).toBeTrue();
+    expect(service.desafio()).toBeNull();
+  });
+
+  it('cancelar la verificación cierra el ingreso a medio camino', async () => {
+    const { service, sesion } = crear();
+    (sesion.ingresar as jasmine.Spy).and.resolveTo({ desafio: { correo: 'x', minutos: 10 } });
+    await service.login('eva@prueba.co', 'Clave2026xx');
+    service.cancelarVerificacion();
+    expect(service.desafio()).toBeNull();
+    expect(sesion.salir).toHaveBeenCalled();
   });
 });

@@ -15,6 +15,8 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:4200',
     launchOptions: process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {},
     trace: 'retain-on-failure',
+    // El aviso de cookies ya leído, para que no tape los botones; e2e/sitio.spec.ts lo prueba aparte.
+    storageState: 'e2e/estado-inicial.json',
   },
   webServer: process.env.E2E_BASE_URL
     ? undefined
