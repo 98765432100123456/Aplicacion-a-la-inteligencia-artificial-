@@ -60,7 +60,7 @@ Bitácora de acciones relevantes. Solo se agregan entradas.
 | Campo | Tipo | Obligatorio | Descripción |
 |---|---|---|---|
 | `actorId` | texto | Sí | `uid` de quien hizo la acción; debe ser quien la registra |
-| `accion` | texto | Sí | Por ejemplo `evaluacion.finalizada` o `usuario.creado` |
+| `accion` | texto | Sí | Por ejemplo `evaluacion.finalizada`, `usuario.creado` o, desde las Cloud Functions, `seguridad.sesion_verificada` y `seguridad.codigo_bloqueado` |
 | `entidad` | texto | Sí | Tipo de registro afectado |
 | `entidadId` | texto | Sí | Identificador del registro afectado |
 | `detalle` | mapa | No | Datos adicionales de la acción |

@@ -14,6 +14,9 @@ interface Mensaje {
 }
 
 const SUGERIDAS_VISIBLES = 4;
+/** Tope de preguntas libres por sesión y espera mínima entre ellas: cada una consume cuota del modelo. */
+const PREGUNTAS_LIBRES_MAXIMAS = 30;
+const ESPERA_ENTRE_PREGUNTAS_MS = 2_000;
 /** Pausa breve antes de una respuesta establecida: deja ver que Clara "piensa" sin hacer esperar. */
 const PAUSA_MS = 550;
 
@@ -37,6 +40,8 @@ export class Asistente {
   private readonly registro = viewChild<ElementRef<HTMLElement>>('registro');
   private siguienteId = 1;
   private hablandoHasta = 0;
+  private preguntasLibres = 0;
+  private ultimaPregunta = 0;
 
   protected readonly abierto = signal(false);
   protected readonly pensando = signal(false);
@@ -99,9 +104,17 @@ export class Asistente {
   }
 
   protected async enviar() {
-    const pregunta = this.texto().trim();
+    const pregunta = this.texto().trim().slice(0, 500);
     if (!pregunta || this.pensando()) return;
+    if (Date.now() - this.ultimaPregunta < ESPERA_ENTRE_PREGUNTAS_MS) return;
+    this.ultimaPregunta = Date.now();
     this.texto.set('');
+    if (++this.preguntasLibres > PREGUNTAS_LIBRES_MAXIMAS) {
+      this.agregar('persona', [pregunta]);
+      return this.responder([
+        'Ya respondí muchas preguntas en esta sesión. Para cuidar el servicio, use por ahora las preguntas sugeridas.',
+      ]);
+    }
     const historial: Turno[] = this.mensajes().map((m) => ({ autor: m.autor, texto: m.parrafos.join(' ') }));
     this.agregar('persona', [pregunta]);
     this.pensando.set(true);

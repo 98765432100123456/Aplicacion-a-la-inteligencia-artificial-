@@ -21,7 +21,8 @@ const borrador = (correo: string | null) => ({
 });
 
 // Inicio de sesión de las pruebas; verificaciones/{uid} lo registra como verificado con el código por correo.
-const INGRESO = 1_000;
+// Inicio de sesión hace una hora; las reglas cierran a las 12 horas de ingresar.
+const INGRESO = Math.floor(Date.now() / 1000) - 3_600;
 const VERIFICADOS = ['admin', 'eva', 'dueno', 'otro', 'inactivo', 'nuevo'];
 
 // Contextos autenticados: el token lleva el correo, si está verificado y el momento del ingreso.
@@ -65,7 +66,7 @@ describe('autenticación y usuarios', () => {
 
   it('sin el código del segundo paso, la sesión no lee ni escribe nada', async () => {
     // Ingreso nuevo (otro auth_time) que todavía no verificó el código.
-    const sinCodigo = como('admin', 'admin@ica.co', true, 2_000);
+    const sinCodigo = como('admin', 'admin@ica.co', true, INGRESO + 60);
     await assertFails(getDoc(doc(sinCodigo, 'predios', 'p1')));
     await assertFails(getDoc(doc(sinCodigo, 'usuarios', 'admin')));
     await assertFails(getDoc(doc(sinCodigo, 'roles', 'administrador')));
@@ -76,10 +77,17 @@ describe('autenticación y usuarios', () => {
     await assertFails(getDoc(doc(como('sinverificar', 'x@ica.co'), 'especies', 'bovino')));
   });
 
+  it('un inicio de sesión verificado vence a las 12 horas', async () => {
+    const hace13Horas = Math.floor(Date.now() / 1000) - 13 * 3_600;
+    await env.withSecurityRulesDisabled((ctx) => setDoc(doc(ctx.firestore(), 'verificaciones', 'eva'), { sesiones: [INGRESO, hace13Horas] }));
+    await assertSucceeds(getDoc(doc(como('eva', 'eva@ica.co'), 'predios', 'p1')));
+    await assertFails(getDoc(doc(como('eva', 'eva@ica.co', true, hace13Horas), 'predios', 'p1')));
+  });
+
   it('nadie registra su propia verificación ni lee los códigos', async () => {
-    const sinCodigo = como('admin', 'admin@ica.co', true, 2_000);
-    await assertFails(setDoc(doc(sinCodigo, 'verificaciones', 'admin'), { sesiones: [2_000] }));
-    await assertFails(setDoc(doc(como('admin', 'admin@ica.co'), 'verificaciones', 'admin'), { sesiones: [1_000, 2_000] }));
+    const sinCodigo = como('admin', 'admin@ica.co', true, INGRESO + 60);
+    await assertFails(setDoc(doc(sinCodigo, 'verificaciones', 'admin'), { sesiones: [INGRESO + 60] }));
+    await assertFails(setDoc(doc(como('admin', 'admin@ica.co'), 'verificaciones', 'admin'), { sesiones: [INGRESO, INGRESO + 60] }));
     await assertFails(getDoc(doc(como('admin', 'admin@ica.co'), 'codigosAcceso', 'admin')));
   });
 

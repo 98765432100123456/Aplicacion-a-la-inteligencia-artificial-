@@ -1,0 +1,7 @@
+# Política de divulgación de vulnerabilidades de ICA Bienestar Animal (RFC 9116).
+# Reporte en privado; no publique el problema antes de que esté corregido.
+Contact: https://github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-/security/advisories/new
+Policy: https://github.com/98765432100123456/Aplicacion-a-la-inteligencia-artificial-/blob/main/SECURITY.md
+Preferred-Languages: es, en
+Canonical: https://bienestar-animal-ica.web.app/.well-known/security.txt
+Expires: 2027-11-14T00:00:00.000Z

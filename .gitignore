@@ -11,3 +11,14 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 .firebase/
+
+# Secretos: nunca se suben al repositorio (scripts/control-seguridad.mjs lo verifica)
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+cuenta-de-servicio*.json
+*-firebase-adminsdk-*.json
+.secret.local
+.runtimeconfig.json

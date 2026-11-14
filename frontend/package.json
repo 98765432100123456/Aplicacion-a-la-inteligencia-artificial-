@@ -7,6 +7,7 @@
     "start:emuladores": "ng serve --configuration emuladores",
     "demo": "ng serve --configuration demo",
     "build": "ng build",
+    "postbuild": "node ../scripts/control-seguridad.mjs --dist",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadlessCI",
@@ -26,15 +27,15 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.3.0",
-    "@angular/compiler": "^20.3.0",
-    "@angular/core": "^20.3.0",
-    "@angular/forms": "^20.3.0",
-    "@angular/platform-browser": "^20.3.0",
-    "@angular/router": "^20.3.0",
+    "@angular/common": "^20.3.35",
+    "@angular/compiler": "^20.3.35",
+    "@angular/core": "^20.3.35",
+    "@angular/forms": "^20.3.35",
+    "@angular/platform-browser": "^20.3.35",
+    "@angular/router": "^20.3.35",
     "@fontsource-variable/manrope": "5.3.0",
     "@fontsource/unbounded": "5.3.0",
-    "firebase": "13.0.0",
+    "firebase": "13.3.0",
     "pdfmake": "0.3.11",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@angular/build": "^20.3.39",
     "@angular/cli": "^20.3.39",
-    "@angular/compiler-cli": "^20.3.0",
+    "@angular/compiler-cli": "^20.3.35",
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.56.1",
     "@types/jasmine": "~5.1.0",
@@ -53,5 +54,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7"
   }
 }

@@ -143,6 +143,8 @@ La aplicación queda en `https://bienestar-animal-ica.web.app`. Hosting sirve lo
 Seguridad
 ---------
 
+El informe completo (modelo de amenazas, OWASP Top 10, hallazgos, control automático y respuesta a incidentes) está en [SEGURIDAD.md](SEGURIDAD.md). Antes de publicar, `npm run build` ejecuta el control de seguridad y no termina si encuentra un secreto, una cabecera faltante o reglas abiertas.
+
 | Capa | Medida |
 |---|---|
 | Transporte | HTTPS obligatorio en Hosting, Authentication, Firestore, Functions y AI Logic; HSTS de dos años con subdominios |

@@ -3,6 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeEsCo from '@angular/common/locales/es-CO';
 import {
   ApplicationConfig,
+  ErrorHandler,
   LOCALE_ID,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -11,6 +12,7 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { demoApiInterceptor } from './core/demo/demo-api.interceptor';
+import { ManejadorErrores } from './core/utils/manejador-errores';
 
 registerLocaleData(localeEsCo);
 
@@ -22,5 +24,6 @@ export const appConfig: ApplicationConfig = {
     // En modo demostración, demoApiInterceptor responde en lugar del servidor.
     provideHttpClient(withInterceptors([authInterceptor, demoApiInterceptor])),
     { provide: LOCALE_ID, useValue: 'es-CO' },
+    { provide: ErrorHandler, useClass: ManejadorErrores },
   ],
 };

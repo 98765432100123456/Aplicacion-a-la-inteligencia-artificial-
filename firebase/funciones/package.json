@@ -4,15 +4,17 @@
   "description": "Cloud Functions de ICA Bienestar Animal: código de verificación en dos pasos por correo",
   "type": "module",
   "main": "lib/index.js",
-  "engines": { "node": "22" },
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "firebase-admin": "^13.10.0",
+    "firebase-admin": "^14.5.1",
     "firebase-functions": "^7.4.0",
-    "nodemailer": "^7.0.0"
+    "nodemailer": "^10.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

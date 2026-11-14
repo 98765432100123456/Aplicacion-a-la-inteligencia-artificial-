@@ -40,7 +40,11 @@ SEMILLA_ADMIN_CORREO=admin@ica-bienestar.local SEMILLA_ADMIN_CLAVE=CambiarEsta.2
   "npm run semilla:emulador && cd ../frontend && npx playwright test"
 ```
 
-CI (`.github/workflows/ci.yml`) runs three jobs: `reglas` (copy check + typecheck + rules tests), `interfaz` (unit tests + production and demo builds), `extremo-a-extremo` (the command above).
+CI (`.github/workflows/ci.yml`, read-only permissions) runs four jobs: `seguridad` (security gate, secrets in Git history, `npm audit --omit=dev --audit-level=high` in the three packages), `reglas` (copy check + typecheck + rules tests), `interfaz` (unit tests + production and demo builds), `extremo-a-extremo` (the command above). Dependabot (`.github/dependabot.yml`) proposes updates weekly.
+
+### Security gate
+
+`node scripts/control-seguridad.mjs` (also `postbuild` of `frontend`, with `--dist`) fails on: secrets in tracked files or the bundle, the Firebase web key outside `firebase.config.ts`, `innerHTML`/`eval`/`bypassSecurityTrust` and similar, `target="_blank"` without `noopener`, missing or weakened headers/CSP in `firebase.json`, inline scripts in `index.html`, open Firestore rules or rules without `dosPasos()`, hard-coded mail passwords, and source maps or emulator config in the production build. If a rule is a false positive, fix the rule; never weaken the check to get green. The threat model, OWASP mapping, findings and owner actions are in `docs/SEGURIDAD.md`; vulnerability reporting in `SECURITY.md`.
 
 ## Architecture
 
@@ -69,7 +73,7 @@ In the UI, `permissionGuard` and `AuthService.can(...)` only hide things; route 
 
 ### Two-step verification (email code)
 
-After the password or OAuth popup, `SesionFirebase.siguientePaso` checks `verificaciones/{uid}.sesiones` for the token's `auth_time`; if absent it calls the Cloud Function `enviarCodigoAcceso` (`firebase/funciones/`, needs the Blaze plan and the `CORREO_USUARIO`/`CORREO_CLAVE` secrets) and `AuthService.desafio` makes the login screen show `verificacion-codigo`. `verificarCodigoAcceso` checks the SHA-256 hash in `codigosAcceso/{uid}` (no client access) and appends the `auth_time` to `verificaciones/{uid}`. In the rules, `sesion()` requires `dosPasos()`, so an unverified sign-in reads nothing. In the emulators and in demo mode no email is sent: the code comes back as `codigoPrueba` and the screen shows it (E2E reads `.codigo-prueba` in `e2e/helpers.ts`). Rule tests pass `auth_time` in the token and seed `verificaciones`.
+After the password or OAuth popup, `SesionFirebase.siguientePaso` checks `verificaciones/{uid}.sesiones` for the token's `auth_time`; if absent it calls the Cloud Function `enviarCodigoAcceso` (`firebase/funciones/`, needs the Blaze plan and the `CORREO_USUARIO`/`CORREO_CLAVE` secrets) and `AuthService.desafio` makes the login screen show `verificacion-codigo`. `verificarCodigoAcceso` checks the SHA-256 hash in `codigosAcceso/{uid}` (no client access) and appends the `auth_time` to `verificaciones/{uid}`. In the rules, `sesion()` requires `dosPasos()`, so an unverified sign-in reads nothing, and a sign-in older than 12 hours is rejected even with a fresh token. The functions log `seguridad.sesion_verificada` and `seguridad.codigo_bloqueado` to `auditoria`. In the emulators and in demo mode no email is sent: the code comes back as `codigoPrueba` and the screen shows it (E2E reads `.codigo-prueba` in `e2e/helpers.ts`). Rule tests pass `auth_time` in the token and seed `verificaciones`.
 
 ### Evaluation flow
 
@@ -89,6 +93,7 @@ On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, s
 - The admin-only `/sistema-de-diseno` page shows the system live; documented in `docs/SISTEMA-DE-DISENO.md`.
 - The floating assistant "Clara" (`features/asistente/`) lives in the shell: fixed answers in `preguntas.ts` (built from `compartido/norma.ts`), free questions via Gemini (`core/firebase/asistente-ia.ts`) with keyword fallback. The mascot SVG animates with CSS only and respects reduced motion.
 - Public pages: `/privacidad`, `/terminos`, `/cookies` (`features/legal/documentos.ts`; fill `CONTACTO_PRIVACIDAD`), the `pie-legal` footer and the `aviso-cookies` notice. Hosting sends a CSP without inline scripts, so the theme bootstrap is `public/tema.js` and production builds set `inlineCritical: false`. Sessions close after 30 minutes idle (`InactividadService`).
+- Unexpected errors go to `ManejadorErrores` (generic toast, no stack). `rutaDeRegreso` only accepts internal paths. `e2e/seguridad.spec.ts` holds the security regressions (malformed URL, open redirect, XSS, 2FA bypass, error leakage).
 - E2E tests assert axe accessibility, no horizontal overflow and ≥44 px touch targets (`e2e/helpers.ts`), so UI changes must keep those passing.
 
 ## Repository conventions

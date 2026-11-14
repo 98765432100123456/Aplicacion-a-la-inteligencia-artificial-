@@ -5,10 +5,44 @@ on:
     branches: [main, develop]
   pull_request:
 
+# Mínimo privilegio: el flujo solo lee el repositorio (docs/SEGURIDAD.md).
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # Control de seguridad y dependencias: sin secretos, sin APIs peligrosas, cabeceras y reglas completas,
+  # y ninguna vulnerabilidad alta o crítica en lo que llega a producción.
+  seguridad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/control-seguridad.mjs
+      - name: Secretos en todo el historial de Git
+        run: |
+          if git log --all -p | grep -nE -- '-----BEGIN [A-Z ]*PRIVATE KEY-----|"private_key": *"|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|sk_live_[A-Za-z0-9]{10,}' | grep -v 'control-seguridad\|ci.yml'; then
+            echo "Hay secretos en el historial de Git"; exit 1
+          fi
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: frontend
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: firebase
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: firebase/funciones
+
   # Reglas de seguridad de Firestore probadas en el emulador.
   reglas:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: firebase
@@ -32,6 +66,7 @@ jobs:
 
   interfaz:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: frontend
@@ -44,13 +79,14 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run test:ci
-      - run: npx ng build --configuration production
+      - run: npm run build
       - run: npx ng build --configuration demo
 
   # Flujos completos en el navegador contra los emuladores de Auth, Firestore y Functions.
   extremo-a-extremo:
     runs-on: ubuntu-latest
-    needs: [reglas, interfaz]
+    timeout-minutes: 40
+    needs: [seguridad, reglas, interfaz]
     env:
       SEMILLA_ADMIN_CORREO: admin@ica-bienestar.local
       SEMILLA_ADMIN_CLAVE: CambiarEsta.2026

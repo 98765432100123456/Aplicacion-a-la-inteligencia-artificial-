@@ -11,8 +11,10 @@ service cloud.firestore {
     function ruta(coleccion, id) { return /databases/$(database)/documents/$(coleccion)/$(id); }
     // Verificación en dos pasos: el inicio de sesión actual (auth_time del token) debe estar en
     // verificaciones/{uid}. Solo la Cloud Function que comprueba el código por correo escribe ahí.
+    // Además, un inicio de sesión vale como máximo 12 horas, aunque Firebase renueve el token cada hora.
     function dosPasos() {
-      return request.auth.token.auth_time in get(ruta('verificaciones', request.auth.uid)).data.sesiones;
+      return request.auth.token.auth_time in get(ruta('verificaciones', request.auth.uid)).data.sesiones
+        && request.time < timestamp.value(request.auth.token.auth_time * 1000) + duration.value(12, 'h');
     }
     function sesion() { return request.auth != null && dosPasos(); }
     function yo() { return get(ruta('usuarios', request.auth.uid)).data; }

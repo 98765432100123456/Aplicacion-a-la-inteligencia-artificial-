@@ -1,0 +1,22 @@
+# Actualizaciones de seguridad automáticas: Dependabot abre un pull request cuando una dependencia
+# tiene una vulnerabilidad conocida o una versión nueva. Se revisan y se fusionan después de que pase la CI.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      angular: { patterns: ['@angular/*', '@angular-devkit/*'] }
+      firebase: { patterns: ['firebase', '@firebase/*'] }
+  - package-ecosystem: npm
+    directory: /firebase
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /firebase/funciones
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

@@ -53,6 +53,13 @@ function sesionDe(req: CallableRequest) {
   return { uid: req.auth.uid, correo: correo.toLowerCase(), authTime };
 }
 
+/** Evento de seguridad en la bitácora `auditoria`, que el administrador consulta. Nunca incluye el código. */
+function auditar(tx: FirebaseFirestore.Transaction, uid: string, accion: string, detalle: Record<string, unknown> = {}) {
+  tx.set(db.collection('auditoria').doc(), {
+    actorId: uid, accion, entidad: 'usuarios', entidadId: uid, detalle, creadoEn: FieldValue.serverTimestamp(),
+  });
+}
+
 function resumen(uid: string, authTime: number, codigo: string) {
   return createHash('sha256').update(`${uid}:${authTime}:${codigo}`).digest('hex');
 }
@@ -135,11 +142,15 @@ export const verificarCodigoAcceso = onCall(async (req) => {
     if (pendiente.intentos >= INTENTOS_POR_CODIGO) return 'bloqueado';
     if (!iguales(pendiente.resumen, resumen(uid, authTime, codigo))) {
       tx.update(codigosRef, { [`pendientes.${authTime}.intentos`]: FieldValue.increment(1) });
-      return pendiente.intentos + 1 >= INTENTOS_POR_CODIGO ? 'bloqueado' : 'incorrecto';
+      if (pendiente.intentos + 1 < INTENTOS_POR_CODIGO) return 'incorrecto';
+      // Cinco intentos fallidos con el mismo código: posible ataque de fuerza bruta.
+      auditar(tx, uid, 'seguridad.codigo_bloqueado', { intentos: INTENTOS_POR_CODIGO });
+      return 'bloqueado';
     }
     tx.update(codigosRef, { [`pendientes.${authTime}`]: FieldValue.delete() });
     const sesiones = ((verificacion.get('sesiones') as number[] | undefined) ?? []).filter((s) => s !== authTime);
     tx.set(verificacionRef, { sesiones: [...sesiones, authTime].slice(-SESIONES_RECORDADAS), actualizadoEn: FieldValue.serverTimestamp() });
+    auditar(tx, uid, 'seguridad.sesion_verificada');
     return 'ok';
   });
 
