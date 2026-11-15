@@ -157,12 +157,24 @@ export class SesionFirebase implements ProveedorSesion {
     }
   }
 
-  /** El inicio de sesión actual (auth_time del token) está en verificaciones/{uid}. */
+  /**
+   * true si este inicio de sesión puede entrar sin pedir el código: porque ya lo verificó
+   * (su auth_time está en verificaciones/{uid}) o porque las reglas publicadas todavía no exigen
+   * la verificación en dos pasos. Lo decide el servidor, no la interfaz: si las reglas la exigen,
+   * leer el propio perfil sin código es rechazado y se pide el código.
+   */
   private async verificada(fb: Firebase, usuario: User) {
     const { doc, getDoc } = fb.fs;
     const ingreso = Number((await usuario.getIdTokenResult()).claims['auth_time']);
     const verificacion = await getDoc(doc(fb.db, 'verificaciones', usuario.uid)).catch(() => null);
-    return !!verificacion?.exists() && ((verificacion.get('sesiones') as number[] | undefined) ?? []).includes(ingreso);
+    if (verificacion?.exists() && ((verificacion.get('sesiones') as number[] | undefined) ?? []).includes(ingreso)) return true;
+    try {
+      await getDoc(doc(fb.db, 'usuarios', usuario.uid));
+      return true;
+    } catch (e) {
+      if ((e as { code?: string }).code === 'permission-denied') return false;
+      throw e;
+    }
   }
 
   private async abrir(fb: Firebase, usuario: User) {

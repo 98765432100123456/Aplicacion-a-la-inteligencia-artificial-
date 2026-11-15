@@ -156,6 +156,10 @@ Cada cambio que llega a `main` y pasa todas las pruebas de la integración conti
 3. En GitHub, *Settings › Secrets and variables › Actions › New repository secret*, nombre `FIREBASE_CUENTA_SERVICIO`, y pegar el contenido completo del archivo. Después, borrar el archivo del computador.
 4. Opcional: en *Settings › Environments › produccion* se puede exigir la aprobación de una persona antes de cada publicación.
 
+**Sin la herramienta de Firebase.** `node scripts/publicar-sitio.mjs` publica la última compilación (`cd frontend && npm run build`) con la API de Hosting y un token de acceso temporal en `FIREBASE_TOKEN_ACCESO` (por ejemplo, del OAuth Playground de Google con el permiso `https://www.googleapis.com/auth/firebase.hosting`). Solo publica el sitio, no las funciones ni las reglas.
+
+**Verificación en dos pasos gradual.** La interfaz pide el código solo cuando las reglas publicadas lo exigen: si el propio perfil se puede leer sin código, entra como antes. Así el sitio nuevo funciona con las reglas anteriores mientras no estén activos el plan Blaze y las funciones, y la verificación se activa sola al publicar las reglas.
+
 Mientras el secreto no exista, la CI pasa y avisa *Falta el secreto FIREBASE_CUENTA_SERVICIO*, sin publicar nada. La clave se rota cada año o si se sospecha una filtración (borrarla en Google Cloud y guardar una nueva en GitHub).
 
 
