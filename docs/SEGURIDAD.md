@@ -179,6 +179,7 @@ No hay servidor propio: **la frontera de seguridad real son las reglas de Firest
 |---|---|---|
 | Secretos en código, historial, compilación y paquete | VERIFIED (ninguno) | Control automático y búsqueda en `git log --all -p` |
 | Dependencias de producción vulnerables | VERIFIED (0) | `npm audit --omit=dev` en `frontend`, `firebase` y `firebase/funciones` |
+| Publicación automática | PASSED (revisión) | Solo desde `main`, después de las cuatro suites; credencial en un secreto de GitHub escrita en un archivo temporal con permisos 600 y borrada al final; sin cancelaciones a mitad |
 | Integridad de los lockfiles | VERIFIED | `package-lock.json` con `integrity` en los tres paquetes |
 | Reglas de Firestore | PASSED | 16 pruebas en el emulador |
 | Verificación en dos pasos | PASSED | Reglas, pruebas unitarias y de navegador |
@@ -219,7 +220,7 @@ Estas acciones requieren permisos de administrador en GitHub o en la consola de 
 4. En Authentication: **política de contraseñas** (10 caracteres y un número) y **protección contra la enumeración de correos** (*Settings › User actions*).
 5. **Verificación en dos pasos en las cuentas de Google** de quienes administran la consola de Firebase.
 6. **Alerta de presupuesto** en el plan Blaze (por ejemplo, 5 USD).
-7. Borrar las claves de cuentas de servicio que ya no se usen (*Configuración del proyecto › Cuentas de servicio*).
+7. Borrar las claves de cuentas de servicio que ya no se usen (*Configuración del proyecto › Cuentas de servicio*) y rotar cada año la de publicación automática (`FIREBASE_CUENTA_SERVICIO`).
 8. Escribir el correo de contacto de datos personales en `CONTACTO_PRIVACIDAD`.
 
 

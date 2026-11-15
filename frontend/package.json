@@ -7,7 +7,7 @@
     "start:emuladores": "ng serve --configuration emuladores",
     "demo": "ng serve --configuration demo",
     "build": "ng build",
-    "postbuild": "node ../scripts/control-seguridad.mjs --dist",
+    "postbuild": "node ../scripts/version.mjs && node ../scripts/control-seguridad.mjs --dist",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadlessCI",

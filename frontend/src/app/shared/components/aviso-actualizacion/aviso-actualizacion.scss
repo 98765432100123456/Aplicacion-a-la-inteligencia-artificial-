@@ -1,0 +1,55 @@
+// Arriba y al centro: no tapa el asistente, el aviso de cookies ni la barra de la evaluación.
+.aviso-actualizacion {
+  position: fixed;
+  top: calc(var(--e-3) + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  width: min(32rem, calc(100vw - 2 * var(--e-4)));
+  padding: var(--e-3) var(--e-3) var(--e-3) var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-panel);
+  background: var(--superficie-elevada);
+  box-shadow: var(--sombra-flotante);
+  transform: translateX(-50%);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: bajar var(--dur-media) var(--curva);
+  }
+
+  > svg {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: var(--acento);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+@keyframes bajar {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -0.75rem);
+  }
+}
+
+.texto {
+  flex: 1;
+  min-width: 0;
+}
+
+h2 {
+  font-size: var(--texto-sm);
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: var(--texto-xs);
+  line-height: 1.4;
+  color: var(--tinta-suave);
+}

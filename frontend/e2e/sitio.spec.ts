@@ -77,3 +77,27 @@ test.describe('Asistente Clara', () => {
     await expect(page.getByRole('button', { name: 'Asistente de bienestar animal' })).toBeFocused();
   });
 });
+
+test.describe('Actualización en vivo', () => {
+  test('avisa cuando se publica una versión nueva y la carga con un toque', async ({ page }) => {
+    let version = 'v1';
+    await page.route('**/version.json*', (r) => r.fulfill({ json: { version } }));
+    await page.goto('/ingresar');
+    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
+    await expect(page.getByRole('status').filter({ hasText: 'Hay una versión nueva' })).toHaveCount(0);
+
+    // Se publica otra versión; al volver a la pestaña la aplicación lo nota.
+    version = 'v2';
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    const aviso = page.getByRole('status').filter({ hasText: 'Hay una versión nueva' });
+    await expect(aviso).toBeVisible();
+    await expectAccessible(page);
+    await expectNoHorizontalOverflow(page);
+    await expectTouchTargets(page);
+
+    await aviso.getByRole('button', { name: 'Actualizar' }).click();
+    await page.waitForLoadState('load');
+    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
+    await expect(page.getByRole('status').filter({ hasText: 'Hay una versión nueva' })).toHaveCount(0);
+  });
+});

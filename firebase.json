@@ -54,7 +54,7 @@
         ]
       },
       {
-        "source": "**/*.@(js|css|woff2|svg)",
+        "source": "/@(main|chunk|polyfills|styles)-*.@(js|css)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -63,7 +63,25 @@
         ]
       },
       {
-        "source": "/index.html",
+        "source": "/media/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/@(index.html|version.json|tema.js|manifest.webmanifest)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "regex": "^/[^.]*$",
         "headers": [
           {
             "key": "Cache-Control",

@@ -11,7 +11,8 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # En main no se cancela: una publicación a medias dejaría funciones, reglas y sitio desalineados.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   # Control de seguridad y dependencias: sin secretos, sin APIs peligrosas, cabeceras y reglas completas,
@@ -107,3 +108,68 @@ jobs:
         working-directory: frontend
       - run: npx firebase emulators:exec --config ../firebase.json --project demo-ica --only auth,firestore,functions "npm run semilla:emulador && cd ../frontend && npx playwright test"
         working-directory: firebase
+
+  # Actualización en vivo: cada cambio en main que pasa todas las pruebas se publica solo en
+  # https://bienestar-animal-ica.web.app. Nadie tiene que descargar el proyecto ni publicar a mano;
+  # quien tenga la aplicación abierta ve el aviso "Hay una versión nueva".
+  # Requiere el secreto FIREBASE_CUENTA_SERVICIO (docs/DESPLIEGUE.md, "Publicación automática").
+  publicar:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [seguridad, reglas, interfaz, extremo-a-extremo]
+    environment:
+      name: produccion
+      url: https://bienestar-animal-ica.web.app
+    concurrency:
+      group: publicar-produccion
+      cancel-in-progress: false
+    env:
+      CUENTA: ${{ secrets.FIREBASE_CUENTA_SERVICIO }}
+    steps:
+      - name: Sin credencial no se publica
+        if: env.CUENTA == ''
+        run: echo "::warning::Falta el secreto FIREBASE_CUENTA_SERVICIO; las pruebas pasaron pero el sitio no se publicó (docs/DESPLIEGUE.md)."
+      - uses: actions/checkout@v4
+        if: env.CUENTA != ''
+      - uses: actions/setup-node@v4
+        if: env.CUENTA != ''
+        with:
+          node-version: 22
+      - name: Instalar y compilar (con el control de seguridad)
+        if: env.CUENTA != ''
+        run: |
+          (cd firebase && npm ci)
+          (cd firebase/funciones && npm ci)
+          (cd frontend && npm ci && npm run build)
+      - name: Credencial temporal
+        if: env.CUENTA != ''
+        run: |
+          umask 077
+          printf '%s' "$CUENTA" > "$RUNNER_TEMP/cuenta.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/cuenta.json" >> "$GITHUB_ENV"
+      # Orden seguro: funciones, sitio y reglas. Si un paso falla, los siguientes no corren y lo
+      # publicado sigue funcionando (el sitio nuevo convive con las reglas anteriores).
+      - name: Publicar Cloud Functions
+        if: env.CUENTA != ''
+        working-directory: firebase
+        run: npx firebase deploy --config ../firebase.json --project bienestar-animal-ica --only functions --non-interactive
+      - name: Publicar el sitio
+        if: env.CUENTA != ''
+        working-directory: firebase
+        run: npx firebase deploy --config ../firebase.json --project bienestar-animal-ica --only hosting --non-interactive --message "${GITHUB_SHA::12}"
+      - name: Publicar reglas e índices de Firestore
+        if: env.CUENTA != ''
+        working-directory: firebase
+        run: npx firebase deploy --config ../firebase.json --project bienestar-animal-ica --only firestore --non-interactive
+      - name: Comprobar que la versión publicada es esta
+        if: env.CUENTA != ''
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "https://bienestar-animal-ica.web.app/version.json?t=$(date +%s)" | grep -q "${GITHUB_SHA::12}"; then echo "Publicado ${GITHUB_SHA::12}"; exit 0; fi
+            sleep 10
+          done
+          echo "::error::El sitio no muestra la versión ${GITHUB_SHA::12}"; exit 1
+      - name: Borrar la credencial
+        if: always()
+        run: rm -f "$RUNNER_TEMP/cuenta.json"

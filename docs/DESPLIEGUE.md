@@ -140,6 +140,25 @@ npm run desplegar:sitio
 La aplicación queda en `https://bienestar-animal-ica.web.app`. Hosting sirve los archivos con HTTPS, caché larga para los archivos con huella y las cabeceras de seguridad definidas en `firebase.json`.
 
 
+Publicación automática (actualización en vivo)
+---------------------------------------------
+
+Cada cambio que llega a `main` y pasa todas las pruebas de la integración continua se publica solo en `https://bienestar-animal-ica.web.app` (trabajo `publicar` de `.github/workflows/ci.yml`). Nadie tiene que descargar el proyecto, compilar ni ejecutar `firebase deploy` en su computador.
+
+- **Orden:** Cloud Functions, sitio y reglas de Firestore. Si un paso falla, los siguientes no corren y lo publicado sigue funcionando. Al final se comprueba que `https://bienestar-animal-ica.web.app/version.json` muestra el commit recién publicado.
+- **Quien tiene la aplicación abierta** ve, en menos de 5 minutos o al volver a la pestaña, el aviso *Hay una versión nueva* con el botón **Actualizar**. Lo guardado no se pierde. Si alguien abre una pantalla cuyos archivos ya no existen, la aplicación recarga sola esa página con la versión nueva.
+- **Caché:** `index.html`, `version.json`, `tema.js` y las rutas de la aplicación se revalidan siempre; los archivos con huella (`main-…js`, `chunk-…js`, `styles-…css`, `media/`) se guardan un año.
+
+**Configuración, una sola vez** (requiere el plan Blaze y los secretos del correo de la sección anterior):
+
+1. En la consola de Google Cloud del proyecto, *IAM y administración › Cuentas de servicio*, crear la cuenta `publicacion-github` con los roles **Administrador de Firebase**, **Administrador de Cloud Functions**, **Usuario de cuenta de servicio** y **Descriptor de acceso a secretos de Secret Manager**. Si el primer despliegue pide otro permiso, el error del paso lo nombra.
+2. En esa cuenta, *Claves › Agregar clave › JSON*. Se descarga un archivo: **es un secreto**, no se sube al repositorio ni se comparte por chat.
+3. En GitHub, *Settings › Secrets and variables › Actions › New repository secret*, nombre `FIREBASE_CUENTA_SERVICIO`, y pegar el contenido completo del archivo. Después, borrar el archivo del computador.
+4. Opcional: en *Settings › Environments › produccion* se puede exigir la aprobación de una persona antes de cada publicación.
+
+Mientras el secreto no exista, la CI pasa y avisa *Falta el secreto FIREBASE_CUENTA_SERVICIO*, sin publicar nada. La clave se rota cada año o si se sospecha una filtración (borrarla en Google Cloud y guardar una nueva en GitHub).
+
+
 Seguridad
 ---------
 

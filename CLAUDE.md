@@ -40,7 +40,7 @@ SEMILLA_ADMIN_CORREO=admin@ica-bienestar.local SEMILLA_ADMIN_CLAVE=CambiarEsta.2
   "npm run semilla:emulador && cd ../frontend && npx playwright test"
 ```
 
-CI (`.github/workflows/ci.yml`, read-only permissions) runs four jobs: `seguridad` (security gate, secrets in Git history, `npm audit --omit=dev --audit-level=high` in the three packages), `reglas` (copy check + typecheck + rules tests), `interfaz` (unit tests + production and demo builds), `extremo-a-extremo` (the command above). Dependabot (`.github/dependabot.yml`) proposes updates weekly.
+CI (`.github/workflows/ci.yml`, read-only permissions) runs four jobs: `seguridad` (security gate, secrets in Git history, `npm audit --omit=dev --audit-level=high` in the three packages), `reglas` (copy check + typecheck + rules tests), `interfaz` (unit tests + production and demo builds), `extremo-a-extremo` (the command above), and on pushes to `main` `publicar`, which deploys functions → hosting → Firestore rules with the `FIREBASE_CUENTA_SERVICIO` secret (skipped with a warning if absent) and checks `/version.json`. Dependabot (`.github/dependabot.yml`) proposes updates weekly.
 
 ### Security gate
 
@@ -93,6 +93,7 @@ On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, s
 - The admin-only `/sistema-de-diseno` page shows the system live; documented in `docs/SISTEMA-DE-DISENO.md`.
 - The floating assistant "Clara" (`features/asistente/`) lives in the shell: fixed answers in `preguntas.ts` (built from `compartido/norma.ts`), free questions via Gemini (`core/firebase/asistente-ia.ts`) with keyword fallback. The mascot SVG animates with CSS only and respects reduced motion.
 - Public pages: `/privacidad`, `/terminos`, `/cookies` (`features/legal/documentos.ts`; fill `CONTACTO_PRIVACIDAD`), the `pie-legal` footer and the `aviso-cookies` notice. Hosting sends a CSP without inline scripts, so the theme bootstrap is `public/tema.js` and production builds set `inlineCritical: false`. Sessions close after 30 minutes idle (`InactividadService`).
+- Live updates: `postbuild` runs `scripts/version.mjs` (writes `version.json`); `ActualizacionService` polls it every 5 minutes and on tab focus, and `aviso-actualizacion` offers to reload. Stale lazy chunks after a deploy trigger a guarded full reload (`withNavigationErrorHandler` in `app.config.ts`).
 - Unexpected errors go to `ManejadorErrores` (generic toast, no stack). `rutaDeRegreso` only accepts internal paths. `e2e/seguridad.spec.ts` holds the security regressions (malformed URL, open redirect, XSS, 2FA bypass, error leakage).
 - E2E tests assert axe accessibility, no horizontal overflow and ≥44 px touch targets (`e2e/helpers.ts`), so UI changes must keep those passing.
 

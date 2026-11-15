@@ -198,6 +198,12 @@ En la esquina inferior derecha de todas las pantallas internas está el botón *
 También se puede escribir una pregunta propia. Si Firebase AI Logic está disponible, Clara la responde con inteligencia artificial, limitada a la información de la aplicación y de la norma; si no, busca la respuesta establecida que más se parezca. El botón con la flecha circular empieza la conversación de nuevo, y la tecla `Escape` o la **X** cierran el panel. Las respuestas orientan y no reemplazan al médico veterinario.
 
 
+Actualizaciones
+---------------
+
+La aplicación se actualiza sola en el servidor cada vez que el equipo publica una mejora; no hay nada que descargar ni instalar. Si la aplicación está abierta en ese momento, aparece arriba el aviso **Hay una versión nueva**; al seleccionar **Actualizar** la página se recarga con los cambios, sin perder lo guardado.
+
+
 Privacidad, términos y cookies
 ------------------------------
 
