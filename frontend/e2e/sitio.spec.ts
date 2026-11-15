@@ -79,14 +79,30 @@ test.describe('Asistente Clara', () => {
 });
 
 test.describe('Actualización en vivo', () => {
-  test('avisa cuando se publica una versión nueva y la carga con un toque', async ({ page }) => {
+  test('cuando se publica una versión nueva, la página abierta se recarga sola', async ({ page }) => {
     let version = 'v1';
     await page.route('**/version.json*', (r) => r.fulfill({ json: { version } }));
     await page.goto('/ingresar');
     await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
-    await expect(page.getByRole('status').filter({ hasText: 'Hay una versión nueva' })).toHaveCount(0);
+    await page.evaluate(() => ((window as unknown as { marca: number }).marca = 1));
 
-    // Se publica otra versión; al volver a la pestaña la aplicación lo nota.
+    version = 'v2';
+    // La recarga puede empezar mientras esta llamada aún responde.
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))).catch(() => undefined);
+    // La recarga borra la marca: la página es otra, ya con la versión nueva.
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { marca?: number }).marca ?? 'recargada').catch(() => 'navegando'))
+      .toBe('recargada');
+    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
+  });
+
+  test('si la persona está escribiendo, espera a que termine para recargar', async ({ page }) => {
+    let version = 'v1';
+    await page.route('**/version.json*', (r) => r.fulfill({ json: { version } }));
+    await page.goto('/ingresar');
+    await page.getByLabel('Correo electrónico').fill('escribiendo@prueba.co');
+    await page.evaluate(() => ((window as unknown as { marca: number }).marca = 1));
+
     version = 'v2';
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
     const aviso = page.getByRole('status').filter({ hasText: 'Hay una versión nueva' });
@@ -94,10 +110,11 @@ test.describe('Actualización en vivo', () => {
     await expectAccessible(page);
     await expectNoHorizontalOverflow(page);
     await expectTouchTargets(page);
+    expect(await page.evaluate(() => (window as unknown as { marca?: number }).marca)).toBe(1);
 
-    await aviso.getByRole('button', { name: 'Actualizar' }).click();
-    await page.waitForLoadState('load');
-    await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
-    await expect(page.getByRole('status').filter({ hasText: 'Hay una versión nueva' })).toHaveCount(0);
+    await page.getByLabel('Correo electrónico').blur();
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { marca?: number }).marca ?? 'recargada').catch(() => 'navegando'), { timeout: 10_000 })
+      .toBe('recargada');
   });
 });

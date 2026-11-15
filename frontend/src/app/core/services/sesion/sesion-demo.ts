@@ -28,6 +28,8 @@ export class SesionDemo implements ProveedorSesion {
 
   async ingresar(email: string, password: string): Promise<ResultadoIngreso> {
     const respuesta = await firstValueFrom(this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password }));
+    // La vista previa de claude.ai no puede enviar correos: entra directo, sin la pantalla del código.
+    if ((environment as { vista?: boolean }).vista) return { usuario: this.abrir(respuesta) };
     return { desafio: this.desafio(respuesta) };
   }
 

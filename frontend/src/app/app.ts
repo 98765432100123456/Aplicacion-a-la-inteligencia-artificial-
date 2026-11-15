@@ -13,11 +13,16 @@ import { Toasts } from './shared/components/toasts/toasts';
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly demo = environment.demo;
+  // La vista previa de claude.ai se ve como la aplicación normal, sin la franja de demostración.
+  protected readonly demo = environment.demo && !(environment as { vista?: boolean }).vista;
 
   protected reset() {
     resetDemoData();
-    sessionStorage.clear();
-    location.href = '/ingresar';
+    try {
+      sessionStorage.clear();
+    } catch {
+      // Sin almacenamiento de sesión no hay nada que borrar.
+    }
+    location.reload();
   }
 }

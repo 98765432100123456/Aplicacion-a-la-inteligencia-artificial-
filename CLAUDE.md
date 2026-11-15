@@ -16,6 +16,7 @@ Frontend (`cd frontend`):
 | `npm run demo` | Dev server with no Firebase: in-browser fake data (login `admin@ica-bienestar.local` / `CambiarEsta.2026`) |
 | `npm run start:emuladores` | Dev server against local emulators |
 | `npm run build` | Production build to `dist/frontend/browser` (what Hosting serves) |
+| `npm run vista` | Preview for phones/tablets: demo backend without demo notices or 2FA screen, hash routes, relative paths; `scripts/vista.mjs` writes `dist/vista/browser/pagina.html` + `archivos.json`, published as the claude.ai artifact https://claude.ai/artifact/SUmkqdg3CTNmVtzSxbgp2o (republish after each change) |
 | `npm run test:ci` | Karma unit tests, headless (`CHROME_BIN` must point to a Chrome/Chromium) |
 | `npx ng test --watch=false --browsers=ChromeHeadlessCI --include='src/app/core/norma/**/*.spec.ts'` | Run a single unit spec |
 | `npx playwright test` | E2E (needs emulators running and seeded; Playwright starts `start:emuladores` itself) |
@@ -93,7 +94,7 @@ On finalize, `calificar` computes the per-freedom scores (weights 20/50/15/15, s
 - The admin-only `/sistema-de-diseno` page shows the system live; documented in `docs/SISTEMA-DE-DISENO.md`.
 - The floating assistant "Clara" (`features/asistente/`) lives in the shell: fixed answers in `preguntas.ts` (built from `compartido/norma.ts`), free questions via Gemini (`core/firebase/asistente-ia.ts`) with keyword fallback. The mascot SVG animates with CSS only and respects reduced motion.
 - Public pages: `/privacidad`, `/terminos`, `/cookies` (`features/legal/documentos.ts`; fill `CONTACTO_PRIVACIDAD`), the `pie-legal` footer and the `aviso-cookies` notice. Hosting sends a CSP without inline scripts, so the theme bootstrap is `public/tema.js` and production builds set `inlineCritical: false`. Sessions close after 30 minutes idle (`InactividadService`).
-- Live updates: `postbuild` runs `scripts/version.mjs` (writes `version.json`); `ActualizacionService` polls it every 5 minutes and on tab focus, and `aviso-actualizacion` offers to reload. Stale lazy chunks after a deploy trigger a guarded full reload (`withNavigationErrorHandler` in `app.config.ts`).
+- Live updates: `postbuild` runs `scripts/version.mjs` (writes `version.json`); `ActualizacionService` polls it every 5 minutes and on tab focus and reloads the page by itself (waiting until the user leaves a focused form field, while `aviso-actualizacion` shows a notice). Stale lazy chunks after a deploy trigger a guarded full reload (`withNavigationErrorHandler` in `app.config.ts`).
 - Unexpected errors go to `ManejadorErrores` (generic toast, no stack). `rutaDeRegreso` only accepts internal paths. `e2e/seguridad.spec.ts` holds the security regressions (malformed URL, open redirect, XSS, 2FA bypass, error leakage).
 - E2E tests assert axe accessibility, no horizontal overflow and ≥44 px touch targets (`e2e/helpers.ts`), so UI changes must keep those passing.
 

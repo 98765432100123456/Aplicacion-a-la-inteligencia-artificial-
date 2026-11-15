@@ -98,6 +98,26 @@
                   "with": "src/environments/environment.emuladores.ts"
                 }
               ]
+            },
+            "vista": {
+              "outputPath": "dist/vista",
+              "baseHref": "./",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "sourceMap": false,
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.vista.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

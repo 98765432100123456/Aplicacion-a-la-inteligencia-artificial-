@@ -146,7 +146,7 @@ Publicación automática (actualización en vivo)
 Cada cambio que llega a `main` y pasa todas las pruebas de la integración continua se publica solo en `https://bienestar-animal-ica.web.app` (trabajo `publicar` de `.github/workflows/ci.yml`). Nadie tiene que descargar el proyecto, compilar ni ejecutar `firebase deploy` en su computador.
 
 - **Orden:** Cloud Functions, sitio y reglas de Firestore. Si un paso falla, los siguientes no corren y lo publicado sigue funcionando. Al final se comprueba que `https://bienestar-animal-ica.web.app/version.json` muestra el commit recién publicado.
-- **Quien tiene la aplicación abierta** ve, en menos de 5 minutos o al volver a la pestaña, el aviso *Hay una versión nueva* con el botón **Actualizar**. Lo guardado no se pierde. Si alguien abre una pantalla cuyos archivos ya no existen, la aplicación recarga sola esa página con la versión nueva.
+- **Quien tiene la aplicación abierta** la ve actualizada sola en menos de 5 minutos o al volver a la pestaña: la página se recarga sin tocar nada. Si está escribiendo en un campo, ve el aviso *Hay una versión nueva* y la recarga espera a que termine. Lo guardado no se pierde. Si alguien abre una pantalla cuyos archivos ya no existen, la aplicación recarga sola esa página con la versión nueva.
 - **Caché:** `index.html`, `version.json`, `tema.js` y las rutas de la aplicación se revalidan siempre; los archivos con huella (`main-…js`, `chunk-…js`, `styles-…css`, `media/`) se guardan un año.
 
 **Configuración, una sola vez** (requiere el plan Blaze y los secretos del correo de la sección anterior):

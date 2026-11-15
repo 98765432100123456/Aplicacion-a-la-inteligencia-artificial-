@@ -10,7 +10,9 @@ describe('ActualizacionService', () => {
       return v === null ? new Response('', { status: 404 }) : new Response(JSON.stringify({ version: v }));
     });
     TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
-    return TestBed.inject(ActualizacionService);
+    const s = TestBed.inject(ActualizacionService);
+    spyOn(s, 'recargar');
+    return s;
   }
 
   it('avisa solo cuando la versión publicada cambia', async () => {
@@ -20,6 +22,7 @@ describe('ActualizacionService', () => {
     expect(s.disponible()).toBeFalse();
     await s.revisar();
     expect(s.disponible()).toBeTrue();
+    expect(s.recargar).toHaveBeenCalled();
   });
 
   it('sin version.json (desarrollo) no avisa nada', async () => {

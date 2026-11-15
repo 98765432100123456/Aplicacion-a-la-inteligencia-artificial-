@@ -201,7 +201,7 @@ También se puede escribir una pregunta propia. Si Firebase AI Logic está dispo
 Actualizaciones
 ---------------
 
-La aplicación se actualiza sola en el servidor cada vez que el equipo publica una mejora; no hay nada que descargar ni instalar. Si la aplicación está abierta en ese momento, aparece arriba el aviso **Hay una versión nueva**; al seleccionar **Actualizar** la página se recarga con los cambios, sin perder lo guardado.
+La aplicación se actualiza sola en el servidor cada vez que el equipo publica una mejora; no hay nada que descargar ni instalar. Si la página está abierta en ese momento, en menos de 5 minutos (o al volver a la pestaña) se recarga sola con los cambios. Si la persona está escribiendo en un campo, aparece arriba el aviso **Hay una versión nueva** y la recarga espera a que termine de escribir; lo guardado no se pierde.
 
 
 Privacidad, términos y cookies
