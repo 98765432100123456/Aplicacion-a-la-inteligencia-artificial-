@@ -43,8 +43,6 @@ Documentación del proyecto
 | Documento | Contenido |
 |---|---|
 | [Entrega de la semana 12](docs/entrega/Entrega-Semana-12-ICA-Bienestar-Animal.pdf) | Documento PDF con el código, el uso de Git, los diseños de interfaz, los diagramas UML y el diseño de la base de datos |
-| [Informe técnico](docs/INFORME-TECNICO.md) ([PDF](docs/INFORME-TECNICO.pdf)) | Documento de sustentación: lenguajes, estructura, qué llama a qué, Firebase, roles, cálculo de la norma, IA, seguridad, pruebas y publicación |
-| [Preguntas de sustentación](docs/PREGUNTAS-DE-SUSTENTACION.md) ([PDF](docs/PREGUNTAS-DE-SUSTENTACION.pdf)) | 45 preguntas de un evaluador experto con respuestas argumentadas y evidencia en el código |
 | [Seguridad](docs/SEGURIDAD.md) | Modelo de amenazas, OWASP Top 10, hallazgos, control automático y respuesta a incidentes |
 | [Arquitectura del sistema](docs/ARQUITECTURA.md) | Componentes, comunicación con Firebase, autenticación y autorización, flujos principales y operaciones sobre los datos |
 | [Manual de instalación](docs/MANUAL-DE-INSTALACION.md) | Requisitos, puesta en marcha en un equipo local y consulta desde un teléfono móvil |
