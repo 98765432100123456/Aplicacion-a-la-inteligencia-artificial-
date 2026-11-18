@@ -1,0 +1,143 @@
+// Tablero (modo Operate): cifras primero, luego gráficas en paneles y el análisis.
+// Los gráficos son HTML y CSS: se leen con lector de pantalla y respetan el modo oscuro.
+:host { display: block; }
+
+.exportar { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.exportar svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.periodo { margin-bottom: var(--e-6); border: 0; }
+
+// ---------- Cifras ----------
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 0;
+  margin: 0 0 var(--e-10);
+  border-top: 2px solid var(--linea-fuerte);
+
+  div { display: grid; gap: var(--e-1); padding: var(--e-5) var(--e-5) var(--e-5) 0; border-bottom: 1px solid var(--linea); }
+  dt { font-size: var(--texto-sm); color: var(--tinta-suave); }
+  dd { margin: 0; font-size: var(--texto-2xl); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .de { font-size: var(--texto-md); font-weight: 600; letter-spacing: 0; color: var(--tinta-suave); }
+  dd.detalle { font-size: var(--texto-xs); font-weight: 400; letter-spacing: 0; line-height: 1.4; color: var(--tinta-suave); }
+}
+
+.vacio { padding: var(--e-8) 0; color: var(--tinta-suave); max-width: 40rem; }
+
+// ---------- Paneles ----------
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: var(--e-6); }
+
+.panel {
+  min-width: 0;
+  padding: var(--e-5);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-panel);
+  background: var(--superficie);
+
+  h2 { margin-bottom: var(--e-4); font-size: var(--texto-md); letter-spacing: -0.02em; }
+}
+
+.nota { margin-top: var(--e-3); font-size: var(--texto-xs); color: var(--tinta-suave); }
+
+// Barra apilada por nivel
+.pila { display: flex; height: 1rem; overflow: hidden; border-radius: 999px; background: var(--linea); }
+.tramo { min-width: 0.4rem; }
+.tramo + .tramo { border-left: 2px solid var(--superficie); }
+.bajo { background: var(--alerta); }
+.medio { background: var(--maiz); }
+.alto { background: var(--accion); }
+.excelente { background: var(--acento); }
+
+.leyenda {
+  display: grid;
+  gap: var(--e-2);
+  margin-top: var(--e-4);
+  list-style: none;
+  padding: 0;
+
+  li { display: grid; grid-template-columns: auto 1fr auto 3rem; align-items: center; gap: var(--e-3); font-size: var(--texto-sm); }
+  i { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+  b, small { font-variant-numeric: tabular-nums; text-align: right; }
+  small { color: var(--tinta-suave); }
+}
+
+// Barras horizontales (libertades y hallazgos)
+.barras {
+  display: grid;
+  gap: var(--e-3);
+  list-style: none;
+  padding: 0;
+
+  li { display: grid; grid-template-columns: minmax(7rem, 1.2fr) 2fr 2.5rem; align-items: center; gap: var(--e-3); font-size: var(--texto-sm); }
+  .etiqueta { min-width: 0; overflow-wrap: anywhere; }
+  .etiqueta small { color: var(--tinta-suave); font-size: var(--texto-xs); }
+  b { text-align: right; font-variant-numeric: tabular-nums; }
+}
+.pista { height: 0.6rem; overflow: hidden; border-radius: 999px; background: var(--linea); }
+.relleno { display: block; height: 100%; border-radius: inherit; background: var(--accion); transition: width var(--dur-media) var(--curva); }
+.relleno.alerta { background: var(--maiz); }
+.critico { display: inline-block; margin-left: var(--e-1); color: var(--alerta) !important; font-weight: 700; }
+.hallazgos li { grid-template-columns: minmax(8rem, 1.6fr) 1.4fr 2rem; }
+
+// Columnas por mes
+.meses {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--e-2);
+  align-items: end;
+  height: 12rem;
+  list-style: none;
+  padding: 0;
+
+  li { display: grid; grid-template-rows: auto 1fr auto auto; justify-items: center; gap: var(--e-1); height: 100%; font-size: var(--texto-xs); }
+  b { font-size: var(--texto-sm); font-variant-numeric: tabular-nums; }
+  .columna { display: flex; align-items: flex-end; width: min(2.25rem, 100%); height: 100%; border-radius: 6px 6px 0 0; background: var(--acento-tenue); }
+  .columna span { display: block; width: 100%; min-height: 2px; border-radius: inherit; background: var(--accion); }
+  .mes { color: var(--tinta-suave); white-space: nowrap; }
+  small { min-height: 1em; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+}
+
+// ---------- Análisis ----------
+.analisis {
+  margin-top: var(--e-10);
+  padding-top: var(--e-6);
+  border-top: 2px solid var(--linea-fuerte);
+
+  h2 { font-size: var(--texto-xl); letter-spacing: -0.03em; }
+  h3 { margin-bottom: var(--e-2); font-size: var(--texto-md); }
+  ul, ol { display: grid; gap: var(--e-2); padding-left: var(--e-5); line-height: 1.5; }
+}
+.analisis-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--e-4);
+
+  p { margin-top: var(--e-1); color: var(--tinta-suave); max-width: 40rem; }
+}
+.origen { margin-top: var(--e-5); font-size: var(--texto-xs); font-weight: 700; color: var(--acento); }
+.resumen-ia { margin: var(--e-2) 0 var(--e-5); font-size: var(--texto-md); line-height: 1.55; max-width: 60rem; }
+.columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--e-6); }
+
+// ---------- Recientes ----------
+.recientes {
+  margin-top: var(--e-10);
+
+  h2 { margin-bottom: var(--e-4); font-size: var(--texto-xl); letter-spacing: -0.03em; }
+}
+.tabla-desplazable { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: var(--texto-sm); }
+th { padding: var(--e-2) var(--e-3) var(--e-2) 0; border-bottom: 2px solid var(--linea-fuerte); text-align: left; font-size: var(--texto-xs); color: var(--tinta-suave); }
+td { padding: var(--e-3) var(--e-3) var(--e-3) 0; border-bottom: 1px solid var(--linea); vertical-align: top; }
+td a { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 700; }
+td small { display: block; color: var(--tinta-suave); font-size: var(--texto-xs); }
+.cifra { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+// En el teléfono la etiqueta va arriba y la barra ocupa todo el ancho, para no cortar los nombres.
+@media (max-width: 29.99em) {
+  .barras li,
+  .hallazgos li { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--e-1); }
+  .barras .pista { grid-column: 1 / -1; grid-row: 2; }
+  .cifras dd { font-size: var(--texto-xl); }
+}

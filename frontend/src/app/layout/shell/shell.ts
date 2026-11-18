@@ -18,6 +18,7 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { path: '/inicio', label: 'Inicio' },
+  { path: '/tablero', label: 'Tablero', permissions: [P.REPORTES_VER, P.EVALUACIONES_VER, P.FINCAS_VER, P.PREDIOS_PROPIOS] },
   { path: '/predios', label: 'Predios', permissions: [P.FINCAS_VER, P.FINCAS_GESTIONAR, P.PREDIOS_PROPIOS] },
   { path: '/usuarios', label: 'Usuarios', permissions: [P.USUARIOS_VER, P.USUARIOS_GESTIONAR] },
   { path: '/roles', label: 'Roles', permissions: [P.ROLES_VER] },

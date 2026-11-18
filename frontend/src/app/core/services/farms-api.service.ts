@@ -6,6 +6,7 @@ import { PERMISOS } from '../../compartido/permisos';
 import { PrediosEvaluacionesFirebase } from '../firebase/predios-evaluaciones';
 import { guardarArchivo } from '../informes/informes';
 import { EvaluationDetail, EvaluationSummary, FarmInput, FarmItem, SaveEvaluationInput, Species } from '../models/predios';
+import { DatosTablero } from '../models/tablero';
 import { AuthService } from './auth.service';
 
 /** Predios, evaluaciones e informes: Firestore en uso real; la API simulada en el modo demostración. */
@@ -75,6 +76,11 @@ export class FarmsApiService {
     return this.real
       ? from(this.real.regenerateRecommendations(id))
       : this.http.post<EvaluationDetail>(`${this.api}/evaluations/${id}/recommendations`, {});
+  }
+
+  /** Predios y evaluaciones finalizadas para el tablero, según lo que el rol puede ver. */
+  dashboard(): Observable<DatosTablero> {
+    return this.real ? from(this.real.dashboard()) : this.http.get<DatosTablero>(`${this.api}/dashboard`);
   }
 
   /** Genera el PDF y lo descarga con su nombre. */

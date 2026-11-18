@@ -90,6 +90,17 @@ export const PREGUNTAS: PreguntaFrecuente[] = [
     permisos: [P.REPORTES_VER, P.EVALUACIONES_VER, P.PREDIOS_PROPIOS],
   },
   {
+    id: 'tablero',
+    pregunta: '¿Qué muestra el tablero?',
+    respuesta: [
+      'El tablero resume las evaluaciones finalizadas: cuántas hay, el puntaje promedio, cuántas quedaron en cada nivel, el promedio de cada libertad, la tendencia por mes y los criterios con más hallazgos.',
+      'Con «Generar análisis con IA» obtiene una lectura de las cifras con acciones sugeridas. Puede exportar las evaluaciones a Excel o descargar el reporte en PDF.',
+    ],
+    claves: ['tablero', 'dashboard', 'estadistica', 'grafica', 'exportar', 'excel', 'reporte general', 'indicadores'],
+    enlace: { texto: 'Ir al tablero', ruta: '/tablero' },
+    permisos: [P.REPORTES_VER, P.EVALUACIONES_VER, P.FINCAS_VER, P.PREDIOS_PROPIOS],
+  },
+  {
     id: 'recomendaciones',
     pregunta: '¿De dónde salen las recomendaciones?',
     respuesta: [

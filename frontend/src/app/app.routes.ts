@@ -58,6 +58,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/home/home').then((m) => m.Home),
       },
       {
+        path: 'tablero',
+        title: 'Tablero | ICA Bienestar Animal',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.REPORTES_VER, P.EVALUACIONES_VER, P.FINCAS_VER, P.PREDIOS_PROPIOS] },
+        loadComponent: () => import('./features/dashboard/tablero/tablero').then((m) => m.Tablero),
+      },
+      {
         path: 'predios',
         title: 'Predios | ICA Bienestar Animal',
         canActivate: [permissionGuard],

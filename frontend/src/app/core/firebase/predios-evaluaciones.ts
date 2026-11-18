@@ -1,11 +1,12 @@
 import type { DocumentData, DocumentSnapshot, Query } from 'firebase/firestore';
-import { calificar, faltantes, RespuestaIndicador } from '../../compartido/calificacion';
+import { calificar, faltantes, RespuestaIndicador, Resultado } from '../../compartido/calificacion';
 import { ARBOLES, RutaArbol, rutaLimpia } from '../../compartido/escenarios';
 import { listaPara, Respuesta, VERSION_LISTA } from '../../compartido/lista-chequeo';
 import { muestraMinima, NOMBRE_PRODUCTOR, repartir, Sistema, tipoProductor } from '../../compartido/norma';
 import { recomendacionesPorReglas, Recomendaciones } from '../../compartido/recomendaciones';
 import { generarInforme, guardarArchivo, nombreInforme, TipoInforme } from '../informes/informes';
 import { EvaluationDetail, EvaluationSummary, FarmInput, FarmItem, ReportMeta, SaveEvaluationInput, Species } from '../models/predios';
+import { DatosTablero, FilaTablero } from '../models/tablero';
 import { ErrorVisible } from '../utils/http-error';
 import { auditar } from './auditoria';
 import { firebase, Firebase, iso } from './conexion';
@@ -116,6 +117,36 @@ export class PrediosEvaluacionesFirebase {
       })
       .sort((x, y) => (y.createdAt ?? '').localeCompare(x.createdAt ?? ''))
       .map(({ createdAt: _creada, ...resumen }) => resumen);
+  }
+
+  /**
+   * Datos del tablero: predios visibles y evaluaciones finalizadas con sus resultados. Las mismas
+   * consultas que el historial, así que las reglas de Firestore aplican igual: el propietario solo
+   * recibe lo de sus predios.
+   */
+  async dashboard(): Promise<DatosTablero> {
+    const fb = await firebase();
+    const a = this.alcance();
+    const { collection, query, where } = fb.fs;
+    const evaluaciones = collection(fb.db, 'evaluaciones');
+    const predios = a.todosLosPredios ? collection(fb.db, 'predios') : query(collection(fb.db, 'predios'), where('propietarioCorreo', '==', a.correo));
+    const finalizadas = a.personal
+      ? query(evaluaciones, where('estado', '==', 'finalizada'))
+      : query(evaluaciones, where('propietarioCorreo', '==', a.correo), where('estado', '==', 'finalizada'));
+    // Quien ve predios pero no evaluaciones (sin permisos de evaluación) solo recibe el conteo de predios.
+    const veEvaluaciones = a.personal || !a.todosLosPredios;
+    const [docsPredios, docsFinal, docsBorrador, especies] = await Promise.all([
+      this.leer(predios),
+      veEvaluaciones ? this.leer(finalizadas) : Promise.resolve([]),
+      a.personal ? this.leer(query(evaluaciones, where('estado', '==', 'borrador'))) : Promise.resolve([]),
+      this.species(),
+    ]);
+    const porId = new Map(docsPredios.map((d) => [d.id, d]));
+    return {
+      predios: docsPredios.length,
+      borradores: docsBorrador.length,
+      evaluaciones: docsFinal.filter((d) => porId.has(d.get('predioId'))).map((d) => filaTablero(d, porId.get(d.get('predioId'))!, especies)),
+    };
   }
 
   /** Crea la evaluación de una especie, o devuelve la que está en curso (RF13, RF14). */
@@ -337,6 +368,25 @@ function vistaPredio(d: Doc, especies: Species[], ultima: Doc | null): FarmItem 
       ? { id: ultima.id, speciesName: especies.find((x) => x.id === ultima.get('especieId'))?.name ?? '', finishedAt: iso(ultima.get('finalizadaEn'))!, score: ultima.get('puntaje') ?? null, level: ultima.get('nivel') ?? null }
       : null,
     updatedAt: iso(p['actualizadoEn']) ?? new Date().toISOString(),
+  };
+}
+
+function filaTablero(d: Doc, predio: Doc, especies: Species[]): FilaTablero {
+  const e = d.data()!;
+  const p = predio.data()!;
+  const inv = e['inventario'] as { crias: number; jovenes: number; adultos: number };
+  const total = inv.crias + inv.jovenes + inv.adultos;
+  const resultado = (e['resultado'] ?? null) as Resultado | null;
+  return {
+    id: d.id, codigo: `EV-${d.id.slice(0, 8).toUpperCase()}`,
+    predio: p['nombre'], departamento: p['departamento'], municipio: p['municipio'],
+    especie: especies.find((x) => x.id === e['especieId'])?.name ?? e['especieId'],
+    sistema: (e['sistema'] ?? null) as Sistema | null, productor: tipoProductor(total), animales: total,
+    evaluador: e['evaluadorNombre'] ?? 'Evaluador', fechaVisita: e['fechaVisita'], finalizada: iso(e['finalizadaEn']) ?? '',
+    puntaje: e['puntaje'], nivel: e['nivel'],
+    libertades: (resultado?.libertades ?? []).map((l) => ({ codigo: l.codigo, puntaje: l.puntaje })),
+    hallazgos: (resultado?.hallazgos ?? []).map((h) => ({ criterio: h.criterio, nombre: h.nombreCriterio, critico: h.critico })),
+    origenRecomendaciones: (e['recomendacion']?.['origen'] ?? null) as FilaTablero['origenRecomendaciones'],
   };
 }
 

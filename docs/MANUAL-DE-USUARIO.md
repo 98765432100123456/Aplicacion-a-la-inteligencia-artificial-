@@ -190,6 +190,22 @@ La sección **Cuenta** muestra el nombre, el correo y el rol de la persona. Para
 Desde esta sección se cambia la contraseña: se escribe la contraseña actual, la nueva y su confirmación, y se selecciona **Cambiar contraseña**. Quien ingresa con Google, Facebook o Microsoft cambia su contraseña en ese servicio.
 
 
+Tablero
+-------
+
+La sección **Tablero** resume las evaluaciones finalizadas que el rol puede consultar; el propietario ve solo las de sus predios. Con el control **Todo**, **Últimos 12 meses** o **Últimos 90 días** se elige el periodo.
+
+- **Cifras:** evaluaciones finalizadas y en curso, predios evaluados, puntaje promedio con su nivel y porcentaje de evaluaciones en nivel alto o excelente.
+- **Evaluaciones por nivel:** barra con la proporción de evaluaciones en nivel bajo, medio, alto y excelente.
+- **Promedio por libertad:** el puntaje de 0 a 5 de cada libertad, con su peso en la calificación.
+- **Evaluaciones por mes:** cantidad de evaluaciones de los últimos seis meses y su puntaje promedio.
+- **Criterios con más hallazgos:** los cinco criterios que más se repiten con resultado parcial o negativo, y cuántos fueron críticos.
+- **Análisis de los resultados:** el botón **Generar análisis con IA** envía solo las cifras agregadas, sin nombres ni datos personales, a la inteligencia artificial, que devuelve un resumen, lo que muestran las cifras y acciones sugeridas. Si la IA no está disponible, el análisis se genera por reglas y así se indica.
+- **Evaluaciones más recientes:** cada fila abre el resultado de la evaluación.
+
+**Exportar.** **Exportar a Excel** descarga un archivo CSV con una fila por evaluación (predio, ubicación, sistema, tipo de productor, evaluador, fechas, puntaje, nivel, puntaje de cada libertad, criterios con hallazgos y origen de las recomendaciones), listo para abrir en Excel. **Reporte PDF** descarga el reporte del tablero con las cifras, las tablas y, si se generó, el análisis.
+
+
 Asistente Clara
 ---------------
 

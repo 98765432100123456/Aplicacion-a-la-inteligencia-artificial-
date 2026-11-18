@@ -5,6 +5,7 @@ import { rutasDeCuenta, rutasPublicas } from './rutas/autenticacion';
 import { rutasDeEvaluaciones } from './rutas/evaluaciones';
 import { rutasDePredios } from './rutas/predios';
 import { rutasDeRoles } from './rutas/roles';
+import { rutasDeTablero } from './rutas/tablero';
 import { rutasDeUsuarios } from './rutas/usuarios';
 
 export { resetDemoData } from './almacen-demo';
@@ -34,6 +35,7 @@ export const demoApiInterceptor: HttpInterceptorFn = (req, next) => {
     rutasDeRoles(peticion, yo) ??
     rutasDePredios(peticion, yo) ??
     rutasDeEvaluaciones(peticion, yo) ??
+    rutasDeTablero(peticion, yo) ??
     fallo(404, 'Recurso no disponible en el modo demostración.')
   );
 };
