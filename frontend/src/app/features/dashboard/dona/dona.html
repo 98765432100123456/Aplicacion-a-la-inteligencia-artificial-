@@ -1,0 +1,19 @@
+<div class="grafico">
+  <svg viewBox="0 0 140 140" role="img" [attr.aria-label]="descripcion()">
+    <circle class="fondo" cx="70" cy="70" [attr.r]="r" />
+    @for (a of arcos(); track a.codigo) {
+      <circle [class]="'arco ' + a.codigo" cx="70" cy="70" [attr.r]="r" [attr.stroke-dasharray]="a.dash" [attr.stroke-dashoffset]="a.offset" />
+    }
+  </svg>
+  <div class="centro" aria-hidden="true"><b>{{ total() }}</b><span>evaluaciones</span></div>
+</div>
+<ul class="leyenda">
+  @for (s of segmentos(); track s.codigo) {
+    <li>
+      <i [class]="s.codigo.toLowerCase()" aria-hidden="true"></i>
+      <span>{{ s.nombre }}</span>
+      <b>{{ s.cantidad }}</b>
+      <small>{{ porcentaje(s.cantidad) }} %</small>
+    </li>
+  }
+</ul>

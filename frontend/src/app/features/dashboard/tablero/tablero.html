@@ -1,11 +1,27 @@
-<app-page-header heading="Tablero" description="Resultados de las evaluaciones de bienestar animal: niveles, libertades, tendencia y criterios por mejorar.">
+<header class="portada">
+  <div class="portada-texto">
+    <p class="marca">Bienestar animal · Metodología ICA 2023</p>
+    <h1>Tablero</h1>
+    <p class="bajada">
+      @if (resumen(); as r) {
+        {{ r.evaluaciones }} {{ r.evaluaciones === 1 ? 'evaluación finalizada' : 'evaluaciones finalizadas' }} en {{ r.prediosEvaluados }}
+        {{ r.prediosEvaluados === 1 ? 'predio' : 'predios' }} · {{ alcance() }}
+      } @else {
+        Resultados de las evaluaciones de bienestar animal.
+      }
+    </p>
+  </div>
   @if (resumen(); as r) {
     <div class="exportar">
-      <button type="button" class="btn btn-secundario" (click)="exportarExcel()" [disabled]="!r.evaluaciones || exportando()">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>
-        Exportar a Excel
+      <button type="button" class="btn btn-principal" (click)="exportarExcel()" [disabled]="exportando()">
+        @if (exportando() === 'excel') {
+          <span class="spinner" aria-hidden="true"></span> Generando…
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM4 9h16M4 14h16M9 4v16" /></svg>
+          Exportar a Excel
+        }
       </button>
-      <button type="button" class="btn btn-principal" (click)="exportarPdf()" [disabled]="exportando()">
+      <button type="button" class="btn btn-claro" (click)="exportarPdf()" [disabled]="exportando()">
         @if (exportando() === 'pdf') {
           <span class="spinner" aria-hidden="true"></span> Generando…
         } @else {
@@ -15,7 +31,7 @@
       </button>
     </div>
   }
-</app-page-header>
+</header>
 
 @if (error()) {
   <app-error-carga [mensaje]="error()!" (reintentar)="cargar()" />
@@ -24,117 +40,168 @@
 } @else {
   @let r = resumen()!;
 
-  <fieldset class="segmentado periodo">
-    <legend class="visually-hidden">Periodo</legend>
-    @for (p of periodos; track p) {
-      <label><input type="radio" name="periodo" [value]="p" [checked]="periodo() === p" (change)="cambiarPeriodo(p)" />{{ nombrePeriodo[p] }}</label>
-    }
-  </fieldset>
+  <section class="filtros" aria-label="Filtros del tablero">
+    <fieldset class="segmentado">
+      <legend class="visually-hidden">Periodo</legend>
+      @for (p of periodos; track p) {
+        <label><input type="radio" name="periodo" [value]="p" [checked]="periodo() === p" (change)="cambiarPeriodo(p)" />{{ nombrePeriodo[p] }}</label>
+      }
+    </fieldset>
+    <div class="selectores">
+      <label class="visually-hidden" for="f-departamento">Departamento</label>
+      <select id="f-departamento" class="control" [value]="departamento()" (change)="cambiarDepartamento($any($event.target).value)">
+        <option value="">Todos los departamentos</option>
+        @for (d of opciones().departamentos; track d) {
+          <option [value]="d">{{ d }}</option>
+        }
+      </select>
+      <label class="visually-hidden" for="f-sistema">Sistema productivo</label>
+      <select id="f-sistema" class="control" [value]="sistema()" (change)="cambiarSistema($any($event.target).value)">
+        <option value="">Todos los sistemas</option>
+        @for (s of opciones().sistemas; track s) {
+          <option [value]="s">{{ nombreSistema[s] }}</option>
+        }
+      </select>
+      @if (departamento() || sistema() || periodo() !== 'todo') {
+        <button type="button" class="btn btn-texto" (click)="limpiarFiltros()">Quitar filtros</button>
+      }
+    </div>
+  </section>
 
-  <dl class="cifras">
-    <div>
-      <dt>Evaluaciones finalizadas</dt>
-      <dd>{{ r.evaluaciones }}</dd>
-      <dd class="detalle">{{ r.borradores }} en curso</dd>
-    </div>
-    <div>
-      <dt>Predios evaluados</dt>
-      <dd>{{ r.prediosEvaluados }}<span class="de"> de {{ r.predios }}</span></dd>
-      <dd class="detalle">registrados en la plataforma</dd>
-    </div>
-    <div>
-      <dt>Puntaje promedio</dt>
-      <dd>{{ decimal(r.puntajePromedio) }}<span class="de"> / 5</span></dd>
-      <dd class="detalle"><app-nivel [nivel]="r.nivelPromedio" /></dd>
-    </div>
-    <div>
-      <dt>Nivel alto o excelente</dt>
-      <dd>{{ r.buenasPracticas === null ? '—' : r.buenasPracticas + ' %' }}</dd>
-      <dd class="detalle">de las evaluaciones</dd>
-    </div>
-  </dl>
+  <div class="indicadores">
+    <app-indicador
+      etiqueta="Evaluaciones finalizadas"
+      icono="evaluaciones"
+      [valor]="'' + r.evaluaciones"
+      [detalle]="r.borradores + ' en curso'"
+      [variacion]="r.variacion.evaluaciones"
+      [serie]="serieCantidad()"
+    />
+    <app-indicador etiqueta="Predios evaluados" icono="predios" [valor]="'' + r.prediosEvaluados" [unidad]="'de ' + r.predios" detalle="registrados en la plataforma" />
+    <app-indicador
+      etiqueta="Puntaje promedio"
+      icono="puntaje"
+      [valor]="decimal(r.puntajePromedio)"
+      unidad="/ 5"
+      [variacion]="r.variacion.puntaje"
+      formatoVariacion="decimal"
+      [serie]="seriePromedio()"
+    />
+    <app-indicador
+      etiqueta="Nivel alto o excelente"
+      icono="nivel"
+      [valor]="r.buenasPracticas === null ? '—' : r.buenasPracticas + ' %'"
+      detalle="de las evaluaciones"
+      [variacion]="r.variacion.buenasPracticas"
+      formatoVariacion="puntos"
+    />
+  </div>
 
   @if (!r.evaluaciones) {
-    <p class="vacio">
-      No hay evaluaciones finalizadas en este periodo. Cuando un evaluador finalice una evaluación, sus resultados aparecerán aquí.
-    </p>
+    <div class="vacio">
+      <h2>No hay evaluaciones finalizadas con estos filtros.</h2>
+      <p>Cambie el periodo o quite los filtros. Cuando un evaluador finalice una evaluación, sus resultados aparecerán aquí.</p>
+    </div>
   } @else {
     <div class="rejilla">
+      <section class="panel" aria-labelledby="t-indice">
+        <header><h2 id="t-indice">Índice de bienestar</h2><p>Puntaje promedio sobre la escala del ICA</p></header>
+        <app-medidor [puntaje]="r.puntajePromedio" [nivel]="r.nivelPromedio" />
+      </section>
+
       <section class="panel" aria-labelledby="t-niveles">
-        <h2 id="t-niveles">Evaluaciones por nivel</h2>
-        <div class="pila" aria-hidden="true">
-          @for (n of r.porNivel; track n.codigo) {
-            @if (n.cantidad) {
-              <span [class]="'tramo ' + n.codigo.toLowerCase()" [style.flex-grow]="n.cantidad"></span>
-            }
-          }
-        </div>
-        <ul class="leyenda">
-          @for (n of r.porNivel; track n.codigo) {
-            <li>
-              <i [class]="n.codigo.toLowerCase()" aria-hidden="true"></i>
-              <span>{{ n.nombre }}</span>
-              <b>{{ n.cantidad }}</b>
-              <small>{{ porcentaje(n.cantidad) }} %</small>
-            </li>
-          }
-        </ul>
+        <header><h2 id="t-niveles">Evaluaciones por nivel</h2><p>Cuántas quedaron en cada nivel de la norma</p></header>
+        <app-dona [segmentos]="r.porNivel" />
+      </section>
+
+      <section class="panel ancho" aria-labelledby="t-tendencia">
+        <header><h2 id="t-tendencia">Tendencia de los últimos 12 meses</h2><p>Evaluaciones finalizadas por mes y su puntaje promedio</p></header>
+        <app-tendencia [meses]="r.porMes" />
       </section>
 
       <section class="panel" aria-labelledby="t-libertades">
-        <h2 id="t-libertades">Promedio por libertad</h2>
+        <header><h2 id="t-libertades">Libertades</h2><p>Promedio de 0 a 5 frente a la meta de nivel alto ({{ decimal(meta) }})</p></header>
         <ul class="barras">
           @for (l of r.porLibertad; track l.codigo) {
             <li>
-              <span class="etiqueta">{{ l.nombre }} <small>{{ l.peso }} %</small></span>
-              <span class="pista" aria-hidden="true"><span class="relleno" [style.width.%]="((l.promedio ?? 0) / 5) * 100"></span></span>
-              <b>{{ decimal(l.promedio) }}</b>
+              <span class="etiqueta">{{ l.nombre }} <small>{{ l.peso }} % de la nota</small></span>
+              <b [class.bajo-meta]="l.promedio !== null && l.promedio < meta">{{ decimal(l.promedio) }}</b>
+              <span class="pista" aria-hidden="true">
+                <span class="relleno" [class.alerta]="l.promedio !== null && l.promedio < meta" [style.width.%]="((l.promedio ?? 0) / 5) * 100"></span>
+                <span class="meta" [style.left.%]="(meta / 5) * 100"></span>
+              </span>
             </li>
           }
         </ul>
       </section>
 
-      <section class="panel" aria-labelledby="t-meses">
-        <h2 id="t-meses">Evaluaciones por mes</h2>
-        <ol class="meses">
-          @for (m of r.porMes; track m.mes) {
-            <li>
-              <b>{{ m.cantidad }}</b>
-              <span class="columna" aria-hidden="true"><span [style.height.%]="(m.cantidad / maxMes()) * 100"></span></span>
-              <span class="mes">{{ m.etiqueta }}</span>
-              <small>{{ m.promedio === null ? '' : decimal(m.promedio) }}</small>
-            </li>
-          }
-        </ol>
-        <p class="nota">Cantidad de evaluaciones finalizadas y, debajo, su puntaje promedio.</p>
-      </section>
-
       <section class="panel" aria-labelledby="t-hallazgos">
-        <h2 id="t-hallazgos">Criterios con más hallazgos</h2>
+        <header><h2 id="t-hallazgos">Criterios con más hallazgos</h2><p>Evaluaciones con resultado parcial o negativo en el criterio</p></header>
         @if (r.hallazgosFrecuentes.length) {
-          <ul class="barras hallazgos">
-            @for (h of r.hallazgosFrecuentes; track h.criterio) {
+          <ol class="ranking">
+            @for (h of r.hallazgosFrecuentes; track h.criterio; let i = $index) {
               <li>
-                <span class="etiqueta">{{ h.nombre }}@if (h.criticos) { <small class="critico">{{ h.criticos }} crítico{{ h.criticos === 1 ? '' : 's' }}</small> }</span>
-                <span class="pista" aria-hidden="true"><span class="relleno alerta" [style.width.%]="(h.veces / maxHallazgo()) * 100"></span></span>
+                <span class="puesto">{{ i + 1 }}</span>
+                <span class="etiqueta">
+                  {{ h.nombre }}
+                  @if (h.criticos) {
+                    <small class="critico">{{ h.criticos }} crítico{{ h.criticos === 1 ? '' : 's' }}</small>
+                  }
+                </span>
+                <span class="pista" aria-hidden="true"><span class="relleno maiz" [style.width.%]="(h.veces / maxHallazgo()) * 100"></span></span>
                 <b>{{ h.veces }}</b>
               </li>
             }
-          </ul>
-          <p class="nota">Número de evaluaciones en las que el criterio tuvo un resultado parcial o negativo.</p>
+          </ol>
         } @else {
           <p class="nota">Ninguna evaluación tuvo hallazgos en este periodo.</p>
+        }
+      </section>
+
+      <section class="panel" aria-labelledby="t-departamentos">
+        <header><h2 id="t-departamentos">Por departamento</h2><p>Evaluaciones y puntaje promedio</p></header>
+        <ul class="departamentos">
+          @for (d of r.porDepartamento; track d.departamento) {
+            <li>
+              <span class="etiqueta">{{ d.departamento }}</span>
+              <span class="pista" aria-hidden="true"><span class="relleno" [style.width.%]="(d.evaluaciones / maxDepartamento()) * 100"></span></span>
+              <span class="cuantas">{{ d.evaluaciones }}</span>
+              <app-nivel [nivel]="d.nivel" [puntaje]="d.promedio" />
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="t-atencion">
+        <header><h2 id="t-atencion">Predios que requieren atención</h2><p>Su última evaluación quedó en nivel bajo o medio</p></header>
+        @if (r.requierenAtencion.length) {
+          <ul class="atencion">
+            @for (f of r.requierenAtencion; track f.id) {
+              <li>
+                <a [routerLink]="['/evaluaciones', f.id]">
+                  <span><b>{{ f.predio }}</b><small>{{ f.municipio }}, {{ f.departamento }} · {{ f.finalizada.slice(0, 10) }}</small></span>
+                  <app-nivel [nivel]="f.nivel" [puntaje]="f.puntaje" />
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="todo-bien">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            Todos los predios evaluados están en nivel alto o excelente.
+          </p>
         }
       </section>
     </div>
 
     <section class="analisis" aria-labelledby="t-analisis" aria-live="polite">
       <div class="analisis-cabeza">
+        <span class="chispa" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" /></svg></span>
         <div>
           <h2 id="t-analisis">Análisis de los resultados</h2>
-          <p>La inteligencia artificial lee estas cifras (sin datos personales) y propone qué atender primero.</p>
+          <p>La inteligencia artificial lee las cifras de este tablero, sin datos personales, y propone qué atender primero.</p>
         </div>
-        <button type="button" class="btn btn-secundario" (click)="analizar()" [disabled]="analizando()">
+        <button type="button" class="btn btn-principal" (click)="analizar()" [disabled]="analizando()">
           @if (analizando()) {
             <span class="spinner" aria-hidden="true"></span> Analizando…
           } @else {
@@ -143,7 +210,9 @@
         </button>
       </div>
       @if (analisis(); as a) {
-        <p class="origen">{{ a.origen === 'IA' ? 'Generado con inteligencia artificial (' + a.modelo + ')' : 'Generado por reglas: la IA no está disponible en este momento' }}</p>
+        <p class="origen" [class.ia]="a.origen === 'IA'">
+          {{ a.origen === 'IA' ? 'Generado con inteligencia artificial · ' + a.modelo : 'Generado por reglas: la IA no está disponible en este momento' }}
+        </p>
         <p class="resumen-ia">{{ a.resumen }}</p>
         <div class="columnas">
           <div>
@@ -159,7 +228,7 @@
             </ol>
           </div>
         </div>
-        <p class="nota">El análisis orienta; no reemplaza el concepto oficial del ICA ni del médico veterinario. Se incluye en el reporte PDF.</p>
+        <p class="nota">El análisis orienta; no reemplaza el concepto oficial del ICA ni del médico veterinario. Se incluye en el Excel y en el reporte PDF.</p>
       }
     </section>
 
@@ -170,9 +239,10 @@
           <thead>
             <tr>
               <th scope="col">Predio</th>
-              <th scope="col">Municipio</th>
+              <th scope="col">Ubicación</th>
+              <th scope="col">Evaluador</th>
               <th scope="col">Finalizada</th>
-              <th scope="col">Nivel</th>
+              <th scope="col">Resultado</th>
             </tr>
           </thead>
           <tbody>
@@ -180,6 +250,7 @@
               <tr>
                 <td><a [routerLink]="['/evaluaciones', f.id]">{{ f.predio }}</a><small>{{ f.codigo }}</small></td>
                 <td>{{ f.municipio }}, {{ f.departamento }}</td>
+                <td>{{ f.evaluador }}</td>
                 <td class="cifra">{{ f.finalizada.slice(0, 10) }}</td>
                 <td><app-nivel [nivel]="f.nivel" [puntaje]="f.puntaje" /></td>
               </tr>

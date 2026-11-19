@@ -1,0 +1,39 @@
+:host { display: grid; grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr); align-items: center; gap: var(--e-6); }
+.grafico { position: relative; }
+svg { display: block; width: 100%; transform: rotate(-90deg); }
+.fondo { fill: none; stroke: var(--linea); stroke-width: 16; }
+.arco { fill: none; stroke-width: 16; stroke-linecap: butt; }
+.arco.bajo, i.bajo { stroke: var(--alerta); background: var(--alerta); }
+.arco.medio, i.medio { stroke: var(--maiz); background: var(--maiz); }
+.arco.alto, i.alto { stroke: var(--accion); background: var(--accion); }
+.arco.excelente, i.excelente { stroke: var(--acento); background: var(--acento); }
+.centro {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  b { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+  span { font-size: var(--texto-xs); color: var(--tinta-suave); }
+}
+.leyenda {
+  display: grid;
+  gap: var(--e-3);
+  list-style: none;
+  padding: 0;
+
+  li { display: grid; grid-template-columns: auto 1fr auto 2.8rem; align-items: center; gap: var(--e-3); font-size: var(--texto-sm); }
+  i { width: 0.75rem; height: 0.75rem; border-radius: 0.25rem; }
+  b, small { text-align: right; font-variant-numeric: tabular-nums; }
+  small { color: var(--tinta-suave); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .arco { animation: trazar 900ms var(--curva) both; }
+  @keyframes trazar { from { stroke-dasharray: 0 400; } }
+}
+@media (max-width: 29.99em) {
+  :host { grid-template-columns: 1fr; justify-items: center; }
+  .grafico { width: 10rem; }
+  .leyenda { width: 100%; }
+}

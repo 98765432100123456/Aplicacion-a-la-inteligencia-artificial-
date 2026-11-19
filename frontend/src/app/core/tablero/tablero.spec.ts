@@ -41,7 +41,10 @@ describe('Tablero', () => {
     expect(r.porNivel.map((n) => n.cantidad)).toEqual([1, 1, 0, 1]);
     // Las libertades sin dato no cuentan en el promedio.
     expect(r.porLibertad.find((l) => l.codigo === 'COMPORTAMIENTO')!.promedio).toBeNull();
-    expect(r.porMes.map((m) => m.cantidad)).toEqual([0, 0, 0, 0, 1, 1]);
+    expect(r.porMes.length).toBe(12);
+    expect(r.porMes.map((m) => m.cantidad)).toEqual([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]);
+    expect(r.requierenAtencion.map((f) => f.id)).toEqual(['2', '3']);
+    expect(r.porDepartamento).toEqual([{ departamento: 'Boyacá', evaluaciones: 3, promedio: 3.57, nivel: 'MEDIO' }]);
     expect(r.recientes[0].id).toBe('1');
   });
 
@@ -51,9 +54,18 @@ describe('Tablero', () => {
     expect(r.hallazgosFrecuentes[1]).toEqual({ criterio: 'c3', nombre: 'Condición corporal', veces: 1, criticos: 1 });
   });
 
-  it('filtra por periodo según la fecha de finalización', () => {
-    expect(resumirTablero(DATOS, '90d', HOY).evaluaciones).toBe(2);
+  it('filtra por periodo y compara con el periodo anterior', () => {
+    const r90 = resumirTablero(DATOS, '90d', HOY);
+    expect(r90.evaluaciones).toBe(2);
+    // En los 90 días anteriores no hubo evaluaciones: la variación del conteo es +2 y no hay puntaje con qué comparar.
+    expect(r90.variacion).toEqual({ evaluaciones: 2, puntaje: null, buenasPracticas: null });
     expect(resumirTablero(DATOS, '12m', HOY).evaluaciones).toBe(3);
+    expect(resumirTablero(DATOS, 'todo', HOY).variacion.puntaje).toBeNull();
+  });
+
+  it('filtra por departamento y sistema productivo', () => {
+    expect(resumirTablero(DATOS, 'todo', HOY, { departamento: 'Antioquia' }).evaluaciones).toBe(0);
+    expect(resumirTablero(DATOS, 'todo', HOY, { sistema: 'LECHERIA' }).evaluaciones).toBe(3);
   });
 
   it('exporta a CSV para Excel en español y sin fórmulas ejecutables', () => {

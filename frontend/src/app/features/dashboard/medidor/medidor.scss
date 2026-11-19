@@ -1,0 +1,29 @@
+:host { display: grid; justify-items: center; }
+svg { width: 100%; max-width: 20rem; overflow: visible; }
+.franja { fill: none; stroke-width: 18; stroke-linecap: butt; }
+.franja.bajo { stroke: var(--alerta); }
+.franja.medio { stroke: var(--maiz); }
+.franja.alto { stroke: var(--accion); }
+.franja.excelente { stroke: var(--acento); }
+.marca { font-size: 9px; font-weight: 600; fill: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+.aguja { stroke: var(--tinta); stroke-width: 3.5; stroke-linecap: round; }
+.eje { fill: var(--tinta); stroke: var(--superficie); stroke-width: 3; }
+.lectura {
+  margin-top: -2.4rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+
+  b { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+  span { font-size: var(--texto-sm); color: var(--tinta-suave); }
+}
+.nivel { margin-top: var(--e-1); font-weight: 800; font-size: var(--texto-md); }
+.nivel.bajo { color: var(--alerta); }
+.nivel.medio { color: var(--maiz); }
+.nivel.alto, .nivel.excelente { color: var(--acento); }
+.nivel.ninguno { color: var(--tinta-suave); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .aguja { transform-origin: 120px 118px; animation: girar 900ms var(--curva); }
+  @keyframes girar { from { transform: rotate(-90deg); } }
+}

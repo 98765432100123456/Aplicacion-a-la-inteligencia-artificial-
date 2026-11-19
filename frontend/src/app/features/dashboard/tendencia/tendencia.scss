@@ -1,0 +1,37 @@
+:host { display: grid; gap: var(--e-3); }
+svg { width: 100%; height: auto; overflow: visible; }
+.desplazable { overflow-x: auto; padding-bottom: var(--e-1); }
+@media (max-width: 40em) { svg { min-width: 36rem; } }
+.rejilla { stroke: var(--linea); stroke-width: 1; }
+.eje { font-size: 11px; fill: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+.mes-texto { font-weight: 600; }
+.referencia { stroke-width: 1.5; stroke-dasharray: 5 5; }
+.referencia.medio { stroke: var(--maiz); }
+.referencia.excelente { stroke: var(--acento); }
+.ref { font-size: 10px; font-weight: 700; }
+.ref.medio { fill: var(--maiz); }
+.ref.excelente { fill: var(--acento); }
+.zona { fill: transparent; }
+.mes:hover .zona { fill: color-mix(in srgb, var(--tinta) 5%, transparent); }
+.columna { fill: color-mix(in srgb, var(--accion) 55%, var(--superficie)); }
+.mes:hover .columna { fill: var(--accion); }
+.linea { fill: none; stroke: var(--acento); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.punto { fill: var(--superficie-elevada); stroke: var(--acento); stroke-width: 2.5; }
+.convenciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-5);
+  list-style: none;
+  padding: 0;
+  font-size: var(--texto-xs);
+  color: var(--tinta-suave);
+
+  li { display: inline-flex; align-items: center; gap: var(--e-2); }
+  i { display: inline-block; }
+  .c-columna { width: 0.8rem; height: 0.8rem; border-radius: 3px; background: color-mix(in srgb, var(--accion) 55%, var(--superficie)); }
+  .c-linea { width: 1.1rem; height: 0; border-top: 2.5px solid var(--acento); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .columna { transform-box: fill-box; transform-origin: bottom; animation: crecer 700ms var(--curva) both; }
+  @keyframes crecer { from { transform: scaleY(0); } }
+}

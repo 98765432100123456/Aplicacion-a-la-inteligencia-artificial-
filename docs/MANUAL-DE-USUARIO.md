@@ -193,17 +193,28 @@ Desde esta sección se cambia la contraseña: se escribe la contraseña actual, 
 Tablero
 -------
 
-La sección **Tablero** resume las evaluaciones finalizadas que el rol puede consultar; el propietario ve solo las de sus predios. Con el control **Todo**, **Últimos 12 meses** o **Últimos 90 días** se elige el periodo.
+La sección **Tablero** resume las evaluaciones finalizadas que el rol puede consultar; el propietario ve solo las de sus predios. Arriba se elige el periodo (**Todo**, **Últimos 12 meses** o **Últimos 90 días**) y, con las listas, un departamento o un sistema productivo; **Quitar filtros** vuelve a mostrar todo.
 
-- **Cifras:** evaluaciones finalizadas y en curso, predios evaluados, puntaje promedio con su nivel y porcentaje de evaluaciones en nivel alto o excelente.
-- **Evaluaciones por nivel:** barra con la proporción de evaluaciones en nivel bajo, medio, alto y excelente.
-- **Promedio por libertad:** el puntaje de 0 a 5 de cada libertad, con su peso en la calificación.
-- **Evaluaciones por mes:** cantidad de evaluaciones de los últimos seis meses y su puntaje promedio.
+- **Indicadores:** evaluaciones finalizadas, predios evaluados, puntaje promedio y porcentaje en nivel alto o excelente, con una minigráfica de los últimos meses y, en los periodos de 12 meses y 90 días, el cambio frente al periodo anterior.
+- **Índice de bienestar:** medidor con el puntaje promedio sobre las bandas de la escala del ICA (bajo, medio, alto y excelente).
+- **Evaluaciones por nivel:** dona con la cantidad y el porcentaje de cada nivel.
+- **Tendencia de los últimos 12 meses:** columnas con las evaluaciones de cada mes y línea con su puntaje promedio, con las referencias de nivel medio (3,0) y excelente (4,6).
+- **Libertades:** promedio de 0 a 5 de cada libertad, con su peso y la marca de la meta de nivel alto (4,0).
 - **Criterios con más hallazgos:** los cinco criterios que más se repiten con resultado parcial o negativo, y cuántos fueron críticos.
+- **Por departamento** y **Predios que requieren atención:** el promedio de cada departamento y los predios cuya última evaluación quedó en nivel bajo o medio, con enlace a su resultado.
 - **Análisis de los resultados:** el botón **Generar análisis con IA** envía solo las cifras agregadas, sin nombres ni datos personales, a la inteligencia artificial, que devuelve un resumen, lo que muestran las cifras y acciones sugeridas. Si la IA no está disponible, el análisis se genera por reglas y así se indica.
 - **Evaluaciones más recientes:** cada fila abre el resultado de la evaluación.
 
-**Exportar.** **Exportar a Excel** descarga un archivo CSV con una fila por evaluación (predio, ubicación, sistema, tipo de productor, evaluador, fechas, puntaje, nivel, puntaje de cada libertad, criterios con hallazgos y origen de las recomendaciones), listo para abrir en Excel. **Reporte PDF** descarga el reporte del tablero con las cifras, las tablas y, si se generó, el análisis.
+**Exportar.** **Exportar a Excel** descarga un libro de Excel (.xlsx) con el periodo y los filtros elegidos:
+
+- **Tablero:** portada con foto, los cuatro indicadores y gráficos nativos de Excel (dona por nivel, libertades con la meta, tendencia mensual, criterios con más hallazgos y puntaje por departamento), los predios que requieren atención y el resumen del análisis.
+- **Evaluaciones:** una fila por evaluación en una tabla con filtros, con colores por nivel, barras de puntaje y escala de color en cada libertad.
+- **Hallazgos:** cada criterio con hallazgo por evaluación, marcando los críticos.
+- **Análisis IA:** el resumen, las observaciones y las acciones sugeridas.
+- **Metodología:** pesos de las libertades, escala de niveles y el cálculo paso a paso.
+- **Datos:** las cifras que alimentan los gráficos.
+
+El libro se arma en el navegador a partir de una plantilla; no pasa por ningún servidor. **Reporte PDF** descarga el reporte del tablero con las cifras, las tablas y, si se generó, el análisis.
 
 
 Asistente Clara

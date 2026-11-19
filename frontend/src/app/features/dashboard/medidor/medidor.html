@@ -1,0 +1,16 @@
+<svg viewBox="0 0 240 150" role="img" [attr.aria-label]="descripcion()">
+  @for (f of franjas; track f.codigo) {
+    <path [class]="'franja ' + f.codigo" [attr.d]="f.d" />
+  }
+  @for (m of marcas; track m.v) {
+    <text class="marca" [attr.x]="m.x" [attr.y]="m.y" text-anchor="middle">{{ m.texto }}</text>
+  }
+  @if (aguja(); as a) {
+    <line class="aguja" [attr.x1]="cx" [attr.y1]="cy" [attr.x2]="a.x" [attr.y2]="a.y" />
+    <circle class="eje" [attr.cx]="cx" [attr.cy]="cy" r="7" />
+  }
+</svg>
+<div class="lectura" aria-hidden="true">
+  <b>{{ texto() }}</b><span>de 5</span>
+</div>
+<p class="nivel" [class]="'nivel ' + (nivel() ?? 'ninguno').toLowerCase()">{{ nombreNivel() }}</p>

@@ -1,0 +1,63 @@
+:host {
+  position: relative;
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-5);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-panel);
+  background: var(--superficie-elevada);
+  overflow: hidden;
+}
+
+.cabeza { display: flex; align-items: center; gap: var(--e-3); }
+.icono {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.7rem;
+  background: var(--acento-suave);
+  color: var(--acento);
+
+  svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+}
+.etiqueta { font-size: var(--texto-sm); font-weight: 600; color: var(--tinta-suave); }
+
+.valor {
+  font-size: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+.unidad { margin-left: 0.2em; font-size: var(--texto-md); font-weight: 600; letter-spacing: 0; color: var(--tinta-suave); }
+
+.pie { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2); min-height: 1.6rem; }
+.variacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radio-sello);
+  font-size: var(--texto-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  svg { width: 0.6rem; height: 0.6rem; fill: currentColor; stroke: currentColor; stroke-width: 1.5; }
+  &.sube { background: var(--acento-suave); color: var(--acento); }
+  &.baja { background: var(--alerta-fondo); color: var(--alerta-texto); }
+  &.igual { background: color-mix(in srgb, var(--tinta) 8%, transparent); color: var(--tinta-suave); }
+}
+.detalle { font-size: var(--texto-xs); color: var(--tinta-suave); }
+
+.mini {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 55%;
+  height: 3rem;
+  opacity: 0.9;
+
+  .area { fill: color-mix(in srgb, var(--accion) 16%, transparent); }
+  .linea { fill: none; stroke: var(--accion); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+}

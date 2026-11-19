@@ -1,0 +1,32 @@
+<div class="desplazable" tabindex="0" role="group" aria-label="Gráfica de tendencia; deslice para ver todos los meses">
+<svg [attr.viewBox]="'0 0 ' + w + ' ' + h" role="img" [attr.aria-label]="descripcion()">
+  @for (l of lineasCantidad(); track l.y) {
+    <line class="rejilla" [attr.x1]="m.izquierda" [attr.x2]="derecha" [attr.y1]="l.y" [attr.y2]="l.y" />
+    <text class="eje" [attr.x]="m.izquierda - 8" [attr.y]="l.y + 3" text-anchor="end">{{ l.texto }}</text>
+  }
+  @for (r of referencias; track r.v) {
+    <line [class]="'referencia ' + r.clase" [attr.x1]="m.izquierda" [attr.x2]="derecha" [attr.y1]="r.y" [attr.y2]="r.y" />
+    <text [class]="'eje ref ' + r.clase" [attr.x]="derecha + 6" [attr.y]="r.y + 3">{{ r.texto }}</text>
+  }
+  @for (c of columnas(); track c.mes) {
+    <g class="mes">
+      <title>{{ c.titulo }}</title>
+      <rect class="zona" [attr.x]="c.cx - (c.ancho / 0.56) / 2" [attr.y]="m.arriba" [attr.width]="c.ancho / 0.56" [attr.height]="base - m.arriba" />
+      @if (c.alto) {
+        <rect class="columna" [attr.x]="c.x" [attr.y]="c.y" [attr.width]="c.ancho" [attr.height]="c.alto" rx="4" />
+      }
+      <text class="eje mes-texto" [attr.x]="c.cx" [attr.y]="base + 18" text-anchor="middle">{{ c.etiqueta }}</text>
+    </g>
+  }
+  <path class="linea" [attr.d]="linea()" />
+  @for (c of columnas(); track c.mes) {
+    @if (c.py !== null) {
+      <circle class="punto" [attr.cx]="c.cx" [attr.cy]="c.py" r="4.5" />
+    }
+  }
+</svg>
+</div>
+<ul class="convenciones" aria-hidden="true">
+  <li><i class="c-columna"></i>Evaluaciones finalizadas</li>
+  <li><i class="c-linea"></i>Puntaje promedio (0 a 5)</li>
+</ul>

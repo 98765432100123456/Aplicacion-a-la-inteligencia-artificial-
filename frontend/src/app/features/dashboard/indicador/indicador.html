@@ -1,0 +1,29 @@
+<div class="cabeza">
+  <span class="icono" aria-hidden="true">
+    @switch (icono()) {
+      @case ('evaluaciones') { <svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 12l3 3 5-6" /></svg> }
+      @case ('predios') { <svg viewBox="0 0 24 24"><path d="M3 20h18M5 20V10l7-5 7 5v10M10 20v-5h4v5" /></svg> }
+      @case ('puntaje') { <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" /></svg> }
+      @case ('nivel') { <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 19.3 5 15.4 5 11V6zM9 12l2 2 4-4" /></svg> }
+    }
+  </span>
+  <span class="etiqueta">{{ etiqueta() }}</span>
+</div>
+<p class="valor">{{ valor() }}@if (unidad()) {<span class="unidad">{{ unidad() }}</span>}</p>
+<div class="pie">
+  @if (variacionTexto(); as v) {
+    <span class="variacion" [class]="'variacion ' + tendencia()">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path [attr.d]="tendencia() === 'baja' ? 'M6 9L2 4h8z' : tendencia() === 'sube' ? 'M6 3l4 5H2z' : 'M2 6h8'" /></svg>
+      {{ v }}<span class="visually-hidden"> frente al periodo anterior</span>
+    </span>
+  }
+  @if (detalle()) {
+    <span class="detalle">{{ detalle() }}</span>
+  }
+</div>
+@if (trazo(); as t) {
+  <svg class="mini" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true">
+    <path class="area" [attr.d]="t.area" />
+    <path class="linea" [attr.d]="t.linea" />
+  </svg>
+}
