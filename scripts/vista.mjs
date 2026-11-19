@@ -19,6 +19,7 @@ writeFileSync(join(dir, 'pagina.html'), pagina);
 const recorrer = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? recorrer(join(d, f)) : [join(d, f)]));
 const archivos = recorrer(dir)
   .map((f) => relative(dir, f))
-  .filter((f) => !['index.html', 'pagina.html', 'robots.txt', 'sitemap.xml', 'manifest.webmanifest'].includes(f) && !f.startsWith('.well-known'));
+  .filter((f) => !['index.html', 'pagina.html', 'robots.txt', 'sitemap.xml', 'manifest.webmanifest'].includes(f) && !f.startsWith('.well-known') && !f.endsWith('.xlsx'));
+// La vista previa no sirve archivos .xlsx (ni permite descargas), así que la plantilla de Excel no se publica.
 writeFileSync(join(dir, 'archivos.json'), JSON.stringify(archivos, null, 2));
 console.log(`✔ Vista lista: pagina.html y ${archivos.length} archivos`);
