@@ -4,6 +4,7 @@
     "indexes": "firebase/firestore.indexes.json"
   },
   "hosting": {
+    "site": "bienestar-animal-ica",
     "public": "frontend/dist/frontend/browser",
     "ignore": [
       "**/.git/**",
